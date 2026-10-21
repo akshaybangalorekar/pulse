@@ -235,8 +235,7 @@ function cardNews(x){
   const img=it.image?`<img loading="lazy" src="${esc(it.image)}" alt="" onerror="this.style.display='none'">`:"";
   return `<a class="card" href="${esc(it.link)}" target="_blank" rel="noopener">
     <div class="imw">${img}<div class="ph" style="background:${g.c}22">${g.e}</div></div>
-    <div class="cb"><div class="k" style="color:${g.c}">${g.e} ${g.n}</div>
-      <div class="head">${esc(it.title)}</div>
+    <div class="cb"><div class="head">${esc(it.title)}</div>
       <div class="meta">${h?`<img class="fav" src="https://www.google.com/s2/favicons?domain=${esc(h)}&sz=64" alt="" onerror="this.style.display='none'">`:""}
         <span class="src">${esc(it.source||h||"")}</span><span class="dot"></span><span>${ago(it.date)}</span></div>
     </div></a>`;
@@ -261,8 +260,7 @@ function screenFeed(){
     const g=GROUPS[hero.g], it=hero.item;
     html+=`<a class="hero" href="${esc(it.link)}" target="_blank" rel="noopener">
       ${it.image?`<img src="${esc(it.image)}" alt="">`:""}<div class="scrim"></div>
-      <div class="tx"><span class="k">${g.e} ${g.n}</span>
-        <div class="h">${esc(it.title)}</div>
+      <div class="tx"><div class="h">${esc(it.title)}</div>
         <div class="m">${esc(it.source||"")} \u00B7 ${ago(it.date)}</div></div></a>`;
   } else { html+=cardCool(hero.item); }
   html+=`<div class="secdiv">Today for you</div>`;
