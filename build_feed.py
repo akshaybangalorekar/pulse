@@ -8,6 +8,7 @@ CORS proxy. Runs on GitHub Actions on a schedule.
 import calendar
 import html
 import json
+import os
 import re
 import time
 import urllib.parse
@@ -106,6 +107,18 @@ CATALOG = {
 # keys that need a separate copy per language
 LANG_KEYS = {"india", "movies"}
 
+# "what's happening now" hooks for the kids app (Spark), keyed to match its topics
+SPARK_WORLD = {
+    "w_maths": ["mathematics competition", "maths puzzle"],
+    "w_science": ["science discovery", "new invention"],
+    "w_space": ["NASA space mission", "astronomy discovery"],
+    "w_tennis": ["tennis ATP WTA"],
+    "w_basketball": ["basketball NBA NBL"],
+    "w_india": ["India history archaeology discovery", "Vedic mathematics"],
+    "w_aussie": ["Australia wildlife nature"],
+    "w_sport_au": ["AFL Australian football"],
+}
+
 
 # ---- fetch + parse -----------------------------------------------------
 def fetch(url):
@@ -193,12 +206,22 @@ def main():
                 data[key] = items
             else:
                 data[key + "|" + l] = items
-    out = {"generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-           "data": data}
+    gen = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    out = {"generated": gen, "data": data}
     with open("feed.json", "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
     n = sum(len(v) for v in data.values())
     print("WROTE feed.json:", n, "items across", len(data), "keys")
+
+    # kids app: "what's happening now" per topic group
+    world = {}
+    for key, qs in SPARK_WORLD.items():
+        print("WORLD", key)
+        world[key] = gather([gn(q, "en-au") for q in qs])[:20]
+    os.makedirs("spark", exist_ok=True)
+    with open(os.path.join("spark", "world.json"), "w", encoding="utf-8") as f:
+        json.dump({"generated": gen, "world": world}, f, ensure_ascii=False, separators=(",", ":"))
+    print("WROTE spark/world.json:", sum(len(v) for v in world.values()), "items across", len(world), "keys")
 
 
 if __name__ == "__main__":
