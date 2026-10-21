@@ -21,6 +21,12 @@ UA = "Mozilla/5.0 (compatible; PulseBot/1.0; +https://github.com/akshaybangalore
 PER_KEY = 40
 TIMEOUT = 20
 
+# junk that search feeds like to surface: pirate-stream spam and the like
+SPAM = re.compile(r"(live\s*stream|streaming|watch\s+(live|online|free)|free\s*stream|"
+                  r"vip\s*stream|soccer\s*stream|reddit\s*stream|\u3010|\u3011|"
+                  r"live\s*now|hd\s*stream|full\s*match\s*free)", re.I)
+BAD_DOMAINS = {"hrr.mlit.go.jp"}
+
 
 def gn(q, lang):
     """Google News RSS search URL for a query in a given locale."""
@@ -131,7 +137,7 @@ SPARK_NEWS = {
                 gn("dinosaur fossil discovery", "en-au"), gn("ocean discovery", "en-au"),
                 gn("new invention", "en-au")],
     "sports": [gn("cricket", "en-au"), gn("tennis", "en-au"),
-               gn("basketball NBA NBL", "en-au"), gn("football soccer", "en-au")],
+               gn("NBL basketball", "en-au"), gn("A-League soccer", "en-au")],
     "tv": [gn("new kids movie", "en-au"), gn("animated series", "en-au"),
            gn("Bollywood film", "en-in"), gn("Marvel DC", "en-au")],
     "games": [gn("video game news", "en-au"), gn("Minecraft", "en-au"),
@@ -209,6 +215,11 @@ def gather(urls):
             continue
         print("  ok", len(got), u)
         for it in got:
+            if SPAM.search(it["title"]):
+                continue
+            dom = urllib.parse.urlparse(it.get("surl") or "").netloc.lower()
+            if dom in BAD_DOMAINS:
+                continue
             k = it["title"].lower()
             if k in seen:
                 continue
