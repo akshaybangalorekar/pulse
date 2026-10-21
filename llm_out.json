@@ -1,1 +1,10 @@
-OK
+{
+ "github_models": {
+  "status": 200,
+  "body": "OK\r\n"
+ },
+ "azure": {
+  "status": "ERR",
+  "body": "URLError: <urlopen error [Errno -2] Name or service not known>"
+ }
+}
