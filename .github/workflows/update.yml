@@ -36,7 +36,7 @@ jobs:
         run: |
           git config user.name "pulse-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add feed.json
+          git add feed.json spark/world.json
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
