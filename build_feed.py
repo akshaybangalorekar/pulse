@@ -134,10 +134,11 @@ SPARK_WORLD = {
 
 # Spark news: photo-rich publisher feeds, grouped for natural mixing
 SPARK_NEWS = {
-    "bharat": ["https://www.thehindu.com/news/national/feeder/default.rss",
+    "bharat": ["https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms",
+               "https://www.thehindu.com/news/national/feeder/default.rss",
                "https://www.thehindu.com/sport/feeder/default.rss",
-               "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
-               "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml"],
+               "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml",
+               "https://feeds.feedburner.com/ndtvnews-top-stories"],
     "australia": ["https://www.abc.net.au/news/feed/51120/rss.xml",
                   "https://www.theguardian.com/au/rss",
                   "https://www.abc.net.au/news/feed/45910/rss.xml"],
@@ -149,6 +150,7 @@ SPARK_NEWS = {
                 "https://phys.org/rss-feed/"],
     "sports": ["https://www.espncricinfo.com/rss/content/story/feeds/0.xml",
                "https://www.cricket.com.au/news/rss",
+               "https://www.abc.net.au/news/feed/45910/rss.xml",
                "https://feeds.bbci.co.uk/sport/rss.xml"],
     "screen": ["https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml",
                "https://variety.com/v/film/feed/"],
@@ -234,7 +236,7 @@ def parse(raw):
     return out
 
 
-def gather(urls, kid=False):
+def gather(urls, kid=False, cap=None):
     items, seen = [], set()
     for u in urls:
         try:
@@ -257,6 +259,15 @@ def gather(urls, kid=False):
             seen.add(k)
             items.append(it)
     items.sort(key=lambda x: x["date"], reverse=True)
+    if cap:
+        out, per = [], {}
+        for it in items:
+            s = it["source"] or ""
+            if per.get(s, 0) >= cap:
+                continue
+            per[s] = per.get(s, 0) + 1
+            out.append(it)
+        items = out
     return items[:PER_KEY]
 
 
@@ -292,7 +303,7 @@ def main():
     news = {}
     for key, urls in SPARK_NEWS.items():
         print("SPARK", key)
-        news[key] = gather(urls, kid=True)[:30]
+        news[key] = gather(urls, kid=True, cap=8)[:30]
     withimg = sum(1 for v in news.values() for it in v if it["image"])
     total = sum(len(v) for v in news.values())
     with open(os.path.join("spark", "feed.json"), "w", encoding="utf-8") as f:
