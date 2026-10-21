@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Pulse feed builder.
+"""Pulse + Spark feed builder.
 
-Fetches public RSS/Atom feeds, normalises them, and writes feed.json
-(next to index.html) so the web app can read news same-origin with no
-CORS proxy. Runs on GitHub Actions on a schedule.
+Fetches public RSS/Atom feeds, normalises them, and writes:
+  feed.json            -> Pulse (personal news reader)
+  spark/feed.json      -> Spark (kids' news, grouped, real images)
+  spark/world.json     -> Spark "in the world" hooks
+Runs on GitHub Actions on a schedule; the web apps read these same-origin.
 """
 import calendar
 import html
@@ -17,14 +19,20 @@ from datetime import datetime, timezone
 
 import feedparser
 
-UA = "Mozilla/5.0 (compatible; PulseBot/1.0; +https://github.com/akshaybangalorekar/pulse)"
+UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
 PER_KEY = 40
 TIMEOUT = 20
 
-# junk that search feeds like to surface: pirate-stream spam and the like
+# pirate-stream spam and similar junk that search feeds surface
 SPAM = re.compile(r"(live\s*stream|streaming|watch\s+(live|online|free)|free\s*stream|"
                   r"vip\s*stream|soccer\s*stream|reddit\s*stream|\u3010|\u3011|"
                   r"live\s*now|hd\s*stream|full\s*match\s*free)", re.I)
+# not for an 11-year-old: violence, crime, sex, war
+KID_BLOCK = re.compile(r"\b(kill(?:ed|ing|s)?|dead|death|dies|died|murder(?:ed|s)?|"
+                       r"stab(?:bed|bing)?|gunman|shoot(?:ing|ings)?|rape|suicide|"
+                       r"overdose|arrest(?:ed|s)?|jail(?:ed)?|prison|war|missile|"
+                       r"airstrike|bomb(?:ing|ed|s)?|blast|massacre|hostage|"
+                       r"terror(?:ist|ists|ism)?|houthi|nude|porn)\b", re.I)
 BAD_DOMAINS = {"hrr.mlit.go.jp"}
 
 
@@ -39,7 +47,7 @@ def gn(q, lang):
         urllib.parse.quote(q), hl, gl, ceid)
 
 
-# ---- feed catalogue ----------------------------------------------------
+# ---- Pulse (personal news) --------------------------------------------
 def india(l):
     f = [gn("Indian economy", "en-in"), gn("India rupee GDP markets", "en-in"),
          "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
@@ -110,10 +118,9 @@ CATALOG = {
                         gn("world championships sport", "en-au"),
                         "https://feeds.bbci.co.uk/sport/rss.xml"],
 }
-# keys that need a separate copy per language
 LANG_KEYS = {"india", "movies"}
 
-# "what's happening now" hooks for the kids app (Spark), keyed to match its topics
+# "what's happening now" hooks for Spark topics
 SPARK_WORLD = {
     "w_maths": ["mathematics competition", "maths puzzle"],
     "w_science": ["science discovery", "new invention"],
@@ -125,32 +132,37 @@ SPARK_WORLD = {
     "w_sport_au": ["AFL Australian football"],
 }
 
-# kid-facing current-affairs news for Spark, grouped the way an 11-year-old thinks
+# Spark news: photo-rich publisher feeds, grouped for natural mixing
 SPARK_NEWS = {
-    "bharat": [gn("India festival celebration", "en-in"), gn("ISRO space mission", "en-in"),
-               gn("India cricket", "en-in"), gn("Bollywood", "en-in"),
-               gn("India students achievement", "en-in")],
-    "melbourne": [gn("Melbourne events kids", "en-au"), gn("Australia wildlife", "en-au"),
-                  gn("AFL", "en-au"), gn("Australian Open", "en-au"),
-                  gn("Australia school kids", "en-au")],
-    "science": [gn("space discovery", "en-au"), gn("science discovery", "en-au"),
-                gn("dinosaur fossil discovery", "en-au"), gn("ocean discovery", "en-au"),
-                gn("new invention", "en-au")],
-    "sports": [gn("cricket", "en-au"), gn("tennis", "en-au"),
-               gn("NBL basketball", "en-au"), gn("A-League soccer", "en-au")],
-    "tv": [gn("new kids movie", "en-au"), gn("animated series", "en-au"),
-           gn("Bollywood film", "en-in"), gn("Marvel DC", "en-au")],
-    "games": [gn("video game news", "en-au"), gn("Minecraft", "en-au"),
-              gn("Roblox", "en-au"), gn("esports", "en-au")],
-    "fun": [gn("amazing animals", "en-au"), gn("world record", "en-au"),
-            gn("cool invention", "en-au"), gn("funny science", "en-au")],
+    "bharat": ["https://www.thehindu.com/news/national/feeder/default.rss",
+               "https://www.thehindu.com/sport/feeder/default.rss",
+               "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+               "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml"],
+    "australia": ["https://www.abc.net.au/news/feed/51120/rss.xml",
+                  "https://www.theguardian.com/au/rss",
+                  "https://www.abc.net.au/news/feed/45910/rss.xml"],
+    "science": ["https://feeds.bbci.co.uk/newsround/rss.xml",
+                "https://www.snexplores.org/feed",
+                "https://www.space.com/feeds/all",
+                "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
+                "https://www.sciencealert.com/feed",
+                "https://phys.org/rss-feed/"],
+    "sports": ["https://www.espncricinfo.com/rss/content/story/feeds/0.xml",
+               "https://www.cricket.com.au/news/rss",
+               "https://feeds.bbci.co.uk/sport/rss.xml"],
+    "screen": ["https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml",
+               "https://variety.com/v/film/feed/"],
+    "tech": ["https://feeds.ign.com/ign/all",
+             "https://www.cnet.com/rss/news/",
+             "https://feeds.bbci.co.uk/news/technology/rss.xml"],
 }
 
 
 # ---- fetch + parse -----------------------------------------------------
 def fetch(url):
-    req = urllib.request.Request(url, headers={"User-Agent": UA,
-                                               "Accept": "application/rss+xml, application/xml, text/xml, */*"})
+    req = urllib.request.Request(url, headers={
+        "User-Agent": UA,
+        "Accept": "application/rss+xml, application/xml, text/xml, */*"})
     with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
         return r.read()
 
@@ -162,14 +174,24 @@ def clean(s):
     return html.unescape(s).strip()
 
 
+def norm_img(u):
+    if not u:
+        return ""
+    u = u.strip()
+    if u.startswith("//"):
+        u = "https:" + u
+    if not u.startswith("http"):
+        return ""
+    return u
+
+
 def parse(raw):
     d = feedparser.parse(raw)
     out = []
     for e in d.entries:
         title = clean(e.get("title", ""))
         link = e.get("link", "") or ""
-        src = ""
-        surl = ""
+        src = surl = ""
         s = e.get("source")
         if isinstance(s, dict):
             src = clean(s.get("title", ""))
@@ -196,16 +218,23 @@ def parse(raw):
                 break
         if not img:
             for en in e.get("enclosures", []) or []:
-                if en.get("href") and str(en.get("type", "")).startswith("image"):
+                if en.get("href"):
                     img = en["href"]
                     break
+        if not img:
+            for f in ("summary", "description"):
+                m = re.search(r'<img[^>]+src=["\']([^"\']+)', e.get(f, "") or "")
+                if m:
+                    img = m.group(1)
+                    break
+        img = norm_img(img)
         if title and link:
             out.append({"title": title, "link": link, "source": src, "surl": surl,
                         "image": img, "date": ts})
     return out
 
 
-def gather(urls):
+def gather(urls, kid=False):
     items, seen = [], set()
     for u in urls:
         try:
@@ -216,6 +245,8 @@ def gather(urls):
         print("  ok", len(got), u)
         for it in got:
             if SPAM.search(it["title"]):
+                continue
+            if kid and KID_BLOCK.search(it["title"]):
                 continue
             dom = urllib.parse.urlparse(it.get("surl") or "").netloc.lower()
             if dom in BAD_DOMAINS:
@@ -230,6 +261,9 @@ def gather(urls):
 
 
 def main():
+    gen = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # ---- Pulse
     data = {}
     for key, fn in CATALOG.items():
         langs = ["en", "hi", "mr"] if key in LANG_KEYS else ["en"]
@@ -240,14 +274,11 @@ def main():
                 data[key] = items
             else:
                 data[key + "|" + l] = items
-    gen = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    out = {"generated": gen, "data": data}
     with open("feed.json", "w", encoding="utf-8") as f:
-        json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
-    n = sum(len(v) for v in data.values())
-    print("WROTE feed.json:", n, "items across", len(data), "keys")
+        json.dump({"generated": gen, "data": data}, f, ensure_ascii=False, separators=(",", ":"))
+    print("WROTE feed.json:", sum(len(v) for v in data.values()), "items across", len(data), "keys")
 
-    # kids app: "what's happening now" per topic group
+    # ---- Spark "in the world"
     world = {}
     for key, qs in SPARK_WORLD.items():
         print("WORLD", key)
@@ -257,26 +288,17 @@ def main():
         json.dump({"generated": gen, "world": world}, f, ensure_ascii=False, separators=(",", ":"))
     print("WROTE spark/world.json:", sum(len(v) for v in world.values()), "items across", len(world), "keys")
 
-    # kids news feed (Spark)
+    # ---- Spark kids news (with real images)
     news = {}
     for key, urls in SPARK_NEWS.items():
         print("SPARK", key)
-        news[key] = gather(urls)[:30]
-    merged, seen, top = [], set(), []
-    for v in news.values():
-        merged.extend(v)
-    for it in sorted(merged, key=lambda x: x["date"], reverse=True):
-        k = it["title"].lower()
-        if k in seen:
-            continue
-        seen.add(k)
-        top.append(it)
-        if len(top) >= 30:
-            break
-    news["top"] = top
+        news[key] = gather(urls, kid=True)[:30]
+    withimg = sum(1 for v in news.values() for it in v if it["image"])
+    total = sum(len(v) for v in news.values())
     with open(os.path.join("spark", "feed.json"), "w", encoding="utf-8") as f:
         json.dump({"generated": gen, "data": news}, f, ensure_ascii=False, separators=(",", ":"))
-    print("WROTE spark/feed.json:", sum(len(v) for v in news.values()), "items across", len(news), "keys")
+    print("WROTE spark/feed.json:", total, "items across", len(news),
+          "keys |", withimg, "with images")
 
 
 if __name__ == "__main__":
