@@ -1,146 +1,95 @@
 {
- "newsround": {
-  "url": "https://feeds.bbci.co.uk/newsround/rss.xml",
-  "items": 80,
-  "with_image": 80,
-  "sample_title": "Watch Newsround",
-  "sample_img": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/bbad/live/7fe84470-cd1d-11f1-bc2e-018d645d8d21.jpg"
+ "hindu_national": {
+  "url": "https://www.thehindu.com/news/national/feeder/default.rss",
+  "items": 60,
+  "with_image": 43,
+  "sample_title": "Haryana Congress flays BJP government over its failure to ke",
+  "sample_img": "https://th-i.thgim.com/public/incoming/6rcxr0/article71608999.ece/alternates/LANDSCAPE_1200/PTI10_17_2026_0002"
  },
- "dogonews": {
-  "url": "https://www.dogonews.com/feed",
-  "error": "HTTPError: HTTP Error 404: Not Found"
+ "hindu_sport": {
+  "url": "https://www.thehindu.com/sport/feeder/default.rss",
+  "items": 60,
+  "with_image": 48,
+  "sample_title": "Jansen takes five for South Africa as Australia forced to fo",
+  "sample_img": ""
  },
- "snexplores": {
-  "url": "https://www.snexplores.org/feed",
+ "toi_top": {
+  "url": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+  "items": 46,
+  "with_image": 46,
+  "sample_title": "Tiger shooters got weapons via \u2018dead drop\u2019; couriers deliver",
+  "sample_img": "https://static.toiimg.com/photo/msid-135100677,imgsize-146088.cms"
+ },
+ "ndtv": {
+  "url": "https://feeds.feedburner.com/ndtvnews-top-stories",
   "items": 20,
   "with_image": 20,
-  "sample_title": "Explainer: What is an equation?",
-  "sample_img": "https://www.snexplores.org/wp-content/uploads/sites/3/2026/10/1030_equation_explainer_feat.jpg?w=800"
+  "sample_title": "2 Killed, Indian Injured By Houthi Drone Debris At Saudi Oil",
+  "sample_img": "https://c.ndtvimg.com/2026-10/t0lkke74_houthi-attacks-saudi-oil-field_625x300_22_October_26.jpeg"
  },
- "nasa": {
-  "url": "https://www.nasa.gov/rss/dyn/breaking_news.rss",
-  "items": 10,
-  "with_image": 0,
-  "sample_title": "NASA Conducts RS-25 Engine Test in Support of Future Artemis",
-  "sample_img": ""
- },
- "verge": {
-  "url": "https://www.theverge.com/rss/index.xml",
-  "items": 10,
-  "with_image": 0,
-  "sample_title": "Data centers could erase decades of air quality gains",
-  "sample_img": ""
- },
- "abc_top": {
-  "url": "https://www.abc.net.au/news/feed/51120/rss.xml",
-  "items": 25,
-  "with_image": 25,
-  "sample_title": "Breaking: Alleged driver charged over hit-and-run that kille",
-  "sample_img": "https://live-production.wcms.abc-cdn.net.au/a2060c284004452ee44f07607ed0f7f8?impolicy=wcms_crop_resize&cropH=9"
- },
- "abc_business": {
-  "url": "https://www.abc.net.au/news/feed/51892/rss.xml",
-  "items": 25,
-  "with_image": 25,
-  "sample_title": "Mine on tropical island plans to pump pit water into ocean",
-  "sample_img": "https://live-production.wcms.abc-cdn.net.au/e25588f3767a3809f709a45e7b2d99c5?impolicy=wcms_crop_resize&cropH=2"
- },
- "guardian_au": {
-  "url": "https://www.theguardian.com/au/rss",
-  "items": 115,
-  "with_image": 115,
-  "sample_title": "Can Japan\u2019s firebrand PM survive a second year in power? - p",
-  "sample_img": "https://i.guim.co.uk/img/media/78512fffe42433039acb06c18eb5087cf1696c91/313_0_1875_1500/master/1875.jpg?width="
- },
- "guardian_world": {
-  "url": "https://www.theguardian.com/world/rss",
-  "items": 45,
-  "with_image": 45,
-  "sample_title": "Controversial US-backed vaccine trial in African newborns ha",
-  "sample_img": "https://i.guim.co.uk/img/media/344d52d116791a7470b0fa4bee4effb65774989e/298_0_3376_2700/master/3376.jpg?width="
- },
- "cricinfo": {
-  "url": "https://www.espncricinfo.com/rss/content/story/feeds/0.xml",
-  "items": 100,
-  "with_image": 100,
-  "sample_title": "'Can't defend that' - Australia's batting deficiencies expos",
-  "sample_img": "http://p.imgci.com/db/PICTURES/CMS/424100/424107.jpg"
- },
- "atp": {
-  "url": "https://www.atptour.com/en/media/rss-feed/xmlfeed.xml",
+ "indianexpress": {
+  "url": "https://indianexpress.com/feed/",
   "error": "HTTPError: HTTP Error 403: Forbidden"
  },
- "timeout_mel": {
-  "url": "https://www.timeout.com/melbourne/feed/all.rss",
-  "error": "HTTPError: HTTP Error 404: Not Found"
- },
- "broadsheet": {
-  "url": "https://www.broadsheet.com.au/melbourne/feed",
-  "error": "HTTPError: HTTP Error 404: Not Found"
- },
- "bbc_sport": {
-  "url": "https://feeds.bbci.co.uk/sport/rss.xml",
-  "items": 63,
-  "with_image": 63,
-  "sample_title": "Fernandes rounds on Carrick after Man Utd humiliation",
-  "sample_img": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/b893/live/0c5d23f0-cda3-11f1-a307-df5709f146ff.jpg"
- },
- "bbc_tech": {
-  "url": "https://feeds.bbci.co.uk/news/technology/rss.xml",
-  "items": 21,
-  "with_image": 21,
-  "sample_title": "Trump's green card curbs test Indian tech workers' American ",
-  "sample_img": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/51e1/live/804b8da0-cc6e-11f1-baeb-8d65d4bcd7ab.jpg"
- },
- "bollywood": {
-  "url": "https://www.bollywoodhungama.com/feed/",
-  "items": 10,
-  "with_image": 0,
-  "sample_title": "Koffee With Karan 9: Rashmika Mandanna wants to share screen",
-  "sample_img": ""
- },
- "ausgeo": {
-  "url": "https://www.australiangeographic.com.au/feed/",
+ "ht_india": {
+  "url": "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml",
   "items": 100,
-  "with_image": 2,
-  "sample_title": "The North Face Summit Series Nuptse Jacket: Tested",
+  "with_image": 100,
+  "sample_title": "\u2018Does BJP want Opposition votes to split?\u2019 Annamalai backs C",
+  "sample_img": "https://www.hindustantimes.com/ht-img/img/2026/10/21/1600x900/logo/ANI-20260815620-0_1792602791511_cFR4_179260"
+ },
+ "espn_nba": {
+  "url": "https://www.espn.com/espn/rss/nba/news",
+  "items": 0,
+  "with_image": 0,
+  "sample_title": "",
   "sample_img": ""
  },
- "smithsonian": {
-  "url": "https://www.smithsonianmag.com/rss/latest/",
-  "error": "HTTPError: HTTP Error 404: Not Found"
+ "espn_tennis": {
+  "url": "https://www.espn.com/espn/rss/tennis/news",
+  "items": 0,
+  "with_image": 0,
+  "sample_title": "",
+  "sample_img": ""
  },
- "physorg": {
-  "url": "https://phys.org/rss-feed/",
-  "items": 30,
-  "with_image": 30,
-  "sample_title": "Holding out or holding back? Kindergarten redshirting and re",
-  "sample_img": "https://scx1.b-cdn.net/csz/news/tmb/2026/a-ud-education-student.jpg"
- },
- "spacecom": {
-  "url": "https://www.space.com/feeds/all",
-  "items": 50,
-  "with_image": 50,
-  "sample_title": "On this day in space! Oct. 21, 2008: India launches its 1st ",
-  "sample_img": "https://cdn.mos.cms.futurecdn.net/XYSXm8VMcSGEYE32UYqTAA-1920-80.jpg"
- },
- "bbcscience": {
-  "url": "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
-  "items": 40,
-  "with_image": 40,
-  "sample_title": "Why is a peat fire so bad? BBC is in Indonesia to find out",
-  "sample_img": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/28ef/live/eeb5a6a0-cd17-11f1-9a39-31b474234113.jpg"
- },
- "natgeo": {
-  "url": "https://www.nationalgeographic.com/rss/feed",
-  "error": "HTTPError: HTTP Error 404: Not Found"
- },
- "cnet": {
-  "url": "https://www.cnet.com/rss/news/",
+ "abc_sport": {
+  "url": "https://www.abc.net.au/news/feed/45910/rss.xml",
   "items": 25,
   "with_image": 25,
-  "sample_title": "The 3-in-1 Alloop Wearable Could Replace Both Your Wellness ",
-  "sample_img": "https://www.cnet.com/wp-content/uploads/sites/2/Alloop-wearable-1.jpeg"
+  "sample_title": "Live: Helen Haines remains critical as well-wishers leave he",
+  "sample_img": "https://live-production.wcms.abc-cdn.net.au/f590632adecfcf32004cceb6177c8100?impolicy=wcms_crop_resize&cropH=2"
+ },
+ "abc_science": {
+  "url": "https://www.abc.net.au/news/feed/10574772/rss.xml",
+  "error": "HTTPError: HTTP Error 500: Internal Server Error"
+ },
+ "comingsoon": {
+  "url": "https://www.comingsoon.net/feed",
+  "items": 20,
+  "with_image": 0,
+  "sample_title": "Paul Dano, Pen\u00e9lope Cruz, & Javier Bardem\u2019s Apocalyptic Thri",
+  "sample_img": ""
+ },
+ "variety_film": {
+  "url": "https://variety.com/v/film/feed/",
+  "items": 10,
+  "with_image": 10,
+  "sample_title": "\u2018Paper Tiger\u2019 Producer Rodrigo Teixeira Set for GLAFF\u2019s Firs",
+  "sample_img": "https://variety.com/wp-content/uploads/2026/10/split-2-split-1000x667-9.jpg"
+ },
+ "sciencedaily": {
+  "url": "https://www.sciencedaily.com/rss/all.xml",
+  "items": 60,
+  "with_image": 0,
+  "sample_title": "A massive asteroid slammed into the North Sea and unleashed ",
+  "sample_img": ""
+ },
+ "cricket_au": {
+  "url": "https://www.cricket.com.au/news/rss",
+  "items": 35,
+  "with_image": 35,
+  "sample_title": "Full squads: How each club's list is shaping up for BBL|16",
+  "sample_img": "https://resources.cricket-australia.pulselive.com/photo-resources/2026/09/10/ae2d4077-39f4-47ca-8647-833c79466"
  },
  "ign": {
   "url": "https://feeds.ign.com/ign/all",
@@ -148,5 +97,34 @@
   "with_image": 20,
   "sample_title": "Chris Pratt Reaffirms Star-Lord Will Return in the MCU and P",
   "sample_img": "https://assets-prd.ignimgs.com/2023/04/04/chris-pratt-star-lord-dc-future-1680607923459.png"
+ },
+ "bbc_entertain": {
+  "url": "https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml",
+  "items": 29,
+  "with_image": 29,
+  "sample_title": "Don't Stop Believin'! - high school musical Glee set for reb",
+  "sample_img": "https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/d05d/live/765a5ae0-cd65-11f1-bc2e-018d645d8d21.jpg"
+ },
+ "natgeo_animals": {
+  "url": "https://www.nationalgeographic.com/animals/rss/feed",
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "gizmodo": {
+  "url": "https://gizmodo.com/rss",
+  "error": "HTTPError: HTTP Error 403: Forbidden"
+ },
+ "theverge": {
+  "url": "https://www.theverge.com/rss/index.xml",
+  "items": 10,
+  "with_image": 0,
+  "sample_title": "Data centers could erase decades of air quality gains",
+  "sample_img": ""
+ },
+ "sciencealert": {
+  "url": "https://www.sciencealert.com/feed",
+  "items": 10,
+  "with_image": 10,
+  "sample_title": "One-Quarter of Data Centers Are Located in Water-Stressed Ar",
+  "sample_img": "https://www.sciencealert.com/images/2026/10/WaterDrop-1200x675.jpg"
  }
 }
