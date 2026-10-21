@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Spark">
+<meta name="theme-color" content="#fff6ee">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAFUUlEQVR4nO3ba29VRRTG8VXTT2O4lJug6NfQGI1GoyHexQoWkKtQKaWAFUFEEBFE8Gt4v6LyfeqLjYh2rzkze+9zZmat/+8VoYdmWFk8zzCBqZVXHhOgzbTISu4zoFAP5D4AyjUtU7mPgFKRHFCxHFBRK1CRHFCRHFCRHFDxCAYVtQIVtQIVyQEVyQEVywEVtQIVyQEVydHV0jfql2YfneA5xohHsE6Wvg1+2chIqZWhzW7PfYLBUCvpTgZjw9A8SQ6oWI5E4diwhVoZ1K7tluZJcqRYdBQbQnIMzNYwSY5oJ0bFxm47f4lt8Ag2IGuTpFbiLHw3+jPmJkmtRIjZDItIjoHMPWJvkiTHKMedxoawHAigVoLej4uNPQY7RUgOBJAcuvno24bRGfIINgibM6RWFPPfx35y78PjPEdO1EqbY9GbIWY7RUgOBLAcqyTFxj6znSLUSl+mp0dy/NfRlNiwjuTox/T0SI77vJcYG/stXziER7B+jI+OWvnHkR+Sf4n10VErXR3YlvsEY0dyiIjIYWKjBcnRaTN8YDmgcl8rhzrFxqFtHuZGckDlOzkOdr1t+Bgaj2DpDm/NfYIJcVwrB3/MfYLS+a6VbtxMzGtyHCA2RnO5HH0244iXC4dQK8k8jctfcuynUGKRHCmObnU1LmfJ8S6xkYBHsCS+ZuWpVvb91Pc7+JmViLirlT6OPZT7BJPmJjn2EhvJSA6ofCxH/9iYd9cp4qJW9vTeDPHYKeIlOdCJ9eSYGyI2xGly8AgW4fiW3CfIYzr3AcZp7ueyvs9qZa+d9Vop2cKWwodv90L6ztj+uLthdzkKt1B0oTSM1sru4mOjhrFbTI7yN+NEBbEhZpOjZIul30PvMZccu4qPjXrwCDZZi5tznyCBrVp5+5fcJwg6ubmuaZurFQzHUHLMlh0bS5XFhpAcCLCyHOXHRoUM1UqxTtVXKA0TyfFW2bFRrfqTY2fZm3G61tgQHsHGr+LxVl4rO3/NfYKg05tyn6CX+mulWGc21T7bmpPjzbJjo341L0fJztRdKI1qa+WNgmPjg+oLpUFyQFVncrxecGwsG4kNqfU/NS2PodFLXrhMeAQb1PLG3CcYUp21MrjXfhvgm3y40dgwuZBCRXIM5Ky12BCSAwEsh8irvS8cZ03dQ++hVnr7yGChNEgOqEiOfs6ZjQ3hEUxe/r3fr7c8PWqlh3Mbcp9gvKiVrs5vMD86kgMq38vxUtcLx3njhdKgVtJ9bL9QGr6TA0EkR6ILXmJDXCfHjp4vHPa5fwRLcmEm9wkmilqJ9smMt1k5rhWM4jU5Xryd9vmL7mJDSA4EsBwRLs7kPkEeXmsl3qceC6XhMjleuJ37BHUgOYIu+Y0N4REs5NL63CfIzGWtII6/Wnn+j6iPXV7vbjKrkBxQsRxtLnu/bTT81cpIn1EodzlLjufiLhwQEZLj/64QG/9ylhxIwSPYfa6sy32CsniqlWf/DH3183WORhGHWoHKU3IEXCU2WpAcIle5arRzsxzPBC8caOO+Vr6gUFRukgPpfCfHNWIjxMcj2NN/tfzktbUTP0dlqBWovNbK9bVOf+MpSA6oHCzHU6suHNe5bUTxVytfUiixHCQHunKWHDeIjQTWk+PJthcOxPHxCNa4sSb3CSrjpla+WuPldzoc67WCHkwnxxN37v7gJrHRhYPkuMlVoyMHy4GuTNeKiNyiULqzmxyP3xn9GQSZTo6viY1eplZuPZj7DCiU3VpBb6ZrBf2QHFCxHFBRK1CRHFCRHFCRHFB5+pdgSEStQEWtQEVyQEVyQMVyQEWtQEVyQPU3w/enQU3fKFEAAAAASUVORK5CYII=">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAFUUlEQVR4nO3ba29VRRTG8VXTT2O4lJug6NfQGI1GoyHexQoWkKtQKaWAFUFEEBFE8Gt4v6LyfeqLjYh2rzkze+9zZmat/+8VoYdmWFk8zzCBqZVXHhOgzbTISu4zoFAP5D4AyjUtU7mPgFKRHFCxHFBRK1CRHFCRHFCRHFDxCAYVtQIVtQIVyQEVyQEVywEVtQIVyQEVydHV0jfql2YfneA5xohHsE6Wvg1+2chIqZWhzW7PfYLBUCvpTgZjw9A8SQ6oWI5E4diwhVoZ1K7tluZJcqRYdBQbQnIMzNYwSY5oJ0bFxm47f4lt8Ag2IGuTpFbiLHw3+jPmJkmtRIjZDItIjoHMPWJvkiTHKMedxoawHAigVoLej4uNPQY7RUgOBJAcuvno24bRGfIINgibM6RWFPPfx35y78PjPEdO1EqbY9GbIWY7RUgOBLAcqyTFxj6znSLUSl+mp0dy/NfRlNiwjuTox/T0SI77vJcYG/stXziER7B+jI+OWvnHkR+Sf4n10VErXR3YlvsEY0dyiIjIYWKjBcnRaTN8YDmgcl8rhzrFxqFtHuZGckDlOzkOdr1t+Bgaj2DpDm/NfYIJcVwrB3/MfYLS+a6VbtxMzGtyHCA2RnO5HH0244iXC4dQK8k8jctfcuynUGKRHCmObnU1LmfJ8S6xkYBHsCS+ZuWpVvb91Pc7+JmViLirlT6OPZT7BJPmJjn2EhvJSA6ofCxH/9iYd9cp4qJW9vTeDPHYKeIlOdCJ9eSYGyI2xGly8AgW4fiW3CfIYzr3AcZp7ueyvs9qZa+d9Vop2cKWwodv90L6ztj+uLthdzkKt1B0oTSM1sru4mOjhrFbTI7yN+NEBbEhZpOjZIul30PvMZccu4qPjXrwCDZZi5tznyCBrVp5+5fcJwg6ubmuaZurFQzHUHLMlh0bS5XFhpAcCLCyHOXHRoUM1UqxTtVXKA0TyfFW2bFRrfqTY2fZm3G61tgQHsHGr+LxVl4rO3/NfYKg05tyn6CX+mulWGc21T7bmpPjzbJjo341L0fJztRdKI1qa+WNgmPjg+oLpUFyQFVncrxecGwsG4kNqfU/NS2PodFLXrhMeAQb1PLG3CcYUp21MrjXfhvgm3y40dgwuZBCRXIM5Ky12BCSAwEsh8irvS8cZ03dQ++hVnr7yGChNEgOqEiOfs6ZjQ3hEUxe/r3fr7c8PWqlh3Mbcp9gvKiVrs5vMD86kgMq38vxUtcLx3njhdKgVtJ9bL9QGr6TA0EkR6ILXmJDXCfHjp4vHPa5fwRLcmEm9wkmilqJ9smMt1k5rhWM4jU5Xryd9vmL7mJDSA4EsBwRLs7kPkEeXmsl3qceC6XhMjleuJ37BHUgOYIu+Y0N4REs5NL63CfIzGWtII6/Wnn+j6iPXV7vbjKrkBxQsRxtLnu/bTT81cpIn1EodzlLjufiLhwQEZLj/64QG/9ylhxIwSPYfa6sy32CsniqlWf/DH3183WORhGHWoHKU3IEXCU2WpAcIle5arRzsxzPBC8caOO+Vr6gUFRukgPpfCfHNWIjxMcj2NN/tfzktbUTP0dlqBWovNbK9bVOf+MpSA6oHCzHU6suHNe5bUTxVytfUiixHCQHunKWHDeIjQTWk+PJthcOxPHxCNa4sSb3CSrjpla+WuPldzoc67WCHkwnxxN37v7gJrHRhYPkuMlVoyMHy4GuTNeKiNyiULqzmxyP3xn9GQSZTo6viY1eplZuPZj7DCiU3VpBb6ZrBf2QHFCxHFBRK1CRHFCRHFCRHFB5+pdgSEStQEWtQEVyQEVyQMVyQEWtQEVyQPU3w/enQU3fKFEAAAAASUVORK5CYII=">
+<title>Spark — Explore, Think, Ask</title>
+<style>
+  :root{
+    --bg:#fff6ee; --card:#ffffff; --ink:#1f2340; --muted:#7b7f9e; --line:#efe6dc;
+    --pop:#ff6b3d; --pop2:#ffb020; --teal:#12b5a5; --violet:#7a5cff;
+    --shadow:0 8px 24px rgba(60,40,20,.10);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:ui-rounded,"SF Pro Rounded",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  body{background:
+    radial-gradient(900px 500px at 100% -10%, #ffe6c9 0%, transparent 60%),
+    radial-gradient(700px 500px at -10% 10%, #d9f3ff 0%, transparent 55%), var(--bg);
+    background-attachment:fixed;padding-bottom:calc(30px + env(safe-area-inset-bottom))}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:640px;margin:0 auto}
+
+  header{position:sticky;top:0;z-index:20;padding-top:env(safe-area-inset-top);
+    background:rgba(255,246,238,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .hbar{display:flex;align-items:center;gap:10px;padding:12px 16px 10px}
+  .logo{width:34px;height:34px;border-radius:11px;flex:none;display:grid;place-items:center;font-size:19px;
+    background:linear-gradient(135deg,var(--pop),var(--pop2));box-shadow:0 4px 12px rgba(255,107,61,.4)}
+  .htitle{font-size:20px;font-weight:800;letter-spacing:.3px}
+  .htitle span{color:var(--pop)}
+  .grow{flex:1}
+  .score{display:flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--line);
+    border-radius:999px;padding:7px 13px;font-weight:800;font-size:14px;box-shadow:var(--shadow)}
+  .iconbtn{width:40px;height:40px;border-radius:13px;border:1px solid var(--line);background:#fff;
+    display:grid;place-items:center;font-size:18px;cursor:pointer;box-shadow:var(--shadow)}
+  .iconbtn:active{transform:scale(.94)}
+  .backbtn{width:40px;height:40px;border-radius:13px;border:1px solid var(--line);background:#fff;
+    display:grid;place-items:center;font-size:19px;cursor:pointer;box-shadow:var(--shadow)}
+
+  main{padding:6px 16px 24px}
+  h2.big{font-size:23px;margin:14px 2px 10px;letter-spacing:.2px}
+  .lead{color:var(--muted);font-size:14.5px;margin:0 2px 16px;line-height:1.5}
+
+  .hero{position:relative;border-radius:24px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:18px;
+    background:linear-gradient(135deg,var(--pop),var(--pop2));cursor:pointer;min-height:190px;display:flex;align-items:flex-end}
+  .hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.95}
+  .hero .scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.62))}
+  .hero .txt{position:relative;padding:18px;color:#fff;width:100%}
+  .hero .tag{display:inline-block;background:rgba(255,255,255,.25);backdrop-filter:blur(6px);
+    border-radius:999px;padding:4px 11px;font-size:12px;font-weight:700;margin-bottom:8px}
+  .hero .t{font-size:22px;font-weight:800;line-height:1.2;text-shadow:0 2px 10px rgba(0,0,0,.35)}
+  .hero .h{font-size:13.5px;opacity:.95;margin-top:5px}
+
+  .askbox{display:flex;gap:10px;align-items:center;background:#fff;border:2px solid #ffd9c4;border-radius:18px;
+    padding:13px 15px;box-shadow:var(--shadow);cursor:pointer;margin-bottom:18px}
+  .askbox .q{flex:1;font-size:15px;color:var(--muted)}
+  .askbox .go{background:linear-gradient(135deg,var(--pop),var(--pop2));color:#fff;border-radius:13px;
+    padding:9px 15px;font-weight:800;font-size:14px}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px}
+  .tile{border-radius:20px;padding:16px 14px;color:#fff;box-shadow:var(--shadow);cursor:pointer;min-height:104px;
+    display:flex;flex-direction:column;justify-content:space-between}
+  .tile .e{font-size:27px}
+  .tile .n{font-weight:800;font-size:15.5px;line-height:1.2}
+  .tile .c{font-size:11.5px;opacity:.9;font-weight:700}
+  .tile:active{transform:scale(.97)}
+
+  .card{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:14px;margin-bottom:12px;
+    display:flex;gap:13px;align-items:center;cursor:pointer}
+  .card:active{transform:scale(.99)}
+  .thumb{width:76px;height:76px;border-radius:15px;flex:none;object-fit:cover;background:#f0e9e0}
+  .ph{width:76px;height:76px;border-radius:15px;flex:none;display:grid;place-items:center;font-size:32px}
+  .card .ct{min-width:0}
+  .card .ct b{font-size:15.5px;display:block;margin-bottom:3px;line-height:1.25}
+  .card .ct span{font-size:13px;color:var(--muted);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;
+    -webkit-box-orient:vertical;overflow:hidden}
+  .done{font-size:12px;color:var(--teal);font-weight:800}
+
+  .topicimg{width:100%;height:210px;object-fit:cover;border-radius:22px;box-shadow:var(--shadow);background:#f0e9e0;display:block}
+  .topicimg.ph{display:grid;place-items:center;font-size:64px}
+  .ttitle{font-size:25px;font-weight:800;margin:16px 2px 6px;line-height:1.2}
+  .thook{color:var(--pop);font-weight:800;font-size:15px;margin:0 2px 14px}
+  .tcat{display:inline-block;font-size:12px;font-weight:800;color:var(--muted);margin:14px 2px 0}
+  p.body{font-size:16.5px;line-height:1.62;margin:0 2px 14px}
+
+  .callout{border-radius:18px;padding:15px 16px;margin:16px 0;font-size:15.5px;line-height:1.5}
+  .wow{background:linear-gradient(135deg,#fff1c9,#ffe0b0);border:1px solid #ffd88a}
+  .wow b{display:block;font-size:13px;letter-spacing:.6px;text-transform:uppercase;color:#a86a00;margin-bottom:5px}
+  .act{background:linear-gradient(135deg,#e4fbf6,#d2f4ff);border:1px solid #b6ebdf}
+  .act b{display:block;font-size:13px;letter-spacing:.6px;text-transform:uppercase;color:#0a8f83;margin-bottom:5px}
+  .talk{background:linear-gradient(135deg,#efe8ff,#f6e6ff);border:1px solid #dccdfa}
+  .talk b{display:block;font-size:13px;letter-spacing:.6px;text-transform:uppercase;color:#6a44d8;margin-bottom:5px}
+
+  .world{background:#fff;border:2px dashed #ffd0b5;border-radius:18px;padding:14px 15px;margin:16px 0}
+  .world h4{margin:0 0 4px;font-size:15px}
+  .world .sub{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+  .wrow{display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}
+  .wrow .dot{width:7px;height:7px;border-radius:50%;background:var(--pop);margin-top:7px;flex:none}
+  .wrow .wt{font-size:14px;font-weight:650;line-height:1.35}
+  .wrow .ws{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+  .quiz{background:#fff;border-radius:18px;box-shadow:var(--shadow);padding:16px;margin:16px 0}
+  .quiz h4{margin:0 0 12px;font-size:16px}
+  .opt{display:block;width:100%;text-align:left;background:#f7f4f0;border:2px solid transparent;border-radius:14px;
+    padding:13px 15px;margin-bottom:9px;font-size:15.5px;font-weight:650;cursor:pointer;font-family:inherit;color:inherit}
+  .opt.right{background:#d8f7ec;border-color:#38c9a3}
+  .opt.wrong{background:#ffe0e0;border-color:#ff7a7a}
+  .fb{font-weight:800;margin-top:6px;font-size:14.5px}
+
+  .btnrow{display:flex;gap:10px;margin:18px 0}
+  .btn{flex:1;text-align:center;border:0;border-radius:16px;padding:15px;font-size:16px;font-weight:800;cursor:pointer;
+    font-family:inherit;box-shadow:var(--shadow)}
+  .btn.primary{background:linear-gradient(135deg,var(--pop),var(--pop2));color:#fff}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .btn:active{transform:scale(.98)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .chip{background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-size:13.5px;
+    font-weight:650;cursor:pointer;box-shadow:var(--shadow)}
+  .chip:active{transform:scale(.96)}
+
+  .askinput{width:100%;border:2px solid #ffd9c4;border-radius:18px;padding:16px;font-size:16.5px;font-family:inherit;
+    background:#fff;box-shadow:var(--shadow);color:inherit}
+  .askinput:focus{outline:none;border-color:var(--pop)}
+  .ans{background:#fff;border-radius:18px;box-shadow:var(--shadow);padding:16px;margin:14px 0}
+  .ans .lab{font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--pop);margin-bottom:7px}
+  .ans p{margin:0;font-size:16px;line-height:1.55}
+
+  .foot{text-align:center;font-size:11.5px;color:var(--muted);padding:20px 24px 6px;line-height:1.6}
+  .loading{text-align:center;padding:50px;color:var(--muted);font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="hbar" id="hbar"></div>
+  </header>
+  <main id="app"><div class="loading">Loading…</div></main>
+  <div class="foot" id="foot"></div>
+</div>
+
+<script>
+"use strict";
+const C = {"cats":[{"id":"maths","name":"Maths Magic","emoji":"🔢","c1":"#ff8a3d","c2":"#ff4d6d"},{"id":"science","name":"Science Lab","emoji":"🔬","c1":"#3ddc97","c2":"#0aa2c0"},{"id":"tennis","name":"Tennis","emoji":"🎾","c1":"#c8f04a","c2":"#4aa832"},{"id":"basketball","name":"Basketball","emoji":"🏀","c1":"#ff9f45","c2":"#e0533a"},{"id":"bharatiya","name":"Bharatiya Stories","emoji":"📖","c1":"#ffb347","c2":"#d64545"},{"id":"aussie","name":"Cool Australia","emoji":"🦘","c1":"#4db8ff","c2":"#3a5fe0"}],"topics":[{"id":"zero","cat":"maths","t":"Zero the Superhero","e":"0⃣","w":"0","hook":"The number that changed the world came from India.","body":["Imagine a world with no zero. You could not write 10, 100 or 2026. You could not say 'none'. Weird, right?","Long ago, mathematicians in India worked out that you need a symbol for nothing. The great Indian mathematician Brahmagupta wrote the first clear rules for zero around 628 CE.","Zero travelled from India to the Arab world and then to Europe, and it helped create modern maths, computers and even this app. Every time you type a 0, you are using a 1,400-year-old Indian idea."],"wow":"Without zero, computers could not exist. Everything digital is built on just 0s and 1s.","act":"Write the biggest number you can using only three digits. Now do it again without using 0. How much smaller is it?","talk":"Ask your family: what would break in the world if zero disappeared tomorrow?","wk":"w_maths","quiz":{"q":"Which country gave the world the first clear rules for zero?","o":["India","Greece","Egypt"],"a":0}},{"id":"primes","cat":"maths","t":"Prime Numbers: The Untouchables","e":"🔒","w":"Prime number","hook":"The numbers that refuse to be split.","body":["A prime number can only be divided by 1 and itself. 7 is prime. 8 is not, because 8 is 2 x 4.","Primes are the building blocks of all numbers, like atoms are for stuff. Every whole number bigger than 1 is made by multiplying primes together.","Mathematicians have hunted primes for over 2,000 years. The biggest one known has more than 40 million digits. Writing it out would fill a small library."],"wow":"There are infinitely many primes. Euclid proved it 2,300 years ago with one clever sentence.","act":"Find all the primes between 1 and 30. Hint: cross out multiples of 2, 3 and 5 first. How many are left?","talk":"Ask someone: why do you think we still care about primes after 2,000 years?","wk":"w_maths","quiz":{"q":"Which of these is a prime number?","o":["21","29","33"],"a":1}},{"id":"fibonacci","cat":"maths","t":"Fibonacci in Nature","e":"🌻","w":"Fibonacci number","hook":"A number pattern hiding in sunflowers and pinecones.","body":["Start with 1 and 1. Add the last two numbers to get the next: 1, 1, 2, 3, 5, 8, 13, 21...","This is the Fibonacci sequence. The surprising part? It shows up in nature. Count the spirals on a pinecone or a sunflower and you often find 8, 13, 21 or 34.","It is not magic, it is maths. Plants grow in ways that pack seeds most efficiently, and Fibonacci numbers just happen to fit best."],"wow":"A nautilus shell, a pineapple and a spiral galaxy can all follow similar spiral maths.","act":"Next time you eat a pineapple, count the spirals going each way. Do you get two Fibonacci numbers?","talk":"Ask your family to guess what a sunflower and a galaxy have in common.","wk":"w_maths","quiz":{"q":"What comes after 1, 1, 2, 3, 5, 8?","o":["11","13","16"],"a":1}},{"id":"infinity","cat":"maths","t":"Infinity: Can You Count Forever?","e":"♾️","w":"Infinity","hook":"There is always more.","body":["Pick the biggest number you can think of. Add 1. You just beat it. That is the idea behind infinity.","Mathematicians found something wild: some infinities are BIGGER than others. The infinity of counting numbers is smaller than the infinity of all decimals.","Georg Cantor proved this in the 1800s and many mathematicians thought he was crazy. He was right."],"wow":"There are exactly as many even numbers as there are whole numbers, even though half of all numbers are even.","act":"Match every whole number with an even number: 1 to 2, 2 to 4, 3 to 6. You never run out. That is why they are the same size.","talk":"Ask someone older: does infinity make their head spin too?","wk":"w_maths","quiz":{"q":"Is the infinity of decimals bigger than the infinity of counting numbers?","o":["Yes","No","Nobody knows"],"a":0}},{"id":"pi","cat":"maths","t":"Pi: The Number That Never Ends","e":"🥧","w":"Pi","hook":"3.14... and it keeps going forever.","body":["Pi is the distance around a circle divided by the distance across it. It is about 3.14, but the digits go on forever with no pattern.","People have memorised tens of thousands of digits. Computers have calculated over 100 trillion digits and it still has not ended.","Pi shows up everywhere: in waves, in sound, in space missions and even in the way rivers bend."],"wow":"March 14 (3/14) is Pi Day, and it is also Albert Einstein's birthday.","act":"Wrap string around a cup, then measure the string and the cup's width. Divide them. Did you get about 3.14?","talk":"Ask your family: how many digits of pi can they remember?","wk":"w_maths","quiz":{"q":"Pi is the distance around a circle divided by what?","o":["Its width","Its colour","Its weight"],"a":0}},{"id":"skyblue","cat":"science","t":"Why the Sky is Blue","e":"🌌","w":"Rayleigh scattering","hook":"Sunlight is secretly a rainbow.","body":["Sunlight looks white, but it is really all colours mixed together. When it hits the air, tiny gas molecules scatter the blue light far more than the red.","So blue light bounces all around the sky and reaches your eyes from every direction. The sky looks blue.","At sunset, light travels through more air, the blue gets scattered away, and you are left with reds and oranges."],"wow":"On the Moon there is no air, so the sky is always black, even in daytime.","act":"Look at the sky at noon, then again at sunset. Write down how the colour changes. Can you explain why?","talk":"Ask your family what colour they think the sky is on Mars.","wk":"w_science","quiz":{"q":"Why is the sky blue?","o":["Air scatters blue light","The sea reflects up","Clouds are blue"],"a":0}},{"id":"blackhole","cat":"science","t":"Black Holes: The Hungriest Things","e":"🕳️","w":"Black hole","hook":"Nothing escapes, not even light.","body":["A black hole is a place where gravity is so strong that nothing, not even light, can escape. That is why it is black.","Most form when a giant star runs out of fuel and collapses. Some are millions of times heavier than our Sun.","In 2019, scientists took the first-ever picture of a black hole. It looked like a glowing ring with a dark middle."],"wow":"If you fell into a black hole, time would slow down for you compared to everyone else. Space and time get weird near one.","act":"Blow up a balloon with dots drawn on it. Watch the dots move apart. That is how space stretches.","talk":"Ask someone: what would you want to see if you could peek inside a black hole?","wk":"w_space","quiz":{"q":"Why is a black hole black?","o":["Light cannot escape","It is painted","It is very far away"],"a":0}},{"id":"vaccines","cat":"science","t":"Vaccines: Training Your Body's Army","e":"💉","w":"Vaccine","hook":"How a tiny poke makes you stronger.","body":["Your body has an army: your immune system. It learns to fight germs it has met before.","A vaccine shows your body a harmless piece of a germ. Your army practises, remembers it, and is ready if the real germ ever shows up.","Vaccines wiped out smallpox completely and made diseases like polio incredibly rare."],"wow":"Smallpox killed millions for centuries. In 1980 it became the first human disease ever erased from the planet.","act":"Think of a time you got better from a cold. Your body remembered that germ. That is immunity.","talk":"Ask your family which disease they are happiest was wiped out.","wk":"w_science","quiz":{"q":"A vaccine helps your body...","o":["Practise fighting a germ","Forget germs","Sleep better"],"a":0}},{"id":"dreams","cat":"science","t":"Why We Dream","e":"💤","w":"Dream","hook":"Your brain's midnight movie.","body":["Every night your brain runs a private cinema. You dream mostly during a stage called REM sleep.","Scientists think dreams help you sort memories, practise scary situations and solve problems. Some people even solve puzzles in their sleep.","You dream about 4 to 6 times a night, but you forget almost all of it within minutes of waking."],"wow":"Some people can control their dreams. It is called lucid dreaming. They realise they are dreaming and change the story.","act":"Keep a notebook by your bed. Write one line about your dream the second you wake. Do it for a week and spot patterns.","talk":"Ask your family about the strangest dream they have ever had.","wk":"w_science","quiz":{"q":"Dreams mostly happen in which sleep stage?","o":["REM","Deep sleep","Afternoon nap"],"a":0}},{"id":"electricity","cat":"science","t":"Electricity: The Invisible River","e":"⚡","w":"Electricity","hook":"The power hiding inside your walls.","body":["Electricity is the flow of tiny particles called electrons. When they move through a wire, they carry energy.","That energy can become light, heat, sound or movement. Your phone, your TV and your fridge all run on it.","Lightning is the same idea on a giant scale, a huge spark jumping between clouds and the ground."],"wow":"A bolt of lightning is about five times hotter than the surface of the Sun.","act":"Rub a balloon on your hair and hold it near tiny paper bits. That is static electricity, electrons jumping.","talk":"Ask your family to guess how many things in your house use electricity.","wk":"w_science","quiz":{"q":"Electricity is the flow of...","o":["Electrons","Water","Air"],"a":0}},{"id":"serve","cat":"tennis","t":"The Serve: The Shot You Own","e":"🎾","w":"Serve (tennis)","hook":"The one shot where you control everything.","body":["The serve starts every point, and it is the only shot where you decide everything. No opponent is involved.","Pros toss the ball, arch their back and whip the racket up. The best serves reach 250 km/h.","There are three main types: flat (fast), slice (curves sideways) and kick (bounces high). Mixing them keeps the returner guessing."],"wow":"The fastest serve ever recorded was 263 km/h by Sam Groth of Australia.","act":"Practise your toss 20 times without hitting. The ball should go up and come down in front of you, not behind.","talk":"Ask your family: which is scarier to face, a fast serve or a tricky spin serve?","wk":"w_tennis","quiz":{"q":"Which serve bounces high and pushes the returner back?","o":["Kick","Flat","Slice"],"a":0}},{"id":"topspin","cat":"tennis","t":"Topspin: The Dipping Ball","e":"🌀","w":"Topspin","hook":"Why a pro's forehand dives like a plane landing.","body":["Topspin happens when you brush up the back of the ball. The ball spins forward and dives down fast.","That spin lets players hit hard AND keep the ball in the court. It also makes the ball kick up high when it bounces.","Rafael Nadal's heavy topspin once made the ball spin over 5,000 times a minute."],"wow":"Spin can bend a ball's path in the air. That is why a curveball confuses batters in cricket and baseball too.","act":"Brush up the back of the ball slowly and watch it dip. Now brush down (backspin) and watch it float.","talk":"Ask someone to watch a rally and spot which player uses more spin.","wk":"w_tennis","quiz":{"q":"Topspin makes the ball...","o":["Dive down","Float up","Stop dead"],"a":0}},{"id":"slams","cat":"tennis","t":"The Grand Slams","e":"🏆","w":"Grand Slam (tennis)","hook":"The four biggest tournaments on Earth.","body":["Tennis has four majors: the Australian Open, French Open, Wimbledon and US Open. Winning all four in one year is called a Grand Slam.","Each is played on a different surface. Wimbledon is grass, the French Open is clay, and Australia and the US use hard courts.","Only a handful of players have ever won all four in a single year."],"wow":"Australia's Rod Laver won the Grand Slam twice, in 1962 and 1969. The main court at the Australian Open is named after him.","act":"Watch one match on each surface. Can you spot how differently the ball bounces?","talk":"Ask your family which Grand Slam they would most like to visit.","wk":"w_tennis","quiz":{"q":"Wimbledon is played on...","o":["Grass","Clay","Ice"],"a":0}},{"id":"readopp","cat":"tennis","t":"Reading Your Opponent","e":"🧠","w":"Tennis","hook":"Tennis is chess at 200 km/h.","body":["Great players watch more than the ball. They watch the racket, the feet and the body shape to guess where the ball is going.","If your opponent's shoulder opens early, the ball often goes cross-court. If they lean in, expect it down the line.","Patterns matter too. Most players have favourite shots under pressure. Find theirs and you can predict them."],"wow":"Some pros study video of opponents for hours, like a detective building a case.","act":"Watch a match and, before each shot, guess where the ball will go. Count how often you are right.","talk":"Ask someone: what is your 'tell' when you are nervous?","wk":"w_tennis","quiz":{"q":"Reading an opponent means watching...","o":["Their body and racket","The crowd","The scoreboard"],"a":0}},{"id":"ausopen","cat":"tennis","t":"The Australian Open","e":"🇦🇺","w":"Australian Open","hook":"Melbourne's own Grand Slam.","body":["Every January, the world's best tennis players come to Melbourne for the Australian Open.","It is famous for brutal heat. Matches can be played in 40 degree heat, and there is a 'heat policy' that can pause play.","The blue courts at Melbourne Park are some of the fastest in the world, which suits big servers."],"wow":"The Australian Open was first played in 1905. It is older than television, and even older than the first football World Cup.","act":"If you are in Melbourne in January, go watch a practice session. It is often free and you see the pros up close.","talk":"Ask your family who their favourite tennis player is and why.","wk":"w_tennis","quiz":{"q":"The Australian Open is played in which city?","o":["Melbourne","Sydney","Perth"],"a":0}},{"id":"shot","cat":"basketball","t":"The Physics of a Perfect Shot","e":"🎯","w":"Basketball","hook":"Why the best shot is an arc, not a line.","body":["A basketball shot is a maths problem. The ball must arc up and drop through the hoop at the right angle.","A higher arc gives a bigger target, because the hoop looks wider from above. That is why coaches say 'shoot up, not out'.","The best shooters put backspin on the ball, so if it hits the rim it bounces softly and can still drop in."],"wow":"Stephen Curry has made over 3,500 three-pointers, more than any player in NBA history.","act":"Shoot 10 shots aiming flat, then 10 with a high arc. Which goes in more?","talk":"Ask your family to guess why a soft bounce off the rim is better than a hard one.","wk":"w_basketball","quiz":{"q":"A higher arc makes the hoop look...","o":["Bigger","Smaller","The same"],"a":0}},{"id":"dribble","cat":"basketball","t":"Dribbling Like a Drum","e":"🎵","w":"Dribbling","hook":"Your hand is the beat.","body":["Dribble with your fingertips, not your palm. Fingertips give you control.","Keep your head up, not looking at the ball. Great players dribble while watching the whole court.","Change of speed is the real trick. Anyone can go fast. Going slow, then fast, beats a defender."],"wow":"Some players dribble so low the ball barely leaves the floor. It is almost impossible to steal.","act":"Dribble 50 times with your right hand, then 50 with your left. Then try walking while keeping your head up.","talk":"Ask someone to guard you for one minute. How many times can you keep the ball?","wk":"w_basketball","quiz":{"q":"You should dribble with your...","o":["Fingertips","Palm","Elbow"],"a":0}},{"id":"three","cat":"basketball","t":"The Three-Point Revolution","e":"3⃣","w":"Three-point field goal","hook":"The shot that changed basketball forever.","body":["The three-point line is a big arc far from the hoop. Score from beyond it and you get 3 points instead of 2.","When the line arrived, teams realised maths mattered. Three points is 50 percent more than two, so long shots became worth it.","Today, teams take far more threes than they did 20 years ago. It is called the three-point revolution."],"wow":"In some games, more than half of all shots are three-pointers. The game has completely changed.","act":"Stand behind a line and count your points: 3 per long shot, 2 per close shot. Which wins over 20 shots?","talk":"Ask your family: would you rather be a sharpshooter or a big dunker?","wk":"w_basketball","quiz":{"q":"A shot from behind the arc is worth...","o":["3 points","2 points","1 point"],"a":0}},{"id":"defence","cat":"basketball","t":"Defence Wins Games","e":"🛡️","w":"Basketball positions","hook":"The half of the game nobody practises.","body":["Defence is about moving your feet, not your hands. Stay in front of your player and make them work.","Great defenders watch the player's belly button, because it cannot fake. Feet and hips tell you where they are really going.","Teams that defend well win championships. It is the quiet superpower of basketball."],"wow":"Some players are famous almost only for defence, and they still earn millions.","act":"In a game, count how many times your team scores after a good defensive stop. Defence creates offence.","talk":"Ask someone: which is more fun to watch, a big block or a big dunk?","wk":"w_basketball","quiz":{"q":"On defence, you should watch the opponent's...","o":["Belly button","Eyes","Shoes"],"a":0}},{"id":"nba","cat":"basketball","t":"From a Peach Basket to the World","e":"🌍","w":"National Basketball Association","hook":"Basketball started with a fruit basket.","body":["Basketball was invented in 1891 by a teacher, James Naismith, using a peach basket and a soccer ball.","Today the NBA is watched in over 200 countries, and players come from all over the world.","There is a growing Aussie crew in the NBA. Australia is now one of the biggest basketball nations outside the US."],"wow":"The first basketball game used a ladder to get the ball out of the peach basket after every score.","act":"Find one NBA player born outside the USA. Which country are they from?","talk":"Ask your family which country they think will win the next Olympic basketball gold.","wk":"w_basketball","quiz":{"q":"Basketball was invented in...","o":["1891","1991","1801"],"a":0}},{"id":"vedas","cat":"bharatiya","t":"The Vedas: The World's Oldest Notebooks","e":"📜","w":"Vedas","hook":"Ancient India's library of knowledge.","body":["The Vedas are among the oldest texts humans still use. They were composed in India over 3,000 years ago and passed down by memory for centuries before being written.","They contain hymns, but also early science: how to track the stars, build fire altars with exact geometry, and understand medicine and nature.","Think of them as the notebooks of a very curious civilisation, asking big questions about life, the sky and how the world works."],"wow":"The Rig Veda is one of the oldest books in any language, older than the finished pyramids of Giza.","act":"Look up a Vedic 'sulba sutra'. They used ropes to draw perfect right angles for altars. Try drawing one with string.","talk":"Ask your family which ancient Indian idea they are most proud of.","wk":"w_india","quiz":{"q":"The Vedas were composed about how many years ago?","o":["3,000+","300","30"],"a":0}},{"id":"aryabhata","cat":"bharatiya","t":"Aryabhata: The Boy Who Measured the Earth","e":"🔭","w":"Aryabhata","hook":"He did the maths when he was about your age.","body":["Aryabhata was a mathematician and astronomer in India around 500 CE. When he was only about 23, he wrote a book that changed science.","He figured out that the Earth spins on its axis, and he calculated the length of a year to within minutes of the real value.","He also worked with big numbers, square roots and a method for solving equations that looks like early algebra."],"wow":"Aryabhata said the Earth rotates, centuries before Europe believed it. India named its first satellite after him.","act":"Try Aryabhata's trick: watch when a bright star rises at the same spot each night. You are measuring the sky.","talk":"Ask your family: what would you discover if you looked at the sky every night for a year?","wk":"w_india","quiz":{"q":"Aryabhata lived around which year?","o":["500 CE","1500 CE","1800 CE"],"a":0}},{"id":"sushruta","cat":"bharatiya","t":"Sushruta: The Father of Surgery","e":"🩺","w":"Sushruta","hook":"A 2,600-year-old surgery manual.","body":["Around 600 BCE in India, Sushruta wrote one of the world's first surgery manuals. He described hundreds of operations and tools.","He even explained how to rebuild a nose, a skill used in India for centuries and later learned by surgeons around the world.","His book listed over 100 surgical instruments, many looking like tools we still use today."],"wow":"Sushruta taught that a surgeon must practise on fruit and vegetables first, before ever touching a patient.","act":"Try Sushruta's training: peel a cucumber with a spoon and try not to break the skin. Steady hands!","talk":"Ask your family if they would have the steady hands to be a surgeon.","wk":"w_india","quiz":{"q":"Sushruta is famous for...","o":["Surgery","Music","Farming"],"a":0}},{"id":"chola","cat":"bharatiya","t":"The Chola Navy: India's Ocean Explorers","e":"⛵","w":"Chola dynasty","hook":"India ruled the waves 1,000 years ago.","body":["Over a thousand years ago, the Chola kingdom of South India built one of the most powerful navies in the world.","Their ships sailed all the way to Southeast Asia, to places like present-day Indonesia, Malaysia and Thailand, for trade and friendship.","They built huge temples you can still visit today, and their art and ideas spread across the seas."],"wow":"Chola traders brought Indian culture to Bali. That is why you still see Hindu temples and names there today.","act":"Find the Chola temple at Thanjavur on a map. Notice how far their ships had to travel.","talk":"Ask your family: which ancient civilisation would you sail with?","wk":"w_india","quiz":{"q":"The Chola navy sailed mainly to...","o":["Southeast Asia","Europe","Antarctica"],"a":0}},{"id":"panchatantra","cat":"bharatiya","t":"Panchatantra: Animal Stories with a Twist","e":"🦊","w":"Panchatantra","hook":"Clever animals, sneaky lessons.","body":["The Panchatantra is a collection of animal stories written in India over 2,000 years ago, older than most storybooks on your shelf.","Each story stars clever animals: a lion, a crow, a tortoise, a mouse. The animals solve problems using brains, not strength.","The stories travelled the world, into Arabic, Persian and European tales. Many fables you know probably started here."],"wow":"The Panchatantra has been translated into more than 50 languages, one of the most travelled books in history.","act":"Write your own 5-line animal story with a lesson at the end. Keep it short and clever.","talk":"Ask your family which Panchatantra-style lesson they would teach a younger kid.","wk":"w_india","quiz":{"q":"The Panchatantra is a book of...","o":["Animal stories","Maps","Songs"],"a":0}},{"id":"sanskrit","cat":"bharatiya","t":"Sanskrit and Computers","e":"🗣️","w":"Sanskrit","hook":"Is an ancient language the key to computers?","body":["Sanskrit is one of the world's oldest languages, with very precise grammar rules written by Panini around 500 BCE.","Those rules are so exact and rule-based that some computer scientists study them. They look a bit like the logic used to program computers.","Some people claim Sanskrit is the 'best language for computers'. That is a bit of a myth, but its structured grammar really is amazing."],"wow":"Panini's grammar has about 4,000 rules and can describe the whole language, like a giant instruction manual.","act":"Write three rules for making plurals in English. See how fast you need 'exceptions'? Sanskrit tried to avoid that.","talk":"Ask your family which language they think sounds most like music.","wk":"w_india","quiz":{"q":"Sanskrit's famous grammar was written by...","o":["Panini","Aryabhata","Kalidasa"],"a":0}},{"id":"kangaroo","cat":"aussie","t":"Why Kangaroos Can't Walk Backwards","e":"🦘","w":"Kangaroo","hook":"Built to go forward, always.","body":["Kangaroos are built for hopping forward. Their big feet and thick tail make going backwards almost impossible.","That is why the kangaroo is on Australia's coat of arms, a symbol of always moving forward.","A red kangaroo can hop at 60 km/h and leap over 8 metres in a single bound."],"wow":"Baby kangaroos, called joeys, are born the size of a jellybean and crawl into the pouch to grow.","act":"Hop 10 times and measure how far you go. Compare it to a kangaroo's 8-metre leap.","talk":"Ask your family what animal they would put on a family coat of arms.","wk":"w_aussie","quiz":{"q":"The kangaroo on Australia's coat of arms shows...","o":["Moving forward","Speed","Jumping"],"a":0}},{"id":"afl","cat":"aussie","t":"AFL: The Sport Australia Invented","e":"🏉","w":"Australian rules football","hook":"Born in Melbourne in the 1850s.","body":["Australian Rules Football, the AFL, was invented in Melbourne in the 1850s. It is genuinely Australian.","It is fast and free-flowing. Players kick, handball and catch a ball on an oval field, and can run anywhere.","The Grand Final is one of the biggest sporting days in the country. Melbourne basically stops."],"wow":"AFL players can 'mark' the ball by catching it after a huge jump. Some marks are over 3 metres high.","act":"Practise a punt or a handball against a wall. How many clean catches in a row?","talk":"Ask your family which AFL team you should barrack for, and why.","wk":"w_sport_au","quiz":{"q":"AFL was invented in...","o":["Melbourne","Sydney","London"],"a":0}},{"id":"reef","cat":"aussie","t":"The Great Barrier Reef: A City Under the Sea","e":"🐠","w":"Great Barrier Reef","hook":"The biggest living thing on Earth.","body":["The Great Barrier Reef is the biggest living structure on Earth, so big you can see it from space.","It is built by tiny animals called coral polyps. Millions of them together create homes for thousands of species.","Sadly it is under threat from warming oceans, and scientists are racing to protect it."],"wow":"The Reef is home to over 1,500 kinds of fish and 400 kinds of coral, more than most countries have birds.","act":"Draw a coral reef with 5 different fish. Give each fish a job, like real reef animals have.","talk":"Ask your family one thing your household could do to help the ocean.","wk":"w_aussie","quiz":{"q":"The Great Barrier Reef is made by...","o":["Tiny coral animals","Rocks","Seaweed"],"a":0}},{"id":"platypus","cat":"aussie","t":"The Platypus: Nature's Weirdest Animal","e":"🦫","w":"Platypus","hook":"So strange, scientists thought it was a joke.","body":["The platypus has a duck's bill, a beaver's tail and otter's feet. Scientists first thought it was a fake.","It is a mammal that lays eggs. And males have a venomous spur on their back legs.","It hunts underwater with its eyes closed, sensing the tiny electricity that other animals give off."],"wow":"The platypus can sense electric fields. It is like a real-life superpower.","act":"Close your eyes and feel your way around a room using only touch. That is a bit like how a platypus hunts.","talk":"Ask your family: if you could mix three animals, which would you choose?","wk":"w_aussie","quiz":{"q":"The platypus is a mammal that...","o":["Lays eggs","Flies","Has no fur"],"a":0}},{"id":"southerncross","cat":"aussie","t":"The Southern Cross: Finding Your Way","e":"⭐","w":"Crux","hook":"How to navigate using the stars.","body":["The Southern Cross is a group of five bright stars you can see in Australian skies. It is on our flag.","For thousands of years, people used it to find south. Draw a line through the cross and it points the way.","Aboriginal and Torres Strait Islander peoples have used the stars for navigation, seasons and stories for tens of thousands of years."],"wow":"The Southern Cross is the smallest constellation, but one of the most famous in the southern sky.","act":"On a clear night, find the Southern Cross. Use it to point south. Check with a compass app.","talk":"Ask your family if they know any star stories from their own childhood.","wk":"w_aussie","quiz":{"q":"The Southern Cross helps you find...","o":["South","North","East"],"a":0}}],"faqs":[{"q":"why is the sky blue","a":"Sunlight is all colours mixed. Air scatters the blue light much more than the red, so blue reaches your eyes from every direction. Try the 'Why the Sky is Blue' topic!","topics":["skyblue"]},{"q":"what is zero","a":"Zero is a symbol for nothing. India gave the world the first clear rules for zero around 628 CE. It made modern maths and computers possible.","topics":["zero"]},{"q":"who invented basketball","a":"A teacher named James Naismith invented basketball in 1891, using a peach basket and a soccer ball.","topics":["nba"]},{"q":"what are the vedas","a":"The Vedas are among the oldest texts humans still use, composed in India over 3,000 years ago. They mix hymns with early science like astronomy and geometry.","topics":["vedas"]},{"q":"how do black holes work","a":"A black hole is where gravity is so strong that nothing, not even light, can escape. Most form when a giant star collapses.","topics":["blackhole"]},{"q":"what is the biggest number","a":"There isn't one. Whatever number you pick, you can always add 1. That idea is called infinity.","topics":["infinity"]},{"q":"how fast can a tennis serve go","a":"The fastest serve ever recorded was 263 km/h by Australia's Sam Groth.","topics":["serve"]},{"q":"why do kangaroos hop","a":"Kangaroos are built for hopping forward. Their big feet and strong tail make it super efficient, and they can't really go backwards.","topics":["kangaroo"]},{"q":"what is gravity","a":"Gravity is the invisible pull that objects with mass have on each other. Earth's gravity keeps you on the ground and the Moon in orbit.","topics":["blackhole"]},{"q":"why is the sea salty","a":"Rain wears down rocks and carries tiny amounts of salt into rivers, and rivers carry it to the sea. Over millions of years, the salt builds up.","topics":[]},{"q":"how do planes fly","a":"Wings are shaped so air moves faster over the top, which lowers the pressure there. The higher pressure below pushes the wing up. That lift holds the plane in the air.","topics":["skyblue"]},{"q":"what is the largest animal in the world","a":"The blue whale. It can grow longer than a basketball court and its heart is the size of a small car.","topics":[]},{"q":"who was aryabhata","a":"Aryabhata was an Indian mathematician and astronomer around 500 CE. He said the Earth spins, and he calculated the length of a year very accurately.","topics":["aryabhata"]},{"q":"why do we sleep","a":"Sleep lets your brain sort memories and your body repair itself. Dreams mostly happen in a stage called REM sleep.","topics":["dreams"]},{"q":"what is pi","a":"Pi is the distance around a circle divided by the distance across it. It is about 3.14 and the digits never end.","topics":["pi"]},{"q":"what is dna","a":"DNA is the instruction book inside every cell that tells your body how to grow and work. It is written in a code of four letters.","topics":[]},{"q":"why do we have leap years","a":"Earth takes about 365 and a quarter days to go around the Sun. Every four years we add an extra day, 29 February, to catch up.","topics":[]},{"q":"what is the fastest animal","a":"The peregrine falcon, which dives at over 300 km/h. On land, the cheetah wins at about 110 km/h.","topics":[]},{"q":"how do you do a three pointer","a":"Shoot from behind the big arc. Aim high, use your legs for power, and add backspin so the ball bounces softly off the rim.","topics":["three"]},{"q":"what is australia's national sport","a":"Australia doesn't have one official national sport, but AFL, cricket and rugby league are the biggest. AFL was invented in Melbourne.","topics":["afl"]}]};
+const CATS=C.cats, TOPICS=C.topics, FAQS=C.faqs;
+const byId={}; TOPICS.forEach(t=>byId[t.id]=t);
+const catById={}; CATS.forEach(c=>catById[c.id]=c);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- progress ---------- */
+function readSet(){try{return new Set(JSON.parse(localStorage.getItem("spark_read")||"[]"));}catch(e){return new Set();}}
+function saveRead(s){try{localStorage.setItem("spark_read",JSON.stringify([...s]));}catch(e){}}
+function score(){return readSet().size;}
+function markRead(id){const s=readSet(); if(!s.has(id)){s.add(id); saveRead(s);} }
+
+/* ---------- images (Wikipedia) ---------- */
+const imgCache={};
+async function getImage(t){
+  if(imgCache[t.id]!==undefined) return imgCache[t.id];
+  imgCache[t.id]=null;
+  try{
+    const r=await fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(t.w));
+    if(!r.ok) return null;
+    const j=await r.json();
+    const small=(j.thumbnail&&j.thumbnail.source)||(j.originalimage&&j.originalimage.source)||null;
+    if(!small) return null;
+    const big=small.replace(/\/\d+px-/, "/640px-");
+    imgCache[t.id]={big:big,small:small};
+    return imgCache[t.id];
+  }catch(e){ return null; }
+}
+function hydrate(){
+  document.querySelectorAll("img[data-wid]").forEach(el=>{
+    const t=byId[el.getAttribute("data-wid")];
+    if(!t) return;
+    getImage(t).then(im=>{
+      if(im){
+        el.onerror=function(){ el.onerror=null; if(im.small && el.src!==im.small) el.src=im.small; };
+        el.src=im.big||im.small; el.classList.remove("ph");
+      } else { const d=document.createElement("div"); d.className=el.className+" ph"; d.style.background=grad(t.cat);
+        d.textContent=t.e; el.replaceWith(d); }
+    });
+  });
+}
+function grad(catId){const c=catById[catId]||{c1:"#ff8a3d",c2:"#ff4d6d"};
+  return "linear-gradient(135deg,"+c.c1+","+c.c2+")";}
+
+/* ---------- world feed ---------- */
+let WORLD=null;
+async function loadWorld(){
+  try{ const r=await fetch("world.json",{cache:"no-store"}); if(r.ok){ const j=await r.json(); WORLD=j.world||{}; } }catch(e){}
+}
+
+/* ---------- helpers ---------- */
+function topicCard(t){
+  const read=readSet().has(t.id);
+  return `<div class="card" onclick="go('#/topic/${t.id}')">
+    <img class="thumb" data-wid="${t.id}" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+    <div class="ct"><b>${esc(t.t)}</b><span>${esc(t.hook)}</span>
+    ${read?'<div class="done">✔ read</div>':''}</div></div>`;
+}
+function tile(c){
+  const n=TOPICS.filter(t=>t.cat===c.id).length;
+  return `<div class="tile" style="background:linear-gradient(135deg,${c.c1},${c.c2})" onclick="go('#/cat/${c.id}')">
+    <div class="e">${c.emoji}</div><div><div class="n">${esc(c.name)}</div><div class="c">${n} things to explore</div></div></div>`;
+}
+function todaysTopic(){
+  const d=new Date(); const n=Math.floor(d.getTime()/86400000);
+  return TOPICS[n % TOPICS.length];
+}
+
+/* ---------- router ---------- */
+function go(h){ location.hash=h; }
+window.addEventListener("hashchange",render);
+function render(){
+  const h=(location.hash||"#/home").replace(/^#\/?/,"");
+  const parts=h.split("/"); const route=parts[0]||"home";
+  window.scrollTo(0,0);
+  if(route==="cat") return screenCat(parts[1]);
+  if(route==="topic") return screenTopic(parts[1]);
+  if(route==="ask") return screenAsk();
+  if(route==="quiz") return screenQuiz();
+  return screenHome();
+}
+
+/* ---------- header ---------- */
+function header(mode){
+  let left;
+  if(mode==="home") left=`<div class="logo">✨</div><div class="htitle">Sp<span>ark</span></div>`;
+  else left=`<button class="backbtn" onclick="history.back()">‹</button><div class="htitle" style="font-size:17px">Spark</div>`;
+  $("#hbar").innerHTML=left+`<div class="grow"></div>
+    <div class="score">⭐ <span id="sc">${score()}</span></div>
+    <button class="iconbtn" onclick="surprise()" title="Surprise me">🎲</button>`;
+}
+function refreshScore(){const s=$("#sc"); if(s) s.textContent=score();}
+function surprise(){const t=TOPICS[Math.floor(Math.random()*TOPICS.length)]; go("#/topic/"+t.id);}
+
+/* ---------- screens ---------- */
+function screenHome(){
+  header("home");
+  const t=todaysTopic();
+  $("#app").innerHTML=`
+    <h2 class="big">Hey! What shall we explore? 🚀</h2>
+    <p class="lead">One thing to read. Then a doubt you can ask. Then something happening in the world right now.</p>
+
+    <div class="hero" onclick="go('#/topic/${t.id}')">
+      <img data-wid="${t.id}" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+      <div class="scrim"></div>
+      <div class="txt"><span class="tag">⭐ Today's Spark · ${esc((catById[t.cat]||{}).name||"")}</span>
+        <div class="t">${esc(t.t)}</div><div class="h">${esc(t.hook)}</div></div>
+    </div>
+
+    <div class="askbox" onclick="go('#/ask')">
+      <div class="q">Got a doubt? Ask me anything…</div><div class="go">Ask 💬</div>
+    </div>
+
+    <div class="grid">${CATS.map(tile).join("")}</div>
+
+    <div class="btnrow">
+      <button class="btn ghost" onclick="go('#/quiz')">🧠 Quick quiz</button>
+      <button class="btn primary" onclick="surprise()">🎲 Surprise me</button>
+    </div>`;
+  $("#foot").innerHTML="Pictures from Wikipedia. Words written just for you.";
+  hydrate();
+}
+
+function screenCat(id){
+  const c=catById[id]; if(!c) return go("#/home");
+  header("cat");
+  const list=TOPICS.filter(t=>t.cat===id);
+  $("#app").innerHTML=`
+    <h2 class="big">${c.emoji} ${esc(c.name)}</h2>
+    <p class="lead">${list.length} things to explore. Tap one to read it.</p>
+    ${list.map(topicCard).join("")}`;
+  $("#foot").innerHTML="";
+  hydrate();
+}
+
+function screenTopic(id){
+  const t=byId[id]; if(!t) return go("#/home");
+  header("topic");
+  markRead(id); refreshScore();
+  const c=catById[t.cat]||{};
+  const world=(WORLD&&WORLD[t.wk])?WORLD[t.wk].slice(0,3):[];
+  const q=t.quiz;
+  const idx=TOPICS.indexOf(t); const next=TOPICS[(idx+1)%TOPICS.length];
+  $("#app").innerHTML=`
+    <div class="tcat">${c.emoji||""} ${esc(c.name||"")}</div>
+    <img class="topicimg" data-wid="${t.id}" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+    <div class="ttitle">${esc(t.t)}</div>
+    <div class="thook">${esc(t.hook)}</div>
+    ${t.body.map(p=>`<p class="body">${esc(p)}</p>`).join("")}
+
+    <div class="callout wow"><b>🤯 Wow fact</b>${esc(t.wow)}</div>
+    <div class="callout act"><b>🎯 Try this</b>${esc(t.act)}</div>
+    <div class="callout talk"><b>💬 Talk about it</b>${esc(t.talk)}</div>
+
+    <div class="world" id="world">
+      <h4>🌍 In the world right now</h4>
+      <div class="sub">Because you just read about ${esc(t.t.split(":")[0])}, here is something happening now.</div>
+      <div id="wlist">${world.length?world.map(w=>`
+        <a class="wrow" href="${esc(w.link)}" target="_blank" rel="noopener">
+          <div class="dot"></div><div><div class="wt">${esc(w.title)}</div>
+          <div class="ws">${esc(w.source||"")}</div></div></a>`).join(""):
+        `<div class="wrow"><div class="dot"></div><div><div class="wt">New updates arrive every 30 minutes. Pull to refresh later!</div></div></div>`}
+      </div>
+    </div>
+
+    <div class="quiz" id="quizbox">
+      <h4>🧠 Quick check: ${esc(q.q)}</h4>
+      <div id="opts">${q.o.map((o,i)=>`<button class="opt" onclick="answer(${i},${q.a},this)">${esc(o)}</button>`).join("")}</div>
+      <div class="fb" id="fb"></div>
+    </div>
+
+    <div class="askbox" onclick="askAbout('${esc(t.t)}')">
+      <div class="q">Still wondering something about this?</div><div class="go">Ask 💬</div>
+    </div>
+
+    <div class="btnrow">
+      <button class="btn ghost" onclick="go('#/cat/${t.cat}')">← More ${esc((c.name||"").split(" ")[0])}</button>
+      <button class="btn primary" onclick="go('#/topic/${next.id}')">Next: ${esc(next.t.split(":")[0])} →</button>
+    </div>`;
+  $("#foot").innerHTML="Pictures from Wikipedia. Words written just for you.";
+  hydrate();
+}
+
+function answer(i,correct,el){
+  const opts=el.parentNode.querySelectorAll(".opt");
+  opts.forEach((o,k)=>{ if(k===correct) o.classList.add("right"); });
+  if(i!==correct) el.classList.add("wrong");
+  const fb=$("#fb");
+  fb.textContent = i===correct ? "Yes! You got it. ⭐" : "Almost! The green one is right. Keep going. 💪";
+  fb.style.color = i===correct ? "#0a8f83" : "#d84a4a";
+  opts.forEach(o=>o.disabled=true);
+}
+
+function askAbout(topicTitle){
+  sessionStorage.setItem("spark_prefill", "tell me more about " + topicTitle);
+  go("#/ask");
+}
+
+function screenAsk(){
+  header("ask");
+  const pre=sessionStorage.getItem("spark_prefill")||""; sessionStorage.removeItem("spark_prefill");
+  $("#app").innerHTML=`
+    <h2 class="big">Ask a doubt 💬</h2>
+    <p class="lead">Type anything you are wondering about. I will try to answer, and give you something to read next.</p>
+    <input class="askinput" id="q" placeholder="e.g. Why is the sky blue?" value="${esc(pre)}">
+    <div class="chips">
+      ${["Why is the sky blue?","What is zero?","Who invented basketball?","What are the Vedas?","How do black holes work?","Why do kangaroos hop?"]
+        .map(x=>`<div class="chip" onclick="document.getElementById('q').value='${esc(x)}';doAsk()">${esc(x)}</div>`).join("")}
+    </div>
+    <div class="btnrow"><button class="btn primary" onclick="doAsk()">Find my answer 🔎</button></div>
+    <div id="res"></div>`;
+  $("#foot").innerHTML="";
+  if(pre) doAsk();
+  $("#q").addEventListener("keydown",e=>{if(e.key==="Enter")doAsk();});
+}
+
+const STOP=new Set(["what","is","the","a","an","how","why","do","does","can","you","me","tell","about","of","to","in","and","for","it","are","was","were","who","when","where","which","i","my","more"]);
+function norm(s){return String(s).toLowerCase().replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();}
+function doAsk(){
+  const q=$("#q").value.trim();
+  if(!q) return;
+  const toks=norm(q).split(" ").filter(w=>w.length>2&&!STOP.has(w));
+  const sc=text=>{const T=norm(text);let s=0;for(const w of toks){if(T.includes(w))s++;}return s;};
+  const faqHits=FAQS.map(f=>({s:sc(f.q+" "+f.a),f})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s);
+  const topHits=TOPICS.map(t=>({s:sc(t.t+" "+t.hook+" "+t.body.join(" ")+" "+(t.wow||""))+sc(t.t)*2,t})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s);
+  let html="";
+  if(faqHits.length){
+    const f=faqHits[0].f;
+    html+=`<div class="ans"><div class="lab">💡 Here's the idea</div><p>${esc(f.a)}</p></div>`;
+  }
+  const related=(topHits.length?topHits:TOPICS.map(t=>({t}))).slice(0,2);
+  html+=`<div style="font-weight:800;margin:18px 2px 8px">📚 Read this next</div>`;
+  html+=related.map(x=>topicCard(x.t)).join("");
+  if(!faqHits.length && !topHits.length){
+    const mail=`mailto:akshay.bangalorekar@gmail.com?subject=Spark%20doubt&body=${encodeURIComponent(q)}`;
+    html=`<div class="ans"><div class="lab">🤔 Good question!</div><p>I don't have that one yet. Ask Dad to add it — tap below and it goes straight to him.</p>
+      <div class="btnrow"><a class="btn primary" href="${mail}">Send this doubt to Dad ✉️</a></div></div>`+html;
+  }
+  $("#res").innerHTML=html;
+  hydrate();
+  setTimeout(()=>$("#res").scrollIntoView({behavior:"smooth"}),80);
+}
+
+/* ---------- quiz ---------- */
+let qz={qs:[],i:0,score:0};
+function screenQuiz(){
+  header("quiz");
+  const pool=TOPICS.slice().sort(()=>Math.random()-0.5).slice(0,5);
+  qz={qs:pool,i:0,score:0};
+  drawQuiz();
+}
+function drawQuiz(){
+  if(qz.i>=qz.qs.length){
+    const pct=Math.round(qz.score/qz.qs.length*100);
+    const msg=pct===100?"Perfect! You are on fire! 🔥":pct>=60?"Nice work! ⭐":"Good try — now you know more! 💪";
+    $("#app").innerHTML=`<h2 class="big">Quiz done! 🎉</h2>
+      <div class="ans"><div class="lab">Your score</div><p style="font-size:26px;font-weight:800">${qz.score} / ${qz.qs.length}</p>
+      <p style="margin-top:8px">${msg}</p></div>
+      <div class="btnrow"><button class="btn ghost" onclick="screenQuiz()">🔁 Play again</button>
+      <button class="btn primary" onclick="go('#/home')">🏠 Home</button></div>`;
+    return;
+  }
+  const t=qz.qs[qz.i], q=t.quiz;
+  $("#app").innerHTML=`<div style="font-weight:800;color:var(--muted);margin:12px 2px 8px">Question ${qz.i+1} of ${qz.qs.length}</div>
+    <div class="quiz"><h4>🧠 ${esc(q.q)}</h4>
+      <div id="opts">${q.o.map((o,i)=>`<button class="opt" onclick="qzAnswer(${i},${q.a},this)">${esc(o)}</button>`).join("")}</div>
+      <div class="fb" id="fb"></div></div>`;
+}
+function qzAnswer(i,correct,el){
+  const opts=el.parentNode.querySelectorAll(".opt");
+  opts.forEach((o,k)=>{ if(k===correct) o.classList.add("right"); });
+  if(i!==correct) el.classList.add("wrong");
+  if(i===correct) qz.score++;
+  const fb=$("#fb");
+  fb.textContent=i===correct?"Correct! ⭐":"The green one was right. 💡";
+  fb.style.color=i===correct?"#0a8f83":"#d84a4a";
+  opts.forEach(o=>o.disabled=true);
+  setTimeout(()=>{ qz.i++; drawQuiz(); }, 950);
+}
+
+/* ---------- boot ---------- */
+(async function(){
+  render();
+  await loadWorld();
+  if((location.hash||"").indexOf("/topic/")>-1) render();
+})();
+</script>
+</body>
+</html>
