@@ -53,8 +53,9 @@
     cursor:pointer;display:block}
   .card:active{transform:scale(.995)}
   .imw{position:relative;width:100%;aspect-ratio:16/10;background:#efe7de;overflow:hidden}
-  .imw img{width:100%;height:100%;object-fit:cover;display:block}
-  .imw .ph{position:absolute;inset:0;display:grid;place-items:center;font-size:44px}
+  .imw img{position:relative;z-index:1;width:100%;height:100%;object-fit:cover;display:block}
+  .imw .ph{position:absolute;inset:0;z-index:0;display:grid;place-items:center;font-size:46px;
+    background:linear-gradient(135deg,#ffe9d6,#ffe0ec)}
   .cb{padding:13px 15px 15px}
   .k{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px}
   .head{font-size:17px;font-weight:750;line-height:1.32;margin-bottom:9px}
@@ -241,8 +242,10 @@ function cardNews(x){
     </div></a>`;
 }
 function cardCool(t){
+  const cg=catById[t.cat]||{c1:"#ffb347",c2:"#d64545"};
   return `<div class="card cool" onclick="go('#/topic/${t.id}')">
-    <div class="imw" data-wid="${t.id}"><img loading="lazy" alt=""><div class="ph">${t.e}</div></div>
+    <div class="imw" data-wid="${t.id}"><img loading="lazy" alt="">
+      <div class="ph" style="background:linear-gradient(135deg,${cg.c1},${cg.c2})">${t.e}</div></div>
     <div class="cb"><div class="k">\u2728 Cool stuff</div>
       <div class="head">${esc(t.t)}</div>
       <div class="meta"><span class="src">${esc(t.hook)}</span></div></div></div>`;
@@ -320,7 +323,7 @@ function doAsk(){
   const rel=(tops.length?tops:TOPICS.map(t=>({t}))).slice(0,2);
   html+=`<div style="font-weight:800;margin:16px 2px 8px">\uD83D\uDCDA Read this next</div>`;
   html+=rel.map(x=>`<div class="card cool" onclick="go('#/topic/${x.t.id}')">
-    <div class="imw" data-wid="${x.t.id}"><img loading="lazy" alt=""><div class="ph">${x.t.e}</div></div>
+    <div class="imw" data-wid="${x.t.id}"><img loading="lazy" alt=""><div class="ph" style="background:${grad(x.t.cat)}">${x.t.e}</div></div>
     <div class="cb"><div class="head">${esc(x.t.t)}</div><div class="meta"><span class="src">${esc(x.t.hook)}</span></div></div></div>`).join("");
   if(!faqs.length && !tops.length){
     const mail=`mailto:akshay.bangalorekar@gmail.com?subject=Spark%20doubt&body=${encodeURIComponent(q)}`;
