@@ -119,6 +119,27 @@ SPARK_WORLD = {
     "w_sport_au": ["AFL Australian football"],
 }
 
+# kid-facing current-affairs news for Spark, grouped the way an 11-year-old thinks
+SPARK_NEWS = {
+    "bharat": [gn("India festival celebration", "en-in"), gn("ISRO space mission", "en-in"),
+               gn("India cricket", "en-in"), gn("Bollywood", "en-in"),
+               gn("India students achievement", "en-in")],
+    "melbourne": [gn("Melbourne events kids", "en-au"), gn("Australia wildlife", "en-au"),
+                  gn("AFL", "en-au"), gn("Australian Open", "en-au"),
+                  gn("Australia school kids", "en-au")],
+    "science": [gn("space discovery", "en-au"), gn("science discovery", "en-au"),
+                gn("dinosaur fossil discovery", "en-au"), gn("ocean discovery", "en-au"),
+                gn("new invention", "en-au")],
+    "sports": [gn("cricket", "en-au"), gn("tennis", "en-au"),
+               gn("basketball NBA NBL", "en-au"), gn("football soccer", "en-au")],
+    "tv": [gn("new kids movie", "en-au"), gn("animated series", "en-au"),
+           gn("Bollywood film", "en-in"), gn("Marvel DC", "en-au")],
+    "games": [gn("video game news", "en-au"), gn("Minecraft", "en-au"),
+              gn("Roblox", "en-au"), gn("esports", "en-au")],
+    "fun": [gn("amazing animals", "en-au"), gn("world record", "en-au"),
+            gn("cool invention", "en-au"), gn("funny science", "en-au")],
+}
+
 
 # ---- fetch + parse -----------------------------------------------------
 def fetch(url):
@@ -142,9 +163,11 @@ def parse(raw):
         title = clean(e.get("title", ""))
         link = e.get("link", "") or ""
         src = ""
+        surl = ""
         s = e.get("source")
         if isinstance(s, dict):
             src = clean(s.get("title", ""))
+            surl = s.get("href", "") or ""
         if src and title.endswith(" - " + src):
             title = title[: len(title) - len(src) - 3]
         if not src:
@@ -171,7 +194,7 @@ def parse(raw):
                     img = en["href"]
                     break
         if title and link:
-            out.append({"title": title, "link": link, "source": src,
+            out.append({"title": title, "link": link, "source": src, "surl": surl,
                         "image": img, "date": ts})
     return out
 
@@ -222,6 +245,27 @@ def main():
     with open(os.path.join("spark", "world.json"), "w", encoding="utf-8") as f:
         json.dump({"generated": gen, "world": world}, f, ensure_ascii=False, separators=(",", ":"))
     print("WROTE spark/world.json:", sum(len(v) for v in world.values()), "items across", len(world), "keys")
+
+    # kids news feed (Spark)
+    news = {}
+    for key, urls in SPARK_NEWS.items():
+        print("SPARK", key)
+        news[key] = gather(urls)[:30]
+    merged, seen, top = [], set(), []
+    for v in news.values():
+        merged.extend(v)
+    for it in sorted(merged, key=lambda x: x["date"], reverse=True):
+        k = it["title"].lower()
+        if k in seen:
+            continue
+        seen.add(k)
+        top.append(it)
+        if len(top) >= 30:
+            break
+    news["top"] = top
+    with open(os.path.join("spark", "feed.json"), "w", encoding="utf-8") as f:
+        json.dump({"generated": gen, "data": news}, f, ensure_ascii=False, separators=(",", ":"))
+    print("WROTE spark/feed.json:", sum(len(v) for v in news.values()), "items across", len(news), "keys")
 
 
 if __name__ == "__main__":
