@@ -216,107 +216,24 @@ const T = {
   minAgo:"मिनिटांपूर्वी",hrAgo:"तासांपूर्वी"}
 };
 
-/* ---------------- feeds ---------------- */
-function gn(q, lang){
-  const map={"en-au":["en-AU","AU","AU:en"],"en-in":["en-IN","IN","IN:en"],
-    "hi":["hi-IN","IN","IN:hi"],"mr":["mr-IN","IN","IN:mr"]};
-  const c=map[lang]||map["en-au"];
-  return "https://news.google.com/rss/search?q="+encodeURIComponent(q)+"&hl="+c[0]+"&gl="+c[1]+"&ceid="+c[2];
-}
-
+/* ---------------- categories ---------------- */
 const CATS=[
- {id:"top",ic:"★",k:"top",d:"top",feeds:()=>[gn("Australia news","en-au"),gn("Melbourne news","en-au"),gn("India news","en-in")]},
- {id:"australia",ic:"🦘",k:"australia",d:"economy",feeds:()=>[
-    gn("Australian economy","en-au"),gn("RBA interest rates Australia","en-au"),
-    gn("Australia jobs inflation wages","en-au"),"https://www.abc.net.au/news/feed/51892/rss.xml"]},
- {id:"india",ic:"🇮🇳",k:"india",d:"economy",feeds:(l)=>{
-    const f=[gn("Indian economy","en-in"),gn("India rupee GDP markets","en-in")];
-    if(l==="hi")f.push(gn("भारतीय अर्थव्यवस्था","hi"));
-    if(l==="mr")f.push(gn("भारतीय अर्थव्यवस्था","mr"));
-    f.push("https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms");
-    return f;}},
- {id:"sports",ic:"🏆",k:"sports",d:"sports",
-  subs:[{id:"all",k:"all"},{id:"cricket",k:"cricket"},{id:"tennis",k:"tennis"},{id:"football",k:"football"},{id:"basketball",k:"basketball"}],
-  feeds:(l,sub)=>{
-    const qs={all:["cricket","tennis ATP WTA","football soccer","basketball NBA NBL"],
-      cricket:["cricket"],tennis:["tennis ATP WTA"],football:["football soccer"],basketball:["basketball NBA NBL"]}[sub||"all"];
-    const f=qs.map(x=>gn(x,"en-au"));
-    if((sub||"all")==="all"||sub==="cricket") f.push("https://www.espncricinfo.com/rss/content/story/feeds/0.xml");
-    return f;}},
- {id:"melbourne",ic:"🎟",k:"melbourne",d:"evculture",feeds:(l,area)=>{
-    const f=["https://www.timeout.com/melbourne/feed/all.rss","https://www.broadsheet.com.au/melbourne/feed",
-      gn("Melbourne events this weekend","en-au"),gn("Melbourne live music concerts","en-au"),gn("Melbourne comedy stand up","en-au")];
-    if(area) f.unshift(gn(area+" events","en-au"));
-    return f;}},
- {id:"kids",ic:"📰",k:"kids",d:"kidnews",feeds:()=>[
-    "https://feeds.bbci.co.uk/newsround/rss.xml",gn("good news stories kids","en-au"),gn("space animals discovery kids","en-au")]},
- {id:"tech",ic:"🔬",k:"tech",d:"aiquantum",feeds:()=>[
-    "https://www.snexplores.org/feed",gn("artificial intelligence explained","en-au"),
-    gn("quantum computing breakthrough","en-au"),gn("biotechnology discovery health","en-au")]},
- {id:"study",ic:"🎓",k:"study",d:"studytrend",feeds:()=>[
-    gn("STEM subjects students Australia","en-au"),gn("most popular university courses Australia","en-au"),
-    gn("India students engineering medicine trend","en-in"),gn("study trends students India Australia","en-au")]},
- {id:"movies",ic:"🎬",k:"movies",d:"films",feeds:(l)=>{
-    const f=[gn("upcoming movie releases Australia","en-au"),gn("upcoming Hindi film release","en-in")];
-    if(l==="mr")f.push(gn("मराठी चित्रपट","mr"));
-    f.push("https://www.bollywoodhungama.com/feed/");
-    return f;}},
- {id:"books",ic:"📚",k:"books",d:"reading",feeds:()=>[
-    gn("books for 11 year olds Australia","en-au"),gn("children's book awards Australia","en-au"),gn("best books for tweens","en-au")]},
- {id:"major",ic:"🥇",k:"major",d:"olympics",feeds:()=>[
-    gn("Olympics","en-au"),gn("Commonwealth Games","en-au"),
-    gn("Formula 1 Australian Grand Prix Melbourne","en-au"),gn("world championships sport","en-au")]}
+ {id:"top",ic:"\u2605",k:"top",d:"top"},
+ {id:"australia",ic:"\ud83e\udd98",k:"australia",d:"economy"},
+ {id:"india",ic:"\ud83c\uddee\ud83c\uddf3",k:"india",d:"economy"},
+ {id:"sports",ic:"\ud83c\udfc6",k:"sports",d:"sports",
+  subs:[{id:"all",k:"all"},{id:"cricket",k:"cricket"},{id:"tennis",k:"tennis"},{id:"football",k:"football"},{id:"basketball",k:"basketball"}]},
+ {id:"melbourne",ic:"\ud83c\udf9f",k:"melbourne",d:"evculture"},
+ {id:"kids",ic:"\ud83d\udcf0",k:"kids",d:"kidnews"},
+ {id:"tech",ic:"\ud83d\udd2c",k:"tech",d:"aiquantum"},
+ {id:"study",ic:"\ud83c\udf93",k:"study",d:"studytrend"},
+ {id:"movies",ic:"\ud83c\udfac",k:"movies",d:"films"},
+ {id:"books",ic:"\ud83d\udcda",k:"books",d:"reading"},
+ {id:"major",ic:"\ud83e\udd47",k:"major",d:"olympics"}
 ];
 
-/* ---------------- proxy fetch ---------------- */
-const PROXIES=[
-  u=>"https://proxy.cors.dev/"+u,
-  u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u),
-  u=>"https://cors.tools/"+u,
-  u=>"https://api.cors.lol/?url="+encodeURIComponent(u)
-];
-async function fetchFeed(url){
-  for(const p of PROXIES){
-    try{
-      const ctl=new AbortController();
-      const to=setTimeout(()=>ctl.abort(),9000);
-      const res=await fetch(p(url),{signal:ctl.signal,cache:"no-store"});
-      clearTimeout(to);
-      if(!res.ok) continue;
-      const txt=await res.text();
-      if(txt && (txt.indexOf("<item")>-1 || txt.indexOf("<entry")>-1)) return txt;
-      if(txt && txt.length>300 && txt.indexOf("<rss")>-1) return txt;
-    }catch(e){}
-  }
-  return null;
-}
-function parseFeed(text){
-  let doc;
-  try{ doc=new DOMParser().parseFromString(text,"text/xml"); }catch(e){ return []; }
-  let nodes=Array.prototype.slice.call(doc.getElementsByTagName("item"));
-  if(!nodes.length) nodes=Array.prototype.slice.call(doc.getElementsByTagName("entry"));
-  const out=[];
-  for(const n of nodes){
-    const g=(tag)=>{const e=n.getElementsByTagName(tag)[0];return e?e.textContent.trim():"";};
-    let link=g("link");
-    if(!link){const l=n.getElementsByTagName("link")[0]; if(l&&l.getAttribute) link=l.getAttribute("href")||"";}
-    let srcEl=n.getElementsByTagName("source")[0];
-    let source=srcEl?srcEl.textContent.trim():"";
-    let title=g("title");
-    if(source && title.endsWith(" - "+source)) title=title.slice(0,title.length-source.length-3);
-    let img="";
-    const enc=n.getElementsByTagName("enclosure")[0];
-    if(enc&&enc.getAttribute("url")) img=enc.getAttribute("url");
-    if(!img){const mc=n.getElementsByTagName("content")[0]||n.getElementsByTagName("thumbnail")[0];
-      if(mc&&mc.getAttribute&&mc.getAttribute("url")) img=mc.getAttribute("url");}
-    if(!img){const m=g("description").match(/<img[^>]+src=["']([^"']+)/i); if(m) img=m[1];}
-    if(!source){try{source=new URL(link).hostname.replace(/^www\./,"");}catch(e){source="";}}
-    const ds=g("pubDate")||g("published")||g("updated");
-    const date=ds?new Date(ds):new Date();
-    if(title&&link) out.push({title,link,source,image:img,date:(isNaN(date.getTime())?new Date():date).getTime()});
-  }
-  return out;
-}
+/* ---------------- data ---------------- */
+function dataKey(){return state.cat==="sports"?"sports|"+state.sub:state.cat;}
 
 /* ---------------- state ---------------- */
 const state={cat:"top",sub:"all",lang:localStorage.getItem("pulse_lang")||"en",
@@ -326,7 +243,7 @@ const t=k=>(T[state.lang]||T.en)[k]||(T.en[k]||k);
 const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 /* ---------------- cache ---------------- */
-function ck(){return "pulse_v1_"+state.cat+"_"+state.sub+"_"+state.lang;}
+function ck(){return "pulse_v2_"+dataKey()+"_"+state.lang;}
 function readCache(){try{const r=localStorage.getItem(ck());return r?JSON.parse(r):null;}catch(e){return null;}}
 function writeCache(items){try{localStorage.setItem(ck(),JSON.stringify({t:Date.now(),items:items.slice(0,60)}));}catch(e){}}
 
@@ -360,18 +277,28 @@ function renderMsg(txt,ic){$("#feed").innerHTML=`<div class="msg"><span class="b
 let reqSeq=0;
 async function load(){
   const seq=++reqSeq;
-  const cat=CATS.find(c=>c.id===state.cat);
-  const feeds=cat.feeds(state.lang,state.area==="Melbourne, VIC"?"":state.area.split(",")[0]);
+  const key=dataKey();
   const cached=readCache();
   if(cached&&cached.items&&cached.items.length){ renderItems(cached.items); $("#updated").textContent=t("updated")+" "+fmtTime(cached.t); }
   else renderSkeleton();
-  const results=await Promise.all(feeds.map(u=>fetchFeed(u).then(x=>x?parseFeed(x):[]).catch(()=>[])));
-  if(seq!==reqSeq) return;
-  let items=[].concat.apply([],results);
-  const seen={};items=items.filter(i=>{const k=i.title.toLowerCase();if(seen[k])return false;seen[k]=1;return true;});
-  items.sort((a,b)=>b.date-a.date);items=items.slice(0,60);
-  if(items.length){ writeCache(items); renderItems(items); $("#updated").textContent=t("updated")+" "+t("justnow"); }
-  else if(!(cached&&cached.items&&cached.items.length)){ renderMsg(t("err"),"📡"); $("#updated").textContent=""; }
+  try{
+    const res=await fetch("feed.json?b="+Math.floor(Date.now()/300000),{cache:"no-store"});
+    if(!res.ok) throw new Error("http "+res.status);
+    const j=await res.json();
+    if(seq!==reqSeq) return;
+    const d=j.data||{};
+    const items=d[key+"|"+state.lang]||d[key]||[];
+    if(items.length){
+      writeCache(items); renderItems(items);
+      const gen=j.generated?new Date(j.generated).getTime():Date.now();
+      $("#updated").textContent=t("updated")+" "+fmtTime(gen);
+    } else if(!(cached&&cached.items&&cached.items.length)){
+      renderMsg(t("err"),"\ud83d\udce1"); $("#updated").textContent="";
+    }
+  }catch(e){
+    if(seq!==reqSeq) return;
+    if(!(cached&&cached.items&&cached.items.length)){ renderMsg(t("err"),"\ud83d\udce1"); $("#updated").textContent=""; }
+  }
 }
 
 /* ---------------- chrome ---------------- */
