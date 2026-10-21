@@ -162,11 +162,17 @@ function grad(catId){const c=catById[catId]||{c1:"#ff8a3d",c2:"#ff4d6d"};
 function buildStream(){
   const keys=Object.keys(FEED).filter(k=>GROUPS[k]&&(FEED[k]||[]).length);
   const lists=keys.map(k=>(FEED[k]||[]).slice());
-  const out=[]; let i=0, more=true;
+  const out=[]; let i=0, more=true; const seen=new Set();
   while(more && out.length<400){
     more=false;
     for(let j=0;j<lists.length;j++){
-      if(lists[j][i]){ out.push({type:"news",g:keys[j],item:lists[j][i]}); more=true; }
+      const it=lists[j][i];
+      if(!it) continue;
+      more=true;
+      const k=String(it.link||it.title).split("?")[0].toLowerCase();
+      if(seen.has(k)) continue;
+      seen.add(k);
+      out.push({type:"news",g:keys[j],item:it});
     }
     i++;
   }
