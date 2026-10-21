@@ -12,19 +12,39 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Call GitHub Models
+      - name: Call GitHub Models (both endpoints)
         run: |
-          curl -s -X POST https://models.github.ai/inference/chat/completions \
+          set +e
+          BODY='{"model":"openai/gpt-4o-mini","messages":[{"role":"user","content":"Reply with exactly MODELS_OK and one fun space fact for an 11 year old."}],"max_tokens":60}'
+          echo "== models.github.ai =="
+          code=$(curl -s -o a.json -w "%{http_code}" -X POST https://models.github.ai/inference/chat/completions \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d '{"model":"openai/gpt-4o-mini","messages":[{"role":"user","content":"Reply with exactly: MODELS_OK and one fun fact about space for an 11 year old."}],"max_tokens":80}' \
-            -o llm_out.json || true
-          echo "---- response ----"; head -c 900 llm_out.json; echo
+            -H "Accept: application/vnd.github+json" -d "$BODY")
+          echo "HTTP $code"; head -c 700 a.json; echo
+          echo "== models.inference.ai.azure.com =="
+          code2=$(curl -s -o b.json -w "%{http_code}" -X POST https://models.inference.ai.azure.com/chat/completions \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" -d "$BODY")
+          echo "HTTP $code2"; head -c 700 b.json; echo
+          { echo "github_models_http=$code"; echo "azure_http=$code2"; } > llm_status.txt
+          python3 - <<'PY'
+          import json,os
+          out={}
+          for k,f in (("github_models","a.json"),("azure","b.json")):
+              try:
+                  j=json.load(open(f))
+                  out[k]=j.get("choices",[{}])[0].get("message",{}).get("content") or j
+              except Exception as e:
+                  out[k]="PARSE_ERR: "+str(e)+" :: "+open(f).read()[:300]
+          json.dump(out, open("llm_out.json","w"), indent=1)
+          print(json.dumps(out, indent=1))
+          PY
       - name: Save
         run: |
           git config user.name "probe-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add llm_out.json
-          git commit -m "llm probe [skip ci]" || echo "no change"
+          git add llm_out.json llm_status.txt
+          git commit -m "llm probe2 [skip ci]" || echo "no change"
           git pull --rebase --autostash origin main || true
           git push || true
