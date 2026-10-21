@@ -41,6 +41,10 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "Update feeds [skip ci]"
-            git pull --rebase --autostash origin main || true
-            git push
+            for i in 1 2 3 4; do
+              git push && break
+              echo "push failed, rebasing and retrying ($i)"
+              git pull --rebase --autostash origin main || true
+              sleep 4
+            done
           fi
