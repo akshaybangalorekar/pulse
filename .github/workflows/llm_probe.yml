@@ -1,0 +1,30 @@
+name: Probe LLM
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  models: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Call GitHub Models
+        run: |
+          curl -s -X POST https://models.github.ai/inference/chat/completions \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"model":"openai/gpt-4o-mini","messages":[{"role":"user","content":"Reply with exactly: MODELS_OK and one fun fact about space for an 11 year old."}],"max_tokens":80}' \
+            -o llm_out.json || true
+          echo "---- response ----"; head -c 900 llm_out.json; echo
+      - name: Save
+        run: |
+          git config user.name "probe-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add llm_out.json
+          git commit -m "llm probe [skip ci]" || echo "no change"
+          git pull --rebase --autostash origin main || true
+          git push || true
