@@ -35,6 +35,18 @@ NO_THANKS = re.compile(
     r"deport(?:ed|ation)?|green\s*card|geopolitic\w*|nato|sanction\w*|"
     r"security\s+council|diplomat\w*|treaty)\b", re.I)
 SPAM = re.compile(r"(live\s*stream|streaming|watch\s+(live|online|free)|\u3010|\u3011|live\s*now)", re.I)
+# what makes a story worth an 11-year-old's time, and what bores him
+ENGAGE = re.compile(
+    r"\b(discover\w*|record|first|new|amazing|world|space|rocket|robot\w*|game|games|"
+    r"launch\w*|invent\w*|rescue\w*|build\w*|young|student\w*|science|animal\w*|ocean|"
+    r"dinosaur\w*|telescope|satellite|mission|trick|puzzle|mystery|ancient|heritage|"
+    r"temple|chip\w*|semiconductor|nintendo|roblox|minecraft|pokemon|marvel|animation)\b", re.I)
+DULL = re.compile(
+    r"\b(court|supreme|scheme|regulator\w*|norms?|licence|license|policy|gst|tax|budget|"
+    r"parliament|bill|committee|revenue|earnings|stock|shares|ipo|merger|inflation|"
+    r"quarterly|profit|stake|tender|tariff|compliance|protocol|bureau|standards?)\b", re.I)
+CORP = re.compile(r"\b(sue[sd]?|lawsuit|shareholder\w*|investor\w*|ceo|board|acquisition|deal)\b", re.I)
+MIN_WORDS = 26
 
 # --- sources (photo-rich publisher feeds) -------------------------------
 FEEDS = {
@@ -50,7 +62,7 @@ FEEDS = {
                 "https://phys.org/rss-feed/"],
     "sport": ["https://www.espncricinfo.com/rss/content/story/feeds/0.xml",
               "https://www.cricket.com.au/news/rss",
-              "https://www.abc.net.au/news/feed/45910/rss.xml"],
+              "https://feeds.bbci.co.uk/sport/rss.xml"],
     "gaming": ["https://feeds.ign.com/ign/all"],
     "screen": ["https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml"],
     "world": ["https://www.abc.net.au/news/feed/51120/rss.xml"],
@@ -256,26 +268,53 @@ def word_budget(age):
     return 90 if age <= 11 else 115 if age == 12 else 140
 
 
+def score(it):
+    t = it["title"]
+    s = 0
+    if ENGAGE.search(t):
+        s += 2
+    if DULL.search(t):
+        s -= 2
+    if CORP.search(t):
+        s -= 6
+    return s
+
+
+def india_only(it):
+    return bool(re.search(r"\b(india|indian|bharat|isro|drdo|semiconductor|chip|chipmaker)\b",
+                          it["title"], re.I))
+
+
 def main():
     age = age_now()
     budget = word_budget(age)
     gen = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print("age", age, "word budget", budget)
 
-    picked, think_i = [], 0
+    picked, think_i, seen_keys = [], 0, set()
     order = ["bharat", "science", "vedic", "bharat_tech", "gaming", "sport",
              "world", "screen", "good"]
     per_group = 2
     for g in order:
         items = gather(FEEDS.get(g, []), KEYWORDS.get(g, []))
+        if g == "bharat_tech":
+            items = [it for it in items if india_only(it)]
+        items = sorted(items, key=score, reverse=True)
         print("GROUP", g, len(items))
-        for it in items[:per_group]:
+        taken = 0
+        for it in items[:9]:
+            if taken >= per_group:
+                break
+            key = " ".join(it["title"].lower().split()[:4])
+            if key in seen_keys:
+                continue
             paras = article_paragraphs(it["link"]) if it["link"].startswith("http") else []
             if not paras:
                 paras = [it.get("desc", "")] if it.get("desc") else []
             short = simplify(paras, budget)
-            if not short:
+            if sum(len(p.split()) for p in short) < MIN_WORDS:
                 continue
+            seen_keys.add(key)
             think = THINK.get(g, THINK["world"])
             picked.append({
                 "kind": "news", "cat": g, "title": it["title"][:110],
@@ -283,6 +322,7 @@ def main():
                 "date": it["date"], "think": think[think_i % len(think)],
             })
             think_i += 1
+            taken += 1
 
     edition = picked[:EDITION_SIZE]
     os.makedirs("spark", exist_ok=True)
