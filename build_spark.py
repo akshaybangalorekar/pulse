@@ -33,7 +33,8 @@ NO_THANKS = re.compile(
     r"\b(pope|vatican|catholic|church|bishop|cardinal|archbishop|christian|jesus|"
     r"bible|gospel|priest|nun|missionary|visa|immigration|immigrant|migrant|asylum|"
     r"deport(?:ed|ation)?|green\s*card|geopolitic\w*|nato|sanction\w*|"
-    r"security\s+council|diplomat\w*|treaty)\b", re.I)
+    r"security\s+council|diplomat\w*|treaty|jewish|synagogue|mosque|islam\w*|"
+    r"muslim\w*|ramadan|eid|christmas|easter|bible|gospel)\b", re.I)
 SPAM = re.compile(r"(live\s*stream|streaming|watch\s+(live|online|free)|\u3010|\u3011|live\s*now)", re.I)
 # what makes a story worth an 11-year-old's time, and what bores him
 ENGAGE = re.compile(
