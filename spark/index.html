@@ -63,6 +63,9 @@
   .wisdom{font-size:13px;color:#9a8f86;font-style:italic;line-height:1.5;margin:14px 2px 2px;
     padding-left:12px;border-left:3px solid #ffd9c4}
   .credit{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:8px}
+  .more{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:11px 15px;border-radius:14px;
+    background:linear-gradient(135deg,#eef3ff,#e6ecff);border:1px solid #cfdaff;color:#2f4bd6;
+    font-size:14px;font-weight:800;text-decoration:none}
   .wow{background:linear-gradient(135deg,#e4fbf6,#d2f4ff);border:1px solid #b6ebdf;border-radius:15px;
     padding:13px 15px;margin:12px 0;font-size:15.5px;line-height:1.5}
   .wow b{display:block;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase;color:#0a8f83;margin-bottom:5px}
@@ -154,7 +157,7 @@ let EDITION=null, DECK=[], idx=0, TAB="news";
 
 function buildDeck(){
   const news=(EDITION&&EDITION.news)||[];
-  const PRI=["bharatiya","bharat_tech","games"];
+  const PRI=["frontier","bharatiya","bharat_tech","games"];
   const ours=TOPICS.filter(t=>PRI.includes(t.cat)).concat(TOPICS.filter(t=>!PRI.includes(t.cat)));
   const deck=[]; let ti=0;
   news.forEach(it=>{ deck.push({kind:"news",it:it}); if(ti<ours.length) deck.push({kind:"card",t:ours[ti++]}); });
@@ -230,6 +233,7 @@ function renderNews(it){
       ${it.paras.map(p=>`<p class="read">${esc(p)}</p>`).join("")}
       ${it.think?`<div class="think"><b>\uD83D\uDCA1 Think about it</b>${esc(it.think)}</div>`:""}
       <div class="credit">Adapted for you from ${esc(it.source||"the news")}</div>
+      ${it.link?`<a class="more" href="${esc(it.link)}" target="_blank" rel="noopener">Read the full story \u2192</a>`:""}
       <div class="wisdom">${esc(wisdom(idx))}</div>
     </div></div>`;
   $("#foot").textContent="";
@@ -246,6 +250,7 @@ function renderCard(t){
       ${t.body.map(p=>`<p class="read">${esc(p)}</p>`).join("")}
       <div class="wow"><b>\uD83E\uDD2F Wow fact</b>${esc(t.wow)}</div>
       <div class="talk"><b>\uD83D\uDCAC Bring this up with your mates</b>${esc(t.talk)}</div>
+      ${t.more?`<a class="more" href="${esc(t.more)}" target="_blank" rel="noopener">Go deeper \u2192</a>`:""}
       <div class="wisdom">${esc(wisdom(idx))}</div>
     </div></div>`;
   $("#foot").textContent="";

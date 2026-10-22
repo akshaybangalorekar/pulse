@@ -55,9 +55,16 @@ FEEDS = {
     "timeforkids": ["https://www.timeforkids.com/feed/"],
     "newsround": ["https://feeds.bbci.co.uk/newsround/rss.xml"],
     "science": ["https://www.snexplores.org/feed", "https://www.space.com/feeds/all"],
+    # latest world trends: robots, AI, quantum, biotech, engineering
+    "frontier": ["https://spectrum.ieee.org/feeds/topic/robotics.rss",
+                 "https://feeds.arstechnica.com/arstechnica/index",
+                 "https://www.quantamagazine.org/feed/",
+                 "https://www.newscientist.com/feed/home/"],
 }
 GROUP_NAME = {"pressgang": "Press Gang News", "timeforkids": "TIME for Kids",
-              "newsround": "Kid news", "science": "Science & space"}
+              "newsround": "Kid news", "science": "Science & space",
+              "frontier": "Frontier tech"}
+PER_GROUP = {"frontier": 3, "science": 2}
 
 # sport: headline updates + junior achievements
 SPORT_QUERIES = {
@@ -247,6 +254,9 @@ THINK = {
                   "What is the clever move here, do you think?"],
     "science": ["What would you test if you had a real lab for a day?",
                 "Which discovery would help the most people?"],
+    "frontier": ["Which of these technologies would you most want to build?",
+                 "What could go wrong with this, and how would you stop it?",
+                 "How might this change life in India in ten years?"],
 }
 
 
@@ -257,8 +267,9 @@ def build_news(age, budget):
         items.sort(key=score, reverse=True)
         print("GROUP", g, len(items))
         n = 0
+        want = PER_GROUP.get(g, 2)
         for it in items[:8]:
-            if n >= 2:
+            if n >= want:
                 break
             key = " ".join(it["title"].lower().split()[:4])
             if key in seen:
