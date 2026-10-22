@@ -35,7 +35,8 @@ NO_THANKS = re.compile(
     r"bible|gospel|priest|nun|missionary|jewish|synagogue|mosque|islam\w*|muslim\w*|"
     r"ramadan|eid|christmas|easter|visa|immigration|immigrant|migrant|asylum|"
     r"deport(?:ed|ation)?|green\s*card|geopolitic\w*|nato|sanction\w*|"
-    r"security\s+council|diplomat\w*|treaty)\b", re.I)
+    r"security\s+council|diplomat\w*|treaty|weapon\w*|military|warhead|arms\s+race|"
+    r"orbital\s+weapon)\b", re.I)
 SPAM = re.compile(r"(live\s*stream|streaming|watch\s+(live|online|free)|\u3010|\u3011|live\s*now)", re.I)
 # sport: no gossip, no personal life
 GOSSIP = re.compile(
