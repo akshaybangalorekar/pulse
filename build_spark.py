@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Spark edition builder.
 
-Picks a small, finite set of stories for an 11-year-old Bharatiya boy in Melbourne,
-pulls the actual article text, simplifies it for his reading age, and writes
-spark/edition.json. Excludes topics the family does not want (religion news,
-visa/immigration, geopolitics). Designed to be constructive and India-rooted.
+Writes spark/edition.json with two halves:
+  news  - a small, finite set of stories for an 11-year-old, retold in simple words
+          from kid-facing sources (Press Gang News, TIME for Kids, Newsround,
+          Science News Explores, Space.com)
+  sport - tennis + basketball top updates, and junior (10-12) achievements
+Excludes religion news, visa/immigration and geopolitics.
 """
 import calendar
 import html as htmlmod
@@ -18,12 +20,11 @@ from datetime import datetime, timezone
 
 import feedparser
 
-UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
+UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+      "(KHTML, like Gecko) Chrome/124 Safari/537.36")
 TIMEOUT = 20
-EDITION_SIZE = 6
 BIRTHDAY = (2015, 6, 9)          # turns 12 on 9 June 2027
 
-# --- what we never show -------------------------------------------------
 KID_BLOCK = re.compile(
     r"\b(kill(?:ed|ing|s)?|dead|death|dies|died|murder(?:ed|s)?|stab(?:bed|bing)?|"
     r"gunman|shoot(?:ing|ings)?|rape|suicide|overdose|arrest(?:ed|s)?|jail(?:ed)?|"
@@ -31,12 +32,11 @@ KID_BLOCK = re.compile(
     r"terror(?:ist|ists|ism)?|houthi|nude|porn)\b", re.I)
 NO_THANKS = re.compile(
     r"\b(pope|vatican|catholic|church|bishop|cardinal|archbishop|christian|jesus|"
-    r"bible|gospel|priest|nun|missionary|visa|immigration|immigrant|migrant|asylum|"
+    r"bible|gospel|priest|nun|missionary|jewish|synagogue|mosque|islam\w*|muslim\w*|"
+    r"ramadan|eid|christmas|easter|visa|immigration|immigrant|migrant|asylum|"
     r"deport(?:ed|ation)?|green\s*card|geopolitic\w*|nato|sanction\w*|"
-    r"security\s+council|diplomat\w*|treaty|jewish|synagogue|mosque|islam\w*|"
-    r"muslim\w*|ramadan|eid|christmas|easter|bible|gospel)\b", re.I)
+    r"security\s+council|diplomat\w*|treaty)\b", re.I)
 SPAM = re.compile(r"(live\s*stream|streaming|watch\s+(live|online|free)|\u3010|\u3011|live\s*now)", re.I)
-# what makes a story worth an 11-year-old's time, and what bores him
 ENGAGE = re.compile(
     r"\b(discover\w*|record|first|new|amazing|world|space|rocket|robot\w*|game|games|"
     r"launch\w*|invent\w*|rescue\w*|build\w*|young|student\w*|science|animal\w*|ocean|"
@@ -49,68 +49,44 @@ DULL = re.compile(
 CORP = re.compile(r"\b(sue[sd]?|lawsuit|shareholder\w*|investor\w*|ceo|board|acquisition|deal)\b", re.I)
 MIN_WORDS = 32
 
-# --- sources (photo-rich publisher feeds) -------------------------------
+# kid-facing news sources the family asked for (those that publish usable feeds)
 FEEDS = {
-    # written for children / genuinely engaging, not general adult news
-    "kids": ["https://feeds.bbci.co.uk/newsround/rss.xml"],
-    "science": ["https://www.snexplores.org/feed",
-                "https://www.space.com/feeds/all",
-                "https://www.sciencealert.com/feed"],
-    "sport": ["https://www.cricket.com.au/news/rss",
-              "https://www.espncricinfo.com/rss/content/story/feeds/0.xml"],
+    "pressgang": ["https://pressgang.news/feed/"],
+    "timeforkids": ["https://www.timeforkids.com/feed/"],
+    "newsround": ["https://feeds.bbci.co.uk/newsround/rss.xml"],
+    "science": ["https://www.snexplores.org/feed", "https://www.space.com/feeds/all"],
 }
-# keyword feeds (no images, but cover the India-specific asks)
-KEYWORDS = {
-    "bharat_tech": [("India semiconductor mission", "en-in"), ("India AI mission", "en-in"),
-                    ("ISRO mission", "en-in"), ("India startup innovation", "en-in")],
-    "vedic": [("Vedic science mathematics", "en-in"), ("Sanskrit heritage", "en-in"),
-              ("Indian temple heritage restoration", "en-in"), ("Ayurveda research", "en-in")],
-    "gaming": [("Nintendo", "en-au"), ("Roblox", "en-au"), ("Minecraft", "en-au")],
-    "good": [("good news India", "en-in"), ("positive news science", "en-au")],
+GROUP_NAME = {"pressgang": "Press Gang News", "timeforkids": "TIME for Kids",
+              "newsround": "Behind the News", "science": "Science & space"}
+
+# sport: headline updates + junior achievements
+SPORT_QUERIES = {
+    "Tennis": [("tennis ATP WTA", "en-au"), ("Grand Slam tennis", "en-au")],
+    "Basketball": [("basketball NBA", "en-au"), ("NBL basketball", "en-au")],
+    "Junior stars (10-12)": [
+        ("junior tennis ranking Australia", "en-au"),
+        ("Australian junior tennis champion", "en-au"),
+        ("under 12 basketball Australia", "en-au"),
+        ("India junior tennis champion", "en-in"),
+    ],
 }
 
-# --- thought-provoking question per category (rotates) ------------------
-THINK = {
-    "kids": ["What would you tell a friend about this?",
-             "What surprised you most, and why?",
-             "If you could change one thing about this, what would it be?"],
-    "bharat": ["If you could fix one thing in your city, what would it be?",
-               "Which Indian invention are you proudest of, and why?",
-               "What would Chanakya say about this — what is the clever move here?"],
-    "bharat_tech": ["India is building its own chips. Why does making things at home matter?",
-                    "What would you build if you had a lab and no limits?",
-                    "Which is harder — inventing something or making it for millions?"],
-    "vedic": ["What did our ancestors know that we are only now rediscovering?",
-              "How would you explain this idea to a friend in one line?",
-              "What can we learn from how they solved problems with what they had?"],
-    "science": ["What would you test if you had a real lab for a day?",
-                "Which discovery would change the most lives in India?",
-                "What question would you ask the scientist who did this?"],
-    "sport": ["What does it take to stay calm in a big moment?",
-              "Which matters more in sport — talent or practice?",
-              "What would you tell a teammate who is about to give up?"],
-    "gaming": ["What makes a game fun — the challenge or the story?",
-               "If you designed a game about India, what would it be about?",
-               "How could a game teach something useful without feeling like homework?"],
-    "screen": ["What story would you make if you were a director?",
-               "Which character would you want to be, and why?"],
-    "world": ["What would you do to make this better if you were in charge?",
-              "What can India learn from this, and what can it teach?"],
-    "good": ["What small good thing could you do this week?",
-             "Who in your life deserves a thank you?"],
-}
+BAD_OPEN = ("read more", "subscribe", "follow us", "click here", "sign up", "watch:",
+            "advertisement", "get our", "download the", "share this", "you can also",
+            "account subscription", "premium stories", "sign in", "image source",
+            "image caption", "copy link", "click for next", "editorials", "opinions")
 
 
 def gn(q, lang):
     m = {"en-au": ("en-AU", "AU", "AU:en"), "en-in": ("en-IN", "IN", "IN:en")}
     hl, gl, ceid = m.get(lang, m["en-au"])
-    return "https://news.google.com/rss/search?q=%s&hl=%s&gl=%s&ceid=%s" % (
-        urllib.parse.quote(q), hl, gl, ceid)
+    return ("https://news.google.com/rss/search?q=" + urllib.parse.quote(q)
+            + "&hl=" + hl + "&gl=" + gl + "&ceid=" + ceid)
 
 
 def fetch_bytes(url):
-    req = urllib.request.Request(url, headers={"User-Agent": UA,
-        "Accept": "application/rss+xml, application/xml, text/html, */*"})
+    req = urllib.request.Request(url, headers={
+        "User-Agent": UA, "Accept": "application/rss+xml, application/xml, text/html, */*"})
     with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
         return r.read()
 
@@ -120,8 +96,7 @@ def clean(s):
         return ""
     s = re.sub(r"(?is)<(script|style)[^>]*>.*?</\1>", " ", s)
     s = re.sub(r"<[^>]+>", " ", s)
-    s = htmlmod.unescape(s)
-    return re.sub(r"\s+", " ", s).strip()
+    return re.sub(r"\s+", " ", htmlmod.unescape(s)).strip()
 
 
 def norm_img(u):
@@ -174,30 +149,38 @@ def parse(raw):
             if e.get(f):
                 desc = clean(e.get(f))
                 break
-        if not img:
-            m = re.search(r'<img[^>]+src=["\']([^"\']+)', e.get("summary", "") or e.get("description", "") or "")
-            if m:
-                img = m.group(1)
         if title and link:
             out.append({"title": title, "link": link, "source": src, "surl": surl,
                         "image": norm_img(img), "date": ts, "desc": desc})
     return out
 
 
-def gather(feeds, kw, kid=True):
+def ok(it):
+    t = it["title"]
+    return not (SPAM.search(t) or KID_BLOCK.search(t) or NO_THANKS.search(t))
+
+
+def score(it):
+    t = it["title"]
+    s = 2 if ENGAGE.search(t) else 0
+    s -= 2 if DULL.search(t) else 0
+    s -= 6 if CORP.search(t) else 0
+    return s
+
+
+def gather(urls):
     items, seen = [], set()
-    urls = list(feeds) + [gn(q, l) for q, l in kw]
     for u in urls:
         try:
             got = parse(fetch_bytes(u))
         except Exception as ex:
             print("  ! fail", u, type(ex).__name__)
             continue
+        print("  ok", len(got), u)
         for it in got:
-            t = it["title"]
-            if SPAM.search(t) or (kid and (KID_BLOCK.search(t) or NO_THANKS.search(t))):
+            if not ok(it):
                 continue
-            k = t.lower()
+            k = it["title"].lower()
             if k in seen:
                 continue
             seen.add(k)
@@ -206,32 +189,20 @@ def gather(feeds, kw, kid=True):
     return items
 
 
-# --- article text -------------------------------------------------------
 def article_paragraphs(url):
     try:
-        raw = fetch_bytes(url)
-    except Exception:
-        return []
-    try:
-        txt = raw.decode("utf-8", "ignore")
+        txt = fetch_bytes(url).decode("utf-8", "ignore")
     except Exception:
         return []
     txt = re.sub(r"(?is)<(script|style|noscript|nav|footer|aside)[^>]*>.*?</\1>", " ", txt)
     m = re.search(r"(?is)<article[^>]*>(.*?)</article>", txt)
     body = m.group(1) if m else txt
-    paras = re.findall(r"(?is)<p[^>]*>(.*?)</p>", body)
     out = []
-    for p in paras:
+    for p in re.findall(r"(?is)<p[^>]*>(.*?)</p>", body):
         c = clean(p)
         if len(c) > 70:
             out.append(c)
     return out
-
-
-BAD_OPEN = ("read more", "subscribe", "follow us", "click here", "sign up", "watch:",
-            "advertisement", "get our", "download the", "share this", "you can also",
-            "account subscription", "premium stories", "sign in", "image source",
-            "image caption", "copy link", "click for next", "editorials", "opinions")
 
 
 def simplify(paras, max_words):
@@ -241,8 +212,9 @@ def simplify(paras, max_words):
             s = s.strip()
             w = len(s.split())
             low = s.lower()
-            if 7 <= w <= 40 and not low.startswith(BAD_OPEN) and not any(b in low for b in
-                    ("subscription", "premium stories", "sign in", "image source", "image caption")):
+            if (7 <= w <= 40 and not low.startswith(BAD_OPEN)
+                    and not any(b in low for b in ("subscription", "premium stories",
+                                                   "sign in", "image source", "image caption"))):
                 sents.append(s)
     out, total = [], 0
     for s in sents[:7]:
@@ -252,7 +224,6 @@ def simplify(paras, max_words):
             break
     if not out:
         return []
-    # group into 2 short paragraphs
     half = max(1, len(out) // 2)
     return [" ".join(out[:half]), " ".join(out[half:])] if len(out) > 2 else [" ".join(out)]
 
@@ -267,72 +238,85 @@ def word_budget(age):
     return 90 if age <= 11 else 115 if age == 12 else 140
 
 
-def score(it):
-    t = it["title"]
-    s = 0
-    if ENGAGE.search(t):
-        s += 2
-    if DULL.search(t):
-        s -= 2
-    if CORP.search(t):
-        s -= 6
-    return s
+THINK = {
+    "pressgang": ["What would you tell a friend about this?",
+                  "What surprised you most, and why?"],
+    "timeforkids": ["If you could change one thing about this, what would it be?",
+                    "How would you explain this to someone younger?"],
+    "newsround": ["What would you do if you were in charge?",
+                  "What is the clever move here, do you think?"],
+    "science": ["What would you test if you had a real lab for a day?",
+                "Which discovery would help the most people?"],
+}
 
 
-def india_only(it):
-    return bool(re.search(r"\b(india|indian|bharat|isro|drdo|semiconductor|chip|chipmaker)\b",
-                          it["title"], re.I))
+def build_news(age, budget):
+    news, seen, taken = [], set(), {}
+    for g, feeds in FEEDS.items():
+        items = gather(feeds)
+        items.sort(key=score, reverse=True)
+        print("GROUP", g, len(items))
+        n = 0
+        for it in items[:8]:
+            if n >= 2:
+                break
+            key = " ".join(it["title"].lower().split()[:4])
+            if key in seen:
+                continue
+            paras = article_paragraphs(it["link"]) if it["link"].startswith("http") else []
+            if not paras:
+                paras = [it["desc"]] if it["desc"] else []
+            short = simplify(paras, budget)
+            if sum(len(p.split()) for p in short) < MIN_WORDS:
+                continue
+            seen.add(key)
+            th = THINK.get(g, THINK["science"])
+            news.append({"kind": "news", "cat": g, "show": GROUP_NAME.get(g, g),
+                         "title": it["title"][:110], "paras": short,
+                         "image": it["image"], "source": it["source"], "date": it["date"],
+                         "think": th[taken.get(g, 0) % len(th)]})
+            taken[g] = taken.get(g, 0) + 1
+            n += 1
+    return news
+
+
+def build_sport():
+    sport = []
+    for section, queries in SPORT_QUERIES.items():
+        items, seen = [], set()
+        for q, lang in queries:
+            try:
+                got = parse(fetch_bytes(gn(q, lang)))
+            except Exception as ex:
+                print("  ! sport fail", q, type(ex).__name__)
+                continue
+            for it in got:
+                if not ok(it):
+                    continue
+                k = it["title"].lower()
+                if k in seen:
+                    continue
+                seen.add(k)
+                items.append(it)
+        items.sort(key=lambda x: x["date"], reverse=True)
+        for it in items[:6]:
+            sport.append({"kind": "head", "section": section, "title": it["title"][:110],
+                          "source": it["source"], "date": it["date"]})
+        print("SPORT", section, len(items))
+    return sport
 
 
 def main():
     age = age_now()
-    budget = word_budget(age)
     gen = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    print("age", age, "word budget", budget)
-
-    picked, think_i, seen_keys = [], 0, set()
-    # groups whose publishers we can actually fetch and retell; the Vedic/Bharat-tech/
-    # gaming reads come from the hand-written library in the app instead
-    order = ["kids", "science", "sport"]
-    per_group = 3
-    for g in order:
-        items = gather(FEEDS.get(g, []), KEYWORDS.get(g, []))
-        if g == "bharat_tech":
-            items = [it for it in items if india_only(it)]
-        items = sorted(items, key=score, reverse=True)
-        print("GROUP", g, len(items))
-        taken = 0
-        for it in items[:9]:
-            if taken >= per_group:
-                break
-            if score(it) < -2:
-                continue
-            key = " ".join(it["title"].lower().split()[:4])
-            if key in seen_keys:
-                continue
-            paras = article_paragraphs(it["link"]) if it["link"].startswith("http") else []
-            if not paras:
-                paras = [it.get("desc", "")] if it.get("desc") else []
-            short = simplify(paras, budget)
-            if sum(len(p.split()) for p in short) < MIN_WORDS:
-                continue
-            seen_keys.add(key)
-            think = THINK.get(g, THINK["world"])
-            picked.append({
-                "kind": "news", "cat": g, "title": it["title"][:110],
-                "paras": short, "image": it["image"], "source": it["source"],
-                "date": it["date"], "think": think[think_i % len(think)],
-            })
-            think_i += 1
-            taken += 1
-
-    edition = picked[:EDITION_SIZE]
+    print("age", age)
+    news = build_news(age, word_budget(age))
+    sport = build_sport()
     os.makedirs("spark", exist_ok=True)
     with open(os.path.join("spark", "edition.json"), "w", encoding="utf-8") as f:
-        json.dump({"generated": gen, "age": age, "items": edition}, f,
+        json.dump({"generated": gen, "age": age, "news": news, "sport": sport}, f,
                   ensure_ascii=False, separators=(",", ":"))
-    print("WROTE spark/edition.json:", len(edition), "stories |",
-          sum(1 for x in edition if x["image"]), "with images")
+    print("WROTE spark/edition.json:", len(news), "news |", len(sport), "sport headlines")
 
 
 if __name__ == "__main__":
