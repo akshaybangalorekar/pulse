@@ -129,9 +129,9 @@ function buildDeck(){
   const ours=TOPICS.filter(t=>PRI.includes(t.cat))
     .concat(TOPICS.filter(t=>!PRI.includes(t.cat)));
   const deck=[]; let ti=0;
-  news.forEach((it,i)=>{
+  news.forEach((it)=>{
     deck.push({kind:"news",it:it});
-    if((i+1)%2===0 && ti<ours.length) deck.push({kind:"card",t:ours[ti++]});
+    if(ti<ours.length) deck.push({kind:"card",t:ours[ti++]});
   });
   if(deck.length && deck[deck.length-1].kind==="news" && ti<ours.length)
     deck.push({kind:"card",t:ours[ti++]});

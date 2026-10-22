@@ -20,7 +20,7 @@ import feedparser
 
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
 TIMEOUT = 20
-EDITION_SIZE = 12
+EDITION_SIZE = 6
 BIRTHDAY = (2015, 6, 9)          # turns 12 on 9 June 2027
 
 # --- what we never show -------------------------------------------------
@@ -234,7 +234,9 @@ def article_paragraphs(url):
 
 
 BAD_OPEN = ("read more", "subscribe", "follow us", "click here", "sign up", "watch:",
-            "advertisement", "get our", "download the", "share this", "you can also")
+            "advertisement", "get our", "download the", "share this", "you can also",
+            "account subscription", "premium stories", "sign in", "image source",
+            "image caption", "copy link", "click for next", "editorials", "opinions")
 
 
 def simplify(paras, max_words):
@@ -243,7 +245,9 @@ def simplify(paras, max_words):
         for s in re.split(r"(?<=[.!?])\s+", p):
             s = s.strip()
             w = len(s.split())
-            if 7 <= w <= 40 and not s.lower().startswith(BAD_OPEN):
+            low = s.lower()
+            if 7 <= w <= 40 and not low.startswith(BAD_OPEN) and not any(b in low for b in
+                    ("subscription", "premium stories", "sign in", "image source", "image caption")):
                 sents.append(s)
     out, total = [], 0
     for s in sents[:7]:
@@ -294,7 +298,7 @@ def main():
     picked, think_i, seen_keys = [], 0, set()
     # groups whose publishers we can actually fetch and retell; the Vedic/Bharat-tech/
     # gaming reads come from the hand-written library in the app instead
-    order = ["bharat", "science", "sport", "world", "screen"]
+    order = ["bharat", "science", "sport", "world"]
     per_group = 2
     for g in order:
         items = gather(FEEDS.get(g, []), KEYWORDS.get(g, []))
@@ -306,7 +310,7 @@ def main():
         for it in items[:9]:
             if taken >= per_group:
                 break
-            if score(it) <= -2:
+            if score(it) < 0:
                 continue
             key = " ".join(it["title"].lower().split()[:4])
             if key in seen_keys:
