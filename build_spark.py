@@ -50,22 +50,13 @@ MIN_WORDS = 40
 
 # --- sources (photo-rich publisher feeds) -------------------------------
 FEEDS = {
-    "bharat": ["https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms",
-               "https://www.thehindu.com/news/national/feeder/default.rss",
-               "https://feeds.feedburner.com/ndtvnews-top-stories",
-               "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml"],
-    "bharat_tech": ["https://economictimes.indiatimes.com/tech/rssfeeds/13357270.cms"],
-    "science": ["https://feeds.bbci.co.uk/newsround/rss.xml",
-                "https://www.snexplores.org/feed",
+    # written for children / genuinely engaging, not general adult news
+    "kids": ["https://feeds.bbci.co.uk/newsround/rss.xml"],
+    "science": ["https://www.snexplores.org/feed",
                 "https://www.space.com/feeds/all",
-                "https://www.sciencealert.com/feed",
-                "https://phys.org/rss-feed/"],
-    "sport": ["https://www.espncricinfo.com/rss/content/story/feeds/0.xml",
-              "https://www.cricket.com.au/news/rss",
-              "https://feeds.bbci.co.uk/sport/rss.xml"],
-    "gaming": ["https://feeds.ign.com/ign/all"],
-    "screen": ["https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml"],
-    "world": ["https://www.abc.net.au/news/feed/51120/rss.xml"],
+                "https://www.sciencealert.com/feed"],
+    "sport": ["https://www.cricket.com.au/news/rss",
+              "https://www.espncricinfo.com/rss/content/story/feeds/0.xml"],
 }
 # keyword feeds (no images, but cover the India-specific asks)
 KEYWORDS = {
@@ -79,6 +70,9 @@ KEYWORDS = {
 
 # --- thought-provoking question per category (rotates) ------------------
 THINK = {
+    "kids": ["What would you tell a friend about this?",
+             "What surprised you most, and why?",
+             "If you could change one thing about this, what would it be?"],
     "bharat": ["If you could fix one thing in your city, what would it be?",
                "Which Indian invention are you proudest of, and why?",
                "What would Chanakya say about this — what is the clever move here?"],
@@ -298,7 +292,7 @@ def main():
     picked, think_i, seen_keys = [], 0, set()
     # groups whose publishers we can actually fetch and retell; the Vedic/Bharat-tech/
     # gaming reads come from the hand-written library in the app instead
-    order = ["bharat", "science", "sport", "world"]
+    order = ["kids", "science", "sport"]
     per_group = 2
     for g in order:
         items = gather(FEEDS.get(g, []), KEYWORDS.get(g, []))
@@ -310,7 +304,7 @@ def main():
         for it in items[:9]:
             if taken >= per_group:
                 break
-            if score(it) < 0:
+            if score(it) < -2:
                 continue
             key = " ".join(it["title"].lower().split()[:4])
             if key in seen_keys:
