@@ -47,6 +47,12 @@ DULL = re.compile(
     r"parliament|bill|committee|revenue|earnings|stock|shares|ipo|merger|inflation|"
     r"quarterly|profit|stake|tender|tariff|compliance|protocol|bureau|standards?)\b", re.I)
 CORP = re.compile(r"\b(sue[sd]?|lawsuit|shareholder\w*|investor\w*|ceo|board|acquisition|deal)\b", re.I)
+FRONTIER = re.compile(
+    r"\b(quantum|qubit\w*|artificial intelligence|\bai\b|neural|machine learning|robot\w*|"
+    r"drone\w*|crispr|gene\w*|biotech\w*|bio-?robot\w*|synthetic biolog\w*|semiconductor\w*|"
+    r"chip\w*|laser\w*|fusion|battery|batteries|satellite\w*|rocket\w*|brain-?computer|"
+    r"3d[- ]print\w*|soft robot\w*|swarm\w*|autonomous|algorithm\w*|protein\w*|vaccine\w*|"
+    r"telescope\w*|particle\w*|physics|mathematic\w*|superconduct\w*|nanotech\w*)\b", re.I)
 MIN_WORDS = 32
 
 # kid-facing news sources the family asked for (those that publish usable feeds)
@@ -264,7 +270,10 @@ def build_news(age, budget):
     news, seen, taken = [], set(), {}
     for g, feeds in FEEDS.items():
         items = gather(feeds)
-        items.sort(key=score, reverse=True)
+        if g == "frontier":
+            items.sort(key=lambda x: (5 if FRONTIER.search(x["title"]) else 0) + score(x), reverse=True)
+        else:
+            items.sort(key=score, reverse=True)
         print("GROUP", g, len(items))
         n = 0
         want = PER_GROUP.get(g, 2)
@@ -285,7 +294,7 @@ def build_news(age, budget):
             news.append({"kind": "news", "cat": g, "show": GROUP_NAME.get(g, g),
                          "title": it["title"][:110], "paras": short,
                          "image": it["image"], "source": it["source"], "date": it["date"],
-                         "think": th[taken.get(g, 0) % len(th)]})
+                         "link": it["link"], "think": th[taken.get(g, 0) % len(th)]})
             taken[g] = taken.get(g, 0) + 1
             n += 1
     return news
