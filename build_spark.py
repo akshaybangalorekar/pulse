@@ -113,6 +113,30 @@ SPORT_QUERIES = {
     "Football": [("football tactics analysis", "en-au"), ("soccer match analysis", "en-au")],
 }
 
+APPLY = [
+    (r"serve|ace|toss|first serve", "Serve: practise the toss 20 times before you hit a single serve. Steady toss, steady serve."),
+    (r"return|returner", "Return: stand a step inside the baseline and split-step just as they toss."),
+    (r"forehand", "Forehand: turn your shoulders early, then swing low to high and finish over your shoulder."),
+    (r"backhand", "Backhand: get the racket back early, step in, and meet the ball out in front."),
+    (r"volley|net play|at the net", "At the net: racket up and punch through the ball. Do not swing."),
+    (r"drop shot|dropshot", "Drop shot: keep the same swing so they cannot read it, then soften your hands."),
+    (r"slice|spin|topspin", "Spin: brush up the back of the ball. Watch how much it dips and kicks."),
+    (r"footwork|movement|steps|split", "Footwork: take three small adjustment steps before every shot, then recover to the middle."),
+    (r"fitness|injury|endurance|stamina|tired", "Fitness: finish every practice with five short sprints. Tired legs lose the last set."),
+    (r"mental|nerve|pressure|comeback|tie-?break|choke|confidence", "Pressure: between points, turn away, breathe out slowly, say one word to yourself, then play fresh."),
+    (r"tactic|strategy|pattern|plan", "Tactics: play three balls to their weaker side, then go the other way. Make them run."),
+    (r"coach|training|practice", "Practice: pick ONE shot and do it slowly and correctly for ten minutes. Stop when you get tired."),
+]
+
+
+def apply_tip(title):
+    t = title.lower()
+    for pat, tip in APPLY:
+        if re.search(pat, t):
+            return tip
+    return "Watch one rally closely and count how many small steps the player takes before each shot."
+
+
 BAD_OPEN = ("read more", "subscribe", "follow us", "click here", "sign up", "watch:",
             "advertisement", "get our", "download the", "share this", "you can also",
             "account subscription", "premium stories", "sign in", "image source",
@@ -338,12 +362,36 @@ def build_news(age, budget):
     return news
 
 
-def build_sport():
-    sport = []
-    sections = [("Match analysis", None)] + list(SPORT_QUERIES.items())
+def build_analysis(age, budget):
+    items = gather(TENNIS_FEEDS, sport=True)
+    items.sort(key=lambda x: (1 if ANALYSIS.search(x["title"]) else 0, x["date"]), reverse=True)
+    out, seen = [], set()
+    for it in items[:12]:
+        key = " ".join(it["title"].lower().split()[:4])
+        if key in seen:
+            continue
+        paras = article_paragraphs(it["link"]) if it["link"].startswith("http") else []
+        if not paras:
+            paras = [it["desc"]] if it["desc"] else []
+        short = simplify(paras, budget)
+        if sum(len(p.split()) for p in short) < 28:
+            continue
+        seen.add(key)
+        out.append({"kind": "analysis", "section": "Match analysis", "title": it["title"][:110],
+                    "paras": short, "image": it["image"], "source": it["source"],
+                    "date": it["date"], "link": it["link"], "apply": apply_tip(it["title"])})
+        if len(out) >= 6:
+            break
+    print("ANALYSIS", len(out))
+    return out
+
+
+def build_sport(analysis):
+    sport = list(analysis)
+    sections = list(SPORT_QUERIES.items())
     for section, queries in sections:
-        if queries is None:
-            items = gather(TENNIS_FEEDS, sport=True)
+        if False:
+            pass
         else:
             items, seen = [], set()
             for q, lang in queries:
@@ -364,7 +412,7 @@ def build_sport():
         limit = 8 if section == "Match analysis" else 5
         for it in items[:limit]:
             sport.append({"kind": "head", "section": section, "title": it["title"][:110],
-                          "source": it["source"], "date": it["date"]})
+                          "source": it["source"], "date": it["date"], "link": it["link"]})
         print("SPORT", section, len(items))
     return sport
 
@@ -400,7 +448,7 @@ def main():
     gen = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print("age", age)
     news = build_news(age, word_budget(age))
-    sport = build_sport()
+    sport = build_sport(build_analysis(age, word_budget(age)))
     screen = build_screen()
     os.makedirs("spark", exist_ok=True)
     with open(os.path.join("spark", "edition.json"), "w", encoding="utf-8") as f:

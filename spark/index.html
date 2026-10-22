@@ -13,19 +13,19 @@
 <title>Spark — today's edition</title>
 <style>
   :root{--bg:#fff7f0;--card:#fff;--ink:#20243f;--muted:#7c8098;--line:#f0e7dd;--pop:#ff6b3d;
-    --shadow:0 8px 26px rgba(70,45,20,.10)}
+    --shadow:0 6px 20px rgba(70,45,20,.09)}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
     font-family:ui-rounded,"SF Pro Rounded",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
     -webkit-font-smoothing:antialiased}
   body{background:radial-gradient(820px 420px at 100% -6%,#ffe7cd 0,transparent 62%),
     radial-gradient(700px 420px at -10% 4%,#dff2ff 0,transparent 58%),var(--bg);background-attachment:fixed;
-    min-height:100vh;display:flex;flex-direction:column}
+    padding-bottom:calc(28px + env(safe-area-inset-bottom))}
   a{color:inherit;text-decoration:none}
-  .wrap{max-width:600px;margin:0 auto;width:100%;flex:1;display:flex;flex-direction:column}
+  .wrap{max-width:600px;margin:0 auto}
 
   header{position:sticky;top:0;z-index:20;padding-top:env(safe-area-inset-top);
-    background:rgba(255,247,240,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    background:rgba(255,247,240,.93);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
     border-bottom:1px solid var(--line)}
   .hbar{display:flex;align-items:center;gap:11px;padding:10px 16px 8px}
   .logo{width:34px;height:34px;border-radius:11px;flex:none;display:grid;place-items:center;font-size:19px;
@@ -34,78 +34,62 @@
   .brand span{color:var(--pop)}
   .tag{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:1px}
   .grow{flex:1}
-  .count{font-size:12px;font-weight:800;color:var(--muted)}
   .iconbtn{width:36px;height:36px;border-radius:11px;border:1px solid var(--line);background:#fff;
     display:grid;place-items:center;font-size:16px;cursor:pointer;box-shadow:var(--shadow)}
   .tabs{display:flex;gap:6px;padding:0 14px 8px}
   .tabs button{flex:1;border:0;background:transparent;color:var(--muted);font-weight:800;font-size:14.5px;
     padding:9px 4px;border-radius:12px;cursor:pointer;font-family:inherit}
   .tabs button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
-  .bar{height:3px;background:var(--line)}
-  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--pop),#ffb020);width:0;transition:width .25s}
 
-  main{flex:1;padding:14px 16px 8px;display:flex;flex-direction:column}
-  .card{background:var(--card);border-radius:22px;overflow:hidden;box-shadow:var(--shadow);flex:1;
-    display:flex;flex-direction:column;animation:in .28s ease}
-  @keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  .imw{position:relative;width:100%;aspect-ratio:16/10;background:#efe7de;overflow:hidden;flex:none}
-  .imw img{position:relative;z-index:1;width:100%;height:100%;object-fit:cover;display:block}
-  .imw .ph{position:absolute;inset:0;z-index:0;display:grid;place-items:center;font-size:48px;
-    background:linear-gradient(135deg,#ffe9d6,#ffe0ec)}
-  .kchip{position:absolute;z-index:2;top:12px;left:12px;background:rgba(0,0,0,.55);color:#fff;
-    backdrop-filter:blur(6px);border-radius:999px;padding:5px 12px;font-size:11px;font-weight:800;letter-spacing:.4px}
-  .body{padding:16px 17px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  .head{font-size:21px;font-weight:800;line-height:1.26;margin-bottom:11px}
+  main{padding:8px 16px 20px}
+  .hint{font-size:12.5px;color:var(--muted);margin:4px 2px 12px;line-height:1.5}
+  .sect{font-size:15px;font-weight:800;margin:20px 2px 6px;display:flex;align-items:center;gap:8px}
+  .sect:first-child{margin-top:6px}
+
+  .acc{border-bottom:1px solid var(--line)}
+  .row{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:none;border:0;
+    padding:12px 2px;font-family:inherit;color:inherit;cursor:pointer}
+  .row:active{opacity:.75}
+  .th{width:56px;height:56px;border-radius:13px;flex:none;overflow:hidden;display:grid;place-items:center;
+    background:#f2ebe3;font-size:25px}
+  .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .rt{flex:1;min-width:0}
+  .rt b{font-size:15px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;
+    -webkit-box-orient:vertical;overflow:hidden}
+  .rt span{font-size:11.5px;color:var(--muted);display:block;margin-top:3px}
+  .ch{font-size:22px;color:#cbbfb2;transition:transform .22s;flex:none}
+  .acc.open .ch{transform:rotate(90deg)}
+  .panel{max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .acc.open .panel{max-height:3600px}
+  .pin{padding:2px 2px 20px}
+  .pimg{width:100%;border-radius:16px;margin-bottom:13px;display:block;background:#f2ebe3}
   p.read{font-size:16.5px;line-height:1.62;margin:0 0 12px}
+  .head2{font-size:18px;font-weight:800;line-height:1.28;margin:0 0 10px}
+  .apply{background:linear-gradient(135deg,#e9ffe6,#d6f7ea);border:1px solid #b6e8c9;border-radius:15px;
+    padding:13px 15px;margin:12px 0;font-size:15.5px;line-height:1.5}
+  .apply b{display:block;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase;color:#2b7a4b;margin-bottom:5px}
   .think{background:linear-gradient(135deg,#fff1c9,#ffe0b0);border:1px solid #ffd88a;border-radius:15px;
-    padding:13px 15px;margin:14px 0 10px;font-size:15.5px;line-height:1.5}
+    padding:13px 15px;margin:12px 0;font-size:15.5px;line-height:1.5}
   .think b{display:block;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase;color:#a86a00;margin-bottom:5px}
-  .wisdom{font-size:13px;color:#9a8f86;font-style:italic;line-height:1.5;margin:14px 2px 2px;
-    padding-left:12px;border-left:3px solid #ffd9c4}
-  .credit{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:8px}
-  .more{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:11px 15px;border-radius:14px;
-    background:linear-gradient(135deg,#eef3ff,#e6ecff);border:1px solid #cfdaff;color:#2f4bd6;
-    font-size:14px;font-weight:800;text-decoration:none}
   .wow{background:linear-gradient(135deg,#e4fbf6,#d2f4ff);border:1px solid #b6ebdf;border-radius:15px;
     padding:13px 15px;margin:12px 0;font-size:15.5px;line-height:1.5}
   .wow b{display:block;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase;color:#0a8f83;margin-bottom:5px}
   .talk{background:linear-gradient(135deg,#efe8ff,#f6e6ff);border:1px solid #dccdfa;border-radius:15px;
     padding:13px 15px;margin:12px 0;font-size:15.5px;line-height:1.5}
   .talk b{display:block;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase;color:#6a44d8;margin-bottom:5px}
-
-  nav{display:flex;gap:10px;padding:12px 16px calc(16px + env(safe-area-inset-bottom))}
-  .btn{flex:1;text-align:center;border:0;border-radius:16px;padding:16px;font-size:16px;font-weight:800;
-    cursor:pointer;font-family:inherit;box-shadow:var(--shadow)}
-  .btn.primary{background:linear-gradient(135deg,var(--pop),#ffb020);color:#fff;flex:2}
-  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
-  .btn:disabled{opacity:.4}
-  .btn:active{transform:scale(.98)}
-
-  /* sport */
-  .sport{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  .sect{font-size:15px;font-weight:800;margin:18px 4px 10px;display:flex;align-items:center;gap:8px}
-  .sect:first-child{margin-top:4px}
-  .hcard{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:13px 15px;margin-bottom:9px}
-  .hcard .t{font-size:15.5px;font-weight:700;line-height:1.34;margin-bottom:6px}
-  .hcard .m{font-size:11.5px;color:var(--muted);font-weight:650}
-  .explain{background:linear-gradient(135deg,#e4fbf6,#d2f4ff);border:1px solid #b6ebdf;border-radius:16px;
-    padding:14px 15px;font-size:15px;line-height:1.55;margin-bottom:12px}
-  .hcard.coach{background:linear-gradient(135deg,#f3ffe9,#e8fbe0);border:1px solid #cdeeb0}
-  .hcard.coach .ct{font-size:16px;font-weight:800;margin-bottom:5px}
-  .hcard.coach .ch{font-size:13.5px;color:#3d7a2a;font-weight:800;margin-bottom:8px}
-  .hcard.coach p.cb2{font-size:15px;line-height:1.55;margin:0 0 9px}
-  .hcard.coach .cw{background:#fff;border-radius:12px;padding:11px 13px;font-size:14.5px;line-height:1.5}
-  .hcard.coach .cw b{display:block;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:#3d7a2a;margin-bottom:4px}
-  .explain b{display:block;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase;color:#0a8f83;margin-bottom:6px}
-
-  .finish{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-    padding:30px 22px;gap:6px}
-  .finish .big{font-size:52px}
-  .finish h2{font-size:23px;margin:8px 0 4px}
-  .finish p{color:var(--muted);font-size:15px;line-height:1.55;margin:0 0 18px;max-width:34ch}
-  .askrow{display:flex;gap:10px;width:100%;max-width:320px}
-  .loading{text-align:center;padding:60px;color:var(--muted)}
-  .foot{text-align:center;font-size:11px;color:var(--muted);padding:8px 20px 0}
+  .more{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:11px 15px;border-radius:14px;
+    background:linear-gradient(135deg,#eef3ff,#e6ecff);border:1px solid #cfdaff;color:#2f4bd6;
+    font-size:14px;font-weight:800}
+  .credit{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:8px}
+  .wisdom{font-size:13px;color:#9a8f86;font-style:italic;line-height:1.5;margin:14px 2px 2px;
+    padding-left:12px;border-left:3px solid #ffd9c4}
+  .finish{text-align:center;padding:44px 22px}
+  .finish .big{font-size:48px}
+  .finish h2{font-size:21px;margin:8px 0 6px}
+  .finish p{color:var(--muted);font-size:15px;line-height:1.55;margin:0 auto;max-width:34ch}
+  .loading{text-align:center;padding:50px;color:var(--muted)}
+  .foot{text-align:center;font-size:11px;color:var(--muted);padding:14px 20px 6px;line-height:1.6}
+  .askinput{width:100%;border:2px solid #ffd9c4;border-radius:15px;padding:14px;font-size:16px;font-family:inherit}
 </style>
 </head>
 <body>
@@ -113,10 +97,8 @@
   <header>
     <div class="hbar" id="hbar"></div>
     <div class="tabs" id="tabs"></div>
-    <div class="bar"><i id="prog"></i></div>
   </header>
   <main id="app"><div class="loading">Getting today's edition…</div></main>
-  <nav id="nav"></nav>
   <div class="foot" id="foot"></div>
 </div>
 
@@ -129,7 +111,6 @@ const catById={}; CATS.forEach(c=>catById[c.id]=c);
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-/* quiet lines of old wisdom - shown plainly, never labelled */
 const WISDOM=[
  "The strongest person is the one who stays calm when others do not.",
  "A plan thought through twice saves you twice.",
@@ -144,6 +125,8 @@ const WISDOM=[
  "Keep going until it is done - that is how big things get made.",
  "Watch, listen, then act. The one who rushes usually loses."
 ];
+let wseed=Math.floor(Math.random()*WISDOM.length);
+function wisdom(){ wseed++; return WISDOM[wseed % WISDOM.length]; }
 
 /* ---- 15-minute session budget (never shown as a timer) ---- */
 const SESSION_MS=15*60*1000, COOLDOWN_MS=15*60*1000;
@@ -159,20 +142,8 @@ function tick(){
 setInterval(tick,1000);
 document.addEventListener("visibilitychange",()=>{ if(document.hidden){tick();lastTick=null;} else lastTick=Date.now(); });
 
-let EDITION=null, DECK=[], idx=0, TAB="news";
-
-function buildDeck(){
-  const news=(EDITION&&EDITION.news)||[];
-  const PRI=["thinking","experiments","creators","frontier","bharatiya","bharat_tech","games"];
-  const ours=TOPICS.filter(t=>PRI.includes(t.cat)).concat(TOPICS.filter(t=>!PRI.includes(t.cat)));
-  const deck=[]; let ti=0;
-  news.forEach(it=>{ deck.push({kind:"news",it:it}); if(ti<ours.length) deck.push({kind:"card",t:ours[ti++]}); });
-  if(!deck.length && ours.length) deck.push({kind:"card",t:ours[0]});
-  const scr=(EDITION&&EDITION.screen)||[];
-  if(scr.length) deck.push({kind:"screen",items:scr});
-  return deck;
-}
-function wisdom(i){ return WISDOM[i % WISDOM.length]; }
+let EDITION=null, TAB="news";
+const PRI=["thinking","experiments","creators","frontier","bharatiya","bharat_tech","games"];
 
 /* ---- images ---- */
 const imgCache={};
@@ -196,9 +167,41 @@ function hydrate(){
     getImage(t).then(im=>{
       const img=el.querySelector("img")||el;
       if(im){ img.onerror=function(){img.onerror=null; if(im.small&&img.src!==im.small) img.src=im.small;};
-        img.src=im.big||im.small; const p=el.querySelector(".ph"); if(p) p.remove(); }
+        img.src=im.big||im.small;
+        if(img.tagName==="IMG"){ img.style.display="block";
+          const s=el.querySelector("span"); if(s) s.style.display="none"; } }
     });
   });
+}
+function thumbImg(t){
+  const cg=catById[t.cat]||{c1:"#ffb347",c2:"#d64545"};
+  return `<div class="th" data-wid="${t.id}" style="background:linear-gradient(135deg,${cg.c1},${cg.c2});position:relative">
+    <img alt="" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <span>${t.e}</span></div>`;
+}
+
+/* ---- accordion ---- */
+let uid=0;
+function acc(o){
+  const id="a"+(uid++);
+  const thumb = o.thumb || `<div class="th" style="background:${o.tb||"linear-gradient(135deg,#ffe0c2,#ffd0e0)"}">${o.emoji||"📰"}</div>`;
+  return `<div class="acc" id="${id}">
+    <button class="row" onclick="tog('${id}')">
+      ${thumb}
+      <div class="rt"><b>${esc(o.title)}</b><span>${esc(o.meta||"")}</span></div>
+      <div class="ch">›</div>
+    </button>
+    <div class="panel"><div class="pin">${o.body||""}</div></div>
+  </div>`;
+}
+function tog(id){
+  const el=document.getElementById(id);
+  const open=el.classList.contains("open");
+  el.classList.toggle("open",!open);
+  if(!open) el.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function imgTag(src,cls){
+  return src?`<img class="${cls||"pimg"}" src="${esc(src)}" alt="" loading="lazy" onerror="this.style.display='none'">`:"";
 }
 
 /* ---- chrome ---- */
@@ -208,149 +211,129 @@ function chrome(){
     <div><div class="brand">Sp<span>ark</span></div>
       <div class="tag">Today's edition \u00B7 for you, age ${age}</div></div>
     <div class="grow"></div>
-    <span class="count" id="cnt"></span>
     <button class="iconbtn" onclick="askSheet()" title="Ask">\uD83D\uDCAC</button>`;
   $("#tabs").innerHTML=[["news","News"],["tennis","Tennis"],["ball","Ball sports"]]
     .map(x=>`<button class="${TAB===x[0]?"on":""}" onclick="setTab('${x[0]}')">${x[1]}</button>`).join("");
 }
-function setTab(t){ TAB=t; render(); }
-
-/* ---- render ---- */
+function setTab(t){ TAB=t; render(); window.scrollTo(0,0); }
 function render(){
   tick(); chrome();
-  if(locked()){ finish(); return; }
+  if(locked()){ $("#app").innerHTML=`<div class="finish"><div class="big">\u26A1</div>
+    <h2>That's plenty for now</h2><p>You've had a good dose. Go play, run around, build something - fresh stories will be here when you're back.</p></div>`;
+    $("#foot").textContent=""; return; }
   if(TAB==="tennis") return renderTennis();
   if(TAB==="ball") return renderBall();
-  if(!DECK.length){ $("#app").innerHTML=`<div class="loading">Getting today's stories…</div>`; $("#nav").innerHTML=""; return; }
-  const c=DECK[idx];
-  $("#cnt").textContent=(idx+1)+" / "+DECK.length;
-  $("#prog").style.width=((idx+1)/DECK.length*100)+"%";
-  if(c.kind==="news") renderNews(c.it);
-  else if(c.kind==="screen") renderScreen(c.items);
-  else renderCard(c.t);
-  $("#nav").innerHTML=`
-    <button class="btn ghost" onclick="step(-1)" ${idx===0?"disabled":""}>\u2190 Back</button>
-    <button class="btn primary" onclick="step(1)">${idx===DECK.length-1?"Finish":"Next \u2192"}</button>`;
-  hydrate();
-  const b=$("#app").querySelector(".body"); if(b) b.scrollTop=0;
+  return renderNews();
 }
-function renderNews(it){
-  const img=it.image?`<img src="${esc(it.image)}" alt="" onerror="this.style.display='none'">`:"";
-  $("#app").innerHTML=`<div class="card">
-    <div class="imw">${img}<div class="ph">\uD83D\uDCF0</div>
-      <div class="kchip">${esc(it.show||"News")}</div></div>
-    <div class="body">
-      <div class="head">${esc(it.title)}</div>
-      ${it.paras.map(p=>`<p class="read">${esc(p)}</p>`).join("")}
-      ${it.think?`<div class="think"><b>\uD83D\uDCA1 Think about it</b>${esc(it.think)}</div>`:""}
-      <div class="credit">Adapted for you from ${esc(it.source||"the news")}</div>
-      ${it.link?`<a class="more" href="${esc(it.link)}" target="_blank" rel="noopener">Read the full story \u2192</a>`:""}
-      <div class="wisdom">${esc(wisdom(idx))}</div>
-    </div></div>`;
-  $("#foot").textContent="";
-}
-function renderCard(t){
-  const cg=catById[t.cat]||{c1:"#ffb347",c2:"#d64545"};
-  $("#app").innerHTML=`<div class="card">
-    <div class="imw" data-wid="${t.id}"><img alt="">
-      <div class="ph" style="background:linear-gradient(135deg,${cg.c1},${cg.c2})">${t.e}</div>
-      <div class="kchip">\u2728 ${esc((CATS.find(c=>c.id===t.cat)||{}).name||"Cool stuff")}</div></div>
-    <div class="body">
-      <div class="head">${esc(t.t)}</div>
-      <p class="read">${esc(t.hook)}</p>
-      ${t.body.map(p=>`<p class="read">${esc(p)}</p>`).join("")}
-      <div class="wow"><b>\uD83E\uDD2F Wow fact</b>${esc(t.wow)}</div>
-      <div class="talk"><b>\uD83D\uDCAC Bring this up with your mates</b>${esc(t.talk)}</div>
-      ${t.more?`<a class="more" href="${esc(t.more)}" target="_blank" rel="noopener">Go deeper \u2192</a>`:""}
-      <div class="wisdom">${esc(wisdom(idx))}</div>
-    </div></div>`;
-  $("#foot").textContent="";
-}
-function renderScreen(items){
-  $("#app").innerHTML=`<div class="card">
-    <div class="imw"><div class="ph" style="background:linear-gradient(135deg,#b06bff,#6a3fd0)">\uD83C\uDFAC</div>
-      <div class="kchip">Screen</div></div>
-    <div class="body">
-      <div class="head">What's out - and worth your time</div>
-      <p class="read">New films and shows for kids your age. Nothing scary, nothing too old.</p>
-      ${items.map(x=>`<div class="hcard"><div class="t">${esc(x.title)}</div><div class="m">${esc(x.source||"")}</div></div>`).join("")}
-      <div class="wisdom">${esc(wisdom(idx))}</div>
-    </div></div>`;
-  $("#foot").textContent="";
-}
-function step(d){
-  tick();
-  const n=idx+d;
-  if(n<0) return;
-  if(n>=DECK.length){ finish(); return; }
-  idx=n; render();
-}
-function finish(){
-  $("#cnt").textContent=""; $("#prog").style.width="100%"; $("#nav").innerHTML="";
-  $("#app").innerHTML=`<div class="finish">
-    <div class="big">\u26A1</div>
-    <h2>That's today's edition</h2>
-    <p>You're all caught up. Go play, run around, build something - fresh stories will be here when you're back.</p>
-    <div class="askrow">
-      <button class="btn ghost" onclick="restart()">Read again</button>
-      <button class="btn primary" onclick="askSheet()">Ask a doubt</button>
-    </div></div>`;
-  $("#foot").textContent="";
-}
-function restart(){ if(locked()) return; idx=0; render(); }
 
-/* ---- sport tab ---- */
-function coachingCard(t){
-  return `<div class="hcard coach">
-    <div class="ct">\uD83C\uDFBE ${esc(t.t)}</div>
-    <div class="ch">${esc(t.hook)}</div>
-    ${t.body.map(p=>`<p class="cb2">${esc(p)}</p>`).join("")}
-    <div class="cw"><b>Try this</b>${esc(t.act)}</div></div>`;
+/* ---- news ---- */
+function newsRow(it){
+  const body=`${imgTag(it.image)}
+    <div class="head2">${esc(it.title)}</div>
+    ${(it.paras||[]).map(p=>`<p class="read">${esc(p)}</p>`).join("")}
+    ${it.think?`<div class="think"><b>\uD83D\uDCA1 Think about it</b>${esc(it.think)}</div>`:""}
+    ${it.link?`<a class="more" href="${esc(it.link)}" target="_blank" rel="noopener">Read the full story \u2192</a>`:""}
+    <div class="credit">Adapted for you from ${esc(it.source||"the news")}</div>
+    <div class="wisdom">${esc(wisdom())}</div>`;
+  return acc({title:it.title, meta:(it.show||"")+" \u00B7 "+(it.source||""), body:body,
+              thumb: it.image?`<div class="th"><img src="${esc(it.image)}" alt="" loading="lazy" onerror="this.parentNode.textContent='\uD83D\uDCF0'"></div>`:"",
+              emoji:"\uD83D\uDCF0"});
 }
-function headList(sport, sec, limit){
-  const items=sport.filter(x=>x.section===sec).slice(0,limit||6);
-  if(!items.length) return "";
-  const ic = sec==="Basketball"?"\uD83C\uDFC0": sec==="Football"?"\u26BD": sec.indexOf("Junior")>-1?"\u2B50":"\uD83C\uDFBE";
-  return `<div class="sect">${ic} ${sec}</div>`+items.map(x=>`<div class="hcard"><div class="t">${esc(x.title)}</div><div class="m">${esc(x.source||"")}</div></div>`).join("");
+function topicRow(t){
+  const body=`<div class="head2">${esc(t.t)}</div>
+    <p class="read">${esc(t.hook)}</p>
+    ${t.body.map(p=>`<p class="read">${esc(p)}</p>`).join("")}
+    <div class="wow"><b>\uD83E\uDD2F Wow fact</b>${esc(t.wow)}</div>
+    <div class="talk"><b>\uD83D\uDCAC Bring this up with your mates</b>${esc(t.talk)}</div>
+    ${t.more?`<a class="more" href="${esc(t.more)}" target="_blank" rel="noopener">Go deeper \u2192</a>`:""}
+    <div class="wisdom">${esc(wisdom())}</div>`;
+  return acc({title:t.t, meta:(CATS.find(c=>c.id===t.cat)||{}).name||"", body:body, thumb:thumbImg(t)});
+}
+function renderNews(){
+  const news=(EDITION&&EDITION.news)||[];
+  const ours=TOPICS.filter(t=>PRI.includes(t.cat)).concat(TOPICS.filter(t=>!PRI.includes(t.cat)));
+  let html=`<div class="hint">Tap any line to open it. Tap again to close and move on.</div>`;
+  let ti=0;
+  news.forEach(it=>{
+    html+=newsRow(it);
+    if(ti<ours.length) html+=topicRow(ours[ti++]);
+  });
+  const scr=(EDITION&&EDITION.screen)||[];
+  if(scr.length){
+    html+=`<div class="sect">\uD83C\uDFAC Screen - age-appropriate picks</div>`;
+    scr.forEach(x=>{ html+=acc({title:x.title, meta:x.source||"", emoji:"\uD83C\uDFAC",
+      body:`<div class="head2">${esc(x.title)}</div><div class="credit">${esc(x.source||"")}</div>`}); });
+  }
+  $("#app").innerHTML=html; $("#foot").textContent=""; hydrate();
+}
+
+/* ---- tennis ---- */
+function analysisRow(it){
+  const body=`${imgTag(it.image)}
+    <div class="head2">${esc(it.title)}</div>
+    ${(it.paras||[]).map(p=>`<p class="read">${esc(p)}</p>`).join("")}
+    ${it.apply?`<div class="apply"><b>\uD83C\uDFBE Use it in your game</b>${esc(it.apply)}</div>`:""}
+    ${it.link?`<a class="more" href="${esc(it.link)}" target="_blank" rel="noopener">Read the full story \u2192</a>`:""}
+    <div class="credit">From ${esc(it.source||"")}</div>
+    <div class="wisdom">${esc(wisdom())}</div>`;
+  return acc({title:it.title, meta:(it.source||"")+" \u00B7 match analysis", body:body,
+              thumb: it.image?`<div class="th"><img src="${esc(it.image)}" alt="" loading="lazy" onerror="this.parentNode.textContent='\uD83C\uDFBE'"></div>`:"",
+              emoji:"\uD83C\uDFBE"});
+}
+function coachingRow(t){
+  const body=`<div class="head2">${esc(t.t)}</div>
+    <p class="read">${esc(t.hook)}</p>
+    ${t.body.map(p=>`<p class="read">${esc(p)}</p>`).join("")}
+    <div class="apply"><b>\uD83C\uDFAF Try this</b>${esc(t.act)}</div>
+    <div class="talk"><b>\uD83D\uDCAC Ask your coach</b>${esc(t.talk)}</div>
+    <div class="wisdom">${esc(wisdom())}</div>`;
+  return acc({title:t.t, meta:"Coaching", body:body, emoji:"\uD83C\uDFBE",
+              tb:"linear-gradient(135deg,#c9f5a8,#7fd66a)"});
+}
+function headRow(x, emoji){
+  const body=`<div class="head2">${esc(x.title)}</div>
+    <div class="credit">${esc(x.source||"")}</div>
+    ${x.link?`<a class="more" href="${esc(x.link)}" target="_blank" rel="noopener">Read the full story \u2192</a>`:""}
+    <div class="wisdom">${esc(wisdom())}</div>`;
+  return acc({title:x.title, meta:x.source||"", body:body, emoji:emoji||"\uD83C\uDFBE"});
 }
 function renderTennis(){
-  $("#cnt").textContent=""; $("#prog").style.width="0";
-  $("#nav").innerHTML=`<button class="btn ghost" onclick="askSheet()">\uD83D\uDCAC Ask a doubt</button>`;
   const sport=(EDITION&&EDITION.sport)||[];
   const coach=TOPICS.filter(t=>t.cat==="coaching");
   const d=new Date().getDate();
-  const picks=[coach[d%Math.max(coach.length,1)], coach[(d+2)%Math.max(coach.length,1)], coach[(d+4)%Math.max(coach.length,1)]].filter(Boolean);
-  let html=`<div class="explain"><b>Coaching corner</b>Short lessons on how to prepare and improve your game. Read one before your next hit.</div>`;
-  html+=picks.map(coachingCard).join("");
-  html+=headList(sport,"Match analysis",8);
-  html+=headList(sport,"Coaching tips",6);
-  html+=headList(sport,"Junior stars (10-12)",6);
-  $("#app").innerHTML=`<div class="sport">${html}</div>`;
-  $("#foot").textContent="Match and player analysis, coaching tips, and what juniors are achieving.";
+  const picks=[coach[d%Math.max(coach.length,1)], coach[(d+2)%Math.max(coach.length,1)],
+               coach[(d+4)%Math.max(coach.length,1)]].filter(Boolean);
+  let html=`<div class="hint">Match analysis you can actually use, plus coaching you can try before your next hit. Tap a line to open it.</div>`;
+  html+=`<div class="sect">\uD83C\uDFBE Match analysis</div>`;
+  const ana=sport.filter(x=>x.section==="Match analysis");
+  html+= ana.length? ana.map(analysisRow).join("") : `<div class="hint">No analysis yet today.</div>`;
+  html+=`<div class="sect">\uD83C\uDFAF Coaching corner</div>`;
+  html+=picks.map(coachingRow).join("");
+  const ct=sport.filter(x=>x.section==="Coaching tips");
+  if(ct.length){ html+=`<div class="sect">\uD83D\uDCDD Coaching tips in the news</div>`+ct.map(x=>headRow(x)).join(""); }
+  const js=sport.filter(x=>x.section==="Junior stars (10-12)");
+  if(js.length){ html+=`<div class="sect">\u2B50 Junior stars (10-12)</div>`+js.map(x=>headRow(x,"\u2B50")).join(""); }
+  $("#app").innerHTML=html; $("#foot").textContent="Tennis analysis, coaching, and junior achievements."; hydrate();
 }
 function renderBall(){
-  $("#cnt").textContent=""; $("#prog").style.width="0";
-  $("#nav").innerHTML=`<button class="btn ghost" onclick="askSheet()">\uD83D\uDCAC Ask a doubt</button>`;
   const sport=(EDITION&&EDITION.sport)||[];
-  let html=`<div class="explain"><b>Tactics, not gossip</b>How teams play and why - the thinking behind the game.</div>`;
-  html+=headList(sport,"Basketball",6);
-  html+=headList(sport,"Football",6);
-  if(!sport.some(x=>x.section==="Basketball"||x.section==="Football"))
-    html+=`<div class="loading">Updates coming soon.</div>`;
-  $("#app").innerHTML=`<div class="sport">${html}</div>`;
-  $("#foot").textContent="Basketball and football analysis.";
+  let html=`<div class="hint">Tactics, not gossip - how the game is played and why. Tap a line to open it.</div>`;
+  const bb=sport.filter(x=>x.section==="Basketball");
+  const fb=sport.filter(x=>x.section==="Football");
+  if(bb.length) html+=`<div class="sect">\uD83C\uDFC0 Basketball</div>`+bb.map(x=>headRow(x,"\uD83C\uDFC0")).join("");
+  if(fb.length) html+=`<div class="sect">\u26BD Football</div>`+fb.map(x=>headRow(x,"\u26BD")).join("");
+  if(!bb.length && !fb.length) html+=`<div class="hint">Updates coming soon.</div>`;
+  $("#app").innerHTML=html; $("#foot").textContent="Basketball and football analysis."; hydrate();
 }
 
 /* ---- ask ---- */
 function askSheet(){
-  $("#cnt").textContent=""; $("#nav").innerHTML=`<button class="btn ghost" onclick="render()">\u2190 Back</button>`;
-  $("#app").innerHTML=`<div class="card"><div class="body">
-    <div class="head">Ask anything \uD83D\uDCAC</div>
-    <p class="read" style="color:var(--muted);font-size:14px">Wondering about something you read? Type it here.</p>
-    <input id="q" placeholder="e.g. How does a black hole work?"
-      style="width:100%;border:2px solid #ffd9c4;border-radius:15px;padding:14px;font-size:16px;font-family:inherit">
-    <div style="display:flex;gap:10px;margin:14px 0"><button class="btn primary" onclick="doAsk()">Find my answer</button></div>
-    <div id="res"></div></div></div>`;
+  $("#app").innerHTML=`<div class="sect">\uD83D\uDCAC Ask anything</div>
+    <div class="hint">Wondering about something you read? Type it here.</div>
+    <input class="askinput" id="q" placeholder="e.g. How does a black hole work?">
+    <div style="display:flex;gap:10px;margin:14px 0">
+      <button class="row" style="justify-content:center;border:1px solid var(--line);border-radius:15px;padding:14px;font-weight:800" onclick="doAsk()">Find my answer</button></div>
+    <div id="res"></div>`;
   $("#q").addEventListener("keydown",e=>{if(e.key==="Enter")doAsk();});
 }
 const STOP=new Set(["what","is","the","a","an","how","why","do","does","can","you","me","tell","about","of","to","in","and","for","it","are","was","were","who","when","where","which","i","my","more"]);
@@ -370,7 +353,7 @@ function doAsk(){
   if(!faqs.length && !tops.length){
     const mail=`mailto:akshay.bangalorekar@gmail.com?subject=Spark%20doubt&body=${encodeURIComponent(q)}`;
     html=`<div class="think"><b>Good question!</b>I don't have that one yet. Send it to Dad and he'll add it.
-      <div style="margin-top:10px"><a class="btn primary" style="display:inline-block;padding:11px 16px" href="${mail}">Send to Dad</a></div></div>`+html;
+      <div style="margin-top:10px"><a class="more" href="${mail}">Send to Dad</a></div></div>`+html;
   }
   $("#res").innerHTML=html;
 }
@@ -381,11 +364,7 @@ async function loadEdition(){
     if(r.ok){EDITION=await r.json(); return true;}}catch(e){}
   return false;
 }
-(async function(){
-  await loadEdition();
-  DECK=buildDeck();
-  render();
-})();
+(async function(){ await loadEdition(); render(); })();
 </script>
 </body>
 </html>
