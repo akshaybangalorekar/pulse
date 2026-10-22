@@ -58,6 +58,10 @@ DULL = re.compile(
     r"parliament|bill|committee|revenue|earnings|stock|shares|ipo|merger|inflation|"
     r"quarterly|profit|stake|tender|tariff|compliance|protocol|bureau|standards?)\b", re.I)
 CORP = re.compile(r"\b(sue[sd]?|lawsuit|shareholder\w*|investor\w*|ceo|board|acquisition|deal)\b", re.I)
+FUNDRAISER = re.compile(
+    r"\b(fundraiser|fund-?raising|colour fun run|fun run|mufti|cake stall|bake sale|"
+    r"sausage sizzle|school fete|raffle|trivia night|book fair|school newsletter|our school|"
+    r"parents and citizens|P&C|PTA|sports carnival|assembly|newsletter|disco|jumble sale)\b", re.I)
 ANALYSIS = re.compile(
     r"\b(analysis|analys\w*|tactics?|tactical|how|why|explained|breakdown|strategy|preview|"
     r"review|deep dive|numbers|statistics|stats|form|blueprint|masterclass|lessons|"
@@ -72,15 +76,15 @@ MIN_WORDS = 32
 
 # kid-facing news sources the family asked for (those that publish usable feeds)
 FEEDS = {
-    "pressgang": ["https://pressgang.news/feed/"],
-    "timeforkids": ["https://www.timeforkids.com/feed/"],
-    "newsround": ["https://feeds.bbci.co.uk/newsround/rss.xml"],
-    "science": ["https://www.snexplores.org/feed", "https://www.space.com/feeds/all"],
-    # latest world trends: robots, AI, quantum, biotech, engineering
+    # STEM and inventions lead, so curiosity is caught first
     "frontier": ["https://spectrum.ieee.org/feeds/topic/robotics.rss",
                  "https://feeds.arstechnica.com/arstechnica/index",
                  "https://www.quantamagazine.org/feed/",
                  "https://www.newscientist.com/feed/home/"],
+    "science": ["https://www.snexplores.org/feed", "https://www.space.com/feeds/all"],
+    "pressgang": ["https://pressgang.news/feed/"],
+    "timeforkids": ["https://www.timeforkids.com/feed/"],
+    "newsround": ["https://feeds.bbci.co.uk/newsround/rss.xml"],
     "screen": [],
 }
 # keyword queries per group (turned into Google News feeds at run time)
@@ -196,6 +200,8 @@ def parse(raw):
 def ok(it, sport=False, screen=False):
     t = it["title"]
     if SPAM.search(t) or KID_BLOCK.search(t) or NO_THANKS.search(t):
+        return False
+    if FUNDRAISER.search(t):
         return False
     if sport and GOSSIP.search(t):
         return False
