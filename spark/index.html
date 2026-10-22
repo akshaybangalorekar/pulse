@@ -168,6 +168,8 @@ function buildDeck(){
   const deck=[]; let ti=0;
   news.forEach(it=>{ deck.push({kind:"news",it:it}); if(ti<ours.length) deck.push({kind:"card",t:ours[ti++]}); });
   if(!deck.length && ours.length) deck.push({kind:"card",t:ours[0]});
+  const scr=(EDITION&&EDITION.screen)||[];
+  if(scr.length) deck.push({kind:"screen",items:scr});
   return deck;
 }
 function wisdom(i){ return WISDOM[i % WISDOM.length]; }
@@ -223,7 +225,9 @@ function render(){
   const c=DECK[idx];
   $("#cnt").textContent=(idx+1)+" / "+DECK.length;
   $("#prog").style.width=((idx+1)/DECK.length*100)+"%";
-  if(c.kind==="news") renderNews(c.it); else renderCard(c.t);
+  if(c.kind==="news") renderNews(c.it);
+  else if(c.kind==="screen") renderScreen(c.items);
+  else renderCard(c.t);
   $("#nav").innerHTML=`
     <button class="btn ghost" onclick="step(-1)" ${idx===0?"disabled":""}>\u2190 Back</button>
     <button class="btn primary" onclick="step(1)">${idx===DECK.length-1?"Finish":"Next \u2192"}</button>`;
@@ -258,6 +262,18 @@ function renderCard(t){
       <div class="wow"><b>\uD83E\uDD2F Wow fact</b>${esc(t.wow)}</div>
       <div class="talk"><b>\uD83D\uDCAC Bring this up with your mates</b>${esc(t.talk)}</div>
       ${t.more?`<a class="more" href="${esc(t.more)}" target="_blank" rel="noopener">Go deeper \u2192</a>`:""}
+      <div class="wisdom">${esc(wisdom(idx))}</div>
+    </div></div>`;
+  $("#foot").textContent="";
+}
+function renderScreen(items){
+  $("#app").innerHTML=`<div class="card">
+    <div class="imw"><div class="ph" style="background:linear-gradient(135deg,#b06bff,#6a3fd0)">\uD83C\uDFAC</div>
+      <div class="kchip">Screen</div></div>
+    <div class="body">
+      <div class="head">What's out - and worth your time</div>
+      <p class="read">New films and shows for kids your age. Nothing scary, nothing too old.</p>
+      ${items.map(x=>`<div class="hcard"><div class="t">${esc(x.title)}</div><div class="m">${esc(x.source||"")}</div></div>`).join("")}
       <div class="wisdom">${esc(wisdom(idx))}</div>
     </div></div>`;
   $("#foot").textContent="";

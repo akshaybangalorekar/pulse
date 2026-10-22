@@ -58,6 +58,10 @@ DULL = re.compile(
     r"parliament|bill|committee|revenue|earnings|stock|shares|ipo|merger|inflation|"
     r"quarterly|profit|stake|tender|tariff|compliance|protocol|bureau|standards?)\b", re.I)
 CORP = re.compile(r"\b(sue[sd]?|lawsuit|shareholder\w*|investor\w*|ceo|board|acquisition|deal)\b", re.I)
+ANALYSIS = re.compile(
+    r"\b(analysis|analys\w*|tactics?|tactical|how|why|explained|breakdown|strategy|preview|"
+    r"review|deep dive|numbers|statistics|stats|form|blueprint|masterclass|lessons|"
+    r"what we learned|patterns)\b", re.I)
 FRONTIER = re.compile(
     r"\b(quantum|qubit\w*|artificial intelligence|\bai\b|neural|machine learning|robot\w*|"
     r"drone\w*|crispr|gene\w*|biotech\w*|bio-?robot\w*|synthetic biolog\w*|semiconductor\w*|"
@@ -350,7 +354,7 @@ def build_sport():
                         continue
                     seen.add(k)
                     items.append(it)
-        items.sort(key=lambda x: x["date"], reverse=True)
+        items.sort(key=lambda x: (1 if ANALYSIS.search(x["title"]) else 0, x["date"]), reverse=True)
         limit = 8 if section == "Match analysis" else 5
         for it in items[:limit]:
             sport.append({"kind": "head", "section": section, "title": it["title"][:110],
@@ -359,17 +363,44 @@ def build_sport():
     return sport
 
 
+SCREEN_Q = [("new kids movie", "en-au"), ("new animated family film", "en-au"),
+            ("family film release", "en-au"), ("new kids TV series", "en-au")]
+
+
+def build_screen():
+    items, seen = [], set()
+    for q, lang in SCREEN_Q:
+        try:
+            got = parse(fetch_bytes(gn(q, lang)))
+        except Exception as ex:
+            print("  ! screen fail", q, type(ex).__name__)
+            continue
+        for it in got:
+            if not ok(it, screen=True):
+                continue
+            k = it["title"].lower()
+            if k in seen:
+                continue
+            seen.add(k)
+            items.append(it)
+    items.sort(key=lambda x: x["date"], reverse=True)
+    print("SCREEN", len(items))
+    return [{"kind": "head", "title": it["title"][:110], "source": it["source"],
+             "date": it["date"]} for it in items[:6]]
+
+
 def main():
     age = age_now()
     gen = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print("age", age)
     news = build_news(age, word_budget(age))
     sport = build_sport()
+    screen = build_screen()
     os.makedirs("spark", exist_ok=True)
     with open(os.path.join("spark", "edition.json"), "w", encoding="utf-8") as f:
-        json.dump({"generated": gen, "age": age, "news": news, "sport": sport}, f,
-                  ensure_ascii=False, separators=(",", ":"))
-    print("WROTE spark/edition.json:", len(news), "news |", len(sport), "sport headlines")
+        json.dump({"generated": gen, "age": age, "news": news, "sport": sport,
+                   "screen": screen}, f, ensure_ascii=False, separators=(",", ":"))
+    print("WROTE spark/edition.json:", len(news), "news |", len(sport), "sport |", len(screen), "screen")
 
 
 if __name__ == "__main__":
