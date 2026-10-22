@@ -42,7 +42,8 @@ GOSSIP = re.compile(
     r"\b(girlfriend|boyfriend|wife|husband|dating|wedding|divorce|engaged|engagement|"
     r"romance|affair|feud|spat|trolls?|hits back|war of words|personal life|off the field|"
     r"nightclub|vacation|holiday snaps|shirtless|bikini|swipes? at|dig at|takes aim|"
-    r"lashes out|secret love|rumour mill|gossip)\b", re.I)
+    r"lashes out|secret love|rumour mill|gossip|retirement|retires|breaks silence|"
+    r"opens up about|confirms)\b", re.I)
 # screen: keep films and shows age-appropriate
 SCREEN_BLOCK = re.compile(
     r"\b(horror|gore|gruesome|slasher|explicit|erotic|18\+|r-rated|nc-17|adult film|"
@@ -129,12 +130,19 @@ APPLY = [
 ]
 
 
-def apply_tip(title):
-    t = title.lower()
+DEFAULT_TIPS = [
+    "Watch one rally closely and count how many small steps the player takes before each shot.",
+    "Pick one shot from this match and copy it in your next practice. Ten minutes, slowly.",
+    "Notice where the player stands to return. Try standing a step inside next time you play.",
+]
+
+
+def apply_tip(title, paras=None):
+    t = (title + " " + " ".join(paras or [])).lower()
     for pat, tip in APPLY:
         if re.search(pat, t):
             return tip
-    return "Watch one rally closely and count how many small steps the player takes before each shot."
+    return DEFAULT_TIPS[len(title) % len(DEFAULT_TIPS)]
 
 
 BAD_OPEN = ("read more", "subscribe", "follow us", "click here", "sign up", "watch:",
@@ -379,7 +387,7 @@ def build_analysis(age, budget):
         seen.add(key)
         out.append({"kind": "analysis", "section": "Match analysis", "title": it["title"][:110],
                     "paras": short, "image": it["image"], "source": it["source"],
-                    "date": it["date"], "link": it["link"], "apply": apply_tip(it["title"])})
+                    "date": it["date"], "link": it["link"], "apply": apply_tip(it["title"], short)})
         if len(out) >= 6:
             break
     print("ANALYSIS", len(out))
