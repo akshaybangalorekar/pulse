@@ -57,7 +57,7 @@ FEEDS = {
     "science": ["https://www.snexplores.org/feed", "https://www.space.com/feeds/all"],
 }
 GROUP_NAME = {"pressgang": "Press Gang News", "timeforkids": "TIME for Kids",
-              "newsround": "Behind the News", "science": "Science & space"}
+              "newsround": "Kid news", "science": "Science & space"}
 
 # sport: headline updates + junior achievements
 SPORT_QUERIES = {
