@@ -46,7 +46,7 @@ DULL = re.compile(
     r"parliament|bill|committee|revenue|earnings|stock|shares|ipo|merger|inflation|"
     r"quarterly|profit|stake|tender|tariff|compliance|protocol|bureau|standards?)\b", re.I)
 CORP = re.compile(r"\b(sue[sd]?|lawsuit|shareholder\w*|investor\w*|ceo|board|acquisition|deal)\b", re.I)
-MIN_WORDS = 26
+MIN_WORDS = 40
 
 # --- sources (photo-rich publisher feeds) -------------------------------
 FEEDS = {
@@ -292,8 +292,9 @@ def main():
     print("age", age, "word budget", budget)
 
     picked, think_i, seen_keys = [], 0, set()
-    order = ["bharat", "science", "vedic", "bharat_tech", "gaming", "sport",
-             "world", "screen", "good"]
+    # groups whose publishers we can actually fetch and retell; the Vedic/Bharat-tech/
+    # gaming reads come from the hand-written library in the app instead
+    order = ["bharat", "science", "sport", "world", "screen"]
     per_group = 2
     for g in order:
         items = gather(FEEDS.get(g, []), KEYWORDS.get(g, []))
@@ -305,6 +306,8 @@ def main():
         for it in items[:9]:
             if taken >= per_group:
                 break
+            if score(it) <= -2:
+                continue
             key = " ".join(it["title"].lower().split()[:4])
             if key in seen_keys:
                 continue
