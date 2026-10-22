@@ -37,6 +37,17 @@ NO_THANKS = re.compile(
     r"deport(?:ed|ation)?|green\s*card|geopolitic\w*|nato|sanction\w*|"
     r"security\s+council|diplomat\w*|treaty)\b", re.I)
 SPAM = re.compile(r"(live\s*stream|streaming|watch\s+(live|online|free)|\u3010|\u3011|live\s*now)", re.I)
+# sport: no gossip, no personal life
+GOSSIP = re.compile(
+    r"\b(girlfriend|boyfriend|wife|husband|dating|wedding|divorce|engaged|engagement|"
+    r"romance|affair|feud|spat|trolls?|hits back|war of words|personal life|off the field|"
+    r"nightclub|vacation|holiday snaps|shirtless|bikini|swipes? at|dig at|takes aim|"
+    r"lashes out|secret love|rumour mill|gossip)\b", re.I)
+# screen: keep films and shows age-appropriate
+SCREEN_BLOCK = re.compile(
+    r"\b(horror|gore|gruesome|slasher|explicit|erotic|18\+|r-rated|nc-17|adult film|"
+    r"true crime|serial killer|drug cartel|gang war|nude|sex scene|disturbing|"
+    r"nightmare|psychopath|crime thriller)\b", re.I)
 ENGAGE = re.compile(
     r"\b(discover\w*|record|first|new|amazing|world|space|rocket|robot\w*|game|games|"
     r"launch\w*|invent\w*|rescue\w*|build\w*|young|student\w*|science|animal\w*|ocean|"
@@ -66,22 +77,32 @@ FEEDS = {
                  "https://feeds.arstechnica.com/arstechnica/index",
                  "https://www.quantamagazine.org/feed/",
                  "https://www.newscientist.com/feed/home/"],
+    "screen": [],
+}
+# keyword queries per group (turned into Google News feeds at run time)
+KEYWORDS = {
+    "screen": [("new kids movie", "en-au"), ("new animated family film", "en-au"),
+               ("family film release", "en-au")],
 }
 GROUP_NAME = {"pressgang": "Press Gang News", "timeforkids": "TIME for Kids",
               "newsround": "Kid news", "science": "Science & space",
-              "frontier": "Frontier tech"}
-PER_GROUP = {"frontier": 3, "science": 2}
+              "frontier": "Frontier tech", "screen": "Screen"}
+PER_GROUP = {"frontier": 3, "science": 2, "screen": 2}
 
 # sport: headline updates + junior achievements
+TENNIS_FEEDS = ["https://www.tennismajors.com/feed/",
+                "https://www.ubitennis.net/feed/",
+                "https://tennishead.net/feed/",
+                "https://lastwordonsports.com/tennis/feed/"]
 SPORT_QUERIES = {
-    "Tennis": [("tennis ATP WTA", "en-au"), ("Grand Slam tennis", "en-au")],
-    "Basketball": [("basketball NBA", "en-au"), ("NBL basketball", "en-au")],
-    "Junior stars (10-12)": [
-        ("junior tennis ranking Australia", "en-au"),
-        ("Australian junior tennis champion", "en-au"),
-        ("under 12 basketball Australia", "en-au"),
-        ("India junior tennis champion", "en-in"),
-    ],
+    "Coaching tips": [("tennis coaching drills", "en-au"), ("how to improve tennis forehand", "en-au"),
+                      ("tennis technique tips", "en-au"), ("tennis training tips", "en-au")],
+    "Junior stars (10-12)": [("junior tennis ranking Australia", "en-au"),
+                             ("Australian junior tennis champion", "en-au"),
+                             ("under 12 tennis Australia", "en-au"),
+                             ("India junior tennis champion", "en-in")],
+    "Basketball": [("basketball analysis tactics", "en-au"), ("NBL basketball", "en-au")],
+    "Football": [("football tactics analysis", "en-au"), ("soccer match analysis", "en-au")],
 }
 
 BAD_OPEN = ("read more", "subscribe", "follow us", "click here", "sign up", "watch:",
@@ -168,9 +189,15 @@ def parse(raw):
     return out
 
 
-def ok(it):
+def ok(it, sport=False, screen=False):
     t = it["title"]
-    return not (SPAM.search(t) or KID_BLOCK.search(t) or NO_THANKS.search(t))
+    if SPAM.search(t) or KID_BLOCK.search(t) or NO_THANKS.search(t):
+        return False
+    if sport and GOSSIP.search(t):
+        return False
+    if screen and SCREEN_BLOCK.search(t):
+        return False
+    return True
 
 
 def score(it):
@@ -181,7 +208,7 @@ def score(it):
     return s
 
 
-def gather(urls):
+def gather(urls, sport=False, screen=False):
     items, seen = [], set()
     for u in urls:
         try:
@@ -191,7 +218,7 @@ def gather(urls):
             continue
         print("  ok", len(got), u)
         for it in got:
-            if not ok(it):
+            if not ok(it, sport=sport, screen=screen):
                 continue
             k = it["title"].lower()
             if k in seen:
@@ -269,7 +296,8 @@ THINK = {
 def build_news(age, budget):
     news, seen, taken = [], set(), {}
     for g, feeds in FEEDS.items():
-        items = gather(feeds)
+        urls = list(feeds) + [gn(q, l) for q, l in KEYWORDS.get(g, [])]
+        items = gather(urls, screen=(g == "screen"))
         if g == "frontier":
             items.sort(key=lambda x: (5 if FRONTIER.search(x["title"]) else 0) + score(x), reverse=True)
         else:
@@ -302,24 +330,29 @@ def build_news(age, budget):
 
 def build_sport():
     sport = []
-    for section, queries in SPORT_QUERIES.items():
-        items, seen = [], set()
-        for q, lang in queries:
-            try:
-                got = parse(fetch_bytes(gn(q, lang)))
-            except Exception as ex:
-                print("  ! sport fail", q, type(ex).__name__)
-                continue
-            for it in got:
-                if not ok(it):
+    sections = [("Match analysis", None)] + list(SPORT_QUERIES.items())
+    for section, queries in sections:
+        if queries is None:
+            items = gather(TENNIS_FEEDS, sport=True)
+        else:
+            items, seen = [], set()
+            for q, lang in queries:
+                try:
+                    got = parse(fetch_bytes(gn(q, lang)))
+                except Exception as ex:
+                    print("  ! sport fail", q, type(ex).__name__)
                     continue
-                k = it["title"].lower()
-                if k in seen:
-                    continue
-                seen.add(k)
-                items.append(it)
+                for it in got:
+                    if not ok(it, sport=True):
+                        continue
+                    k = it["title"].lower()
+                    if k in seen:
+                        continue
+                    seen.add(k)
+                    items.append(it)
         items.sort(key=lambda x: x["date"], reverse=True)
-        for it in items[:6]:
+        limit = 8 if section == "Match analysis" else 5
+        for it in items[:limit]:
             sport.append({"kind": "head", "section": section, "title": it["title"][:110],
                           "source": it["source"], "date": it["date"]})
         print("SPORT", section, len(items))
