@@ -1,0 +1,119 @@
+{
+ "feeds": {
+  "https://www.tennismajors.com/feed/": {
+   "status": 200,
+   "entries": 21,
+   "with_image": 0,
+   "sample": "October 22, 1985: The day Arthur Ashe resigned as the US D",
+   "text_words": 1020
+  },
+  "https://www.tennisnow.com/rss": {
+   "status": 200,
+   "entries": 10,
+   "with_image": 1,
+   "sample": "CourtsApp Expands Nationwide, Bringing More Than 280,000 R",
+   "text_words": 397
+  },
+  "https://www.tennis.com/feed": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "https://tennishead.net/feed/": {
+   "status": 200,
+   "entries": 10,
+   "with_image": 10,
+   "sample": "How Iga Swiatek\u2019s decision to end her season early could h",
+   "text_words": 363
+  },
+  "https://www.ubitennis.net/feed/": {
+   "status": 200,
+   "entries": 20,
+   "with_image": 0,
+   "sample": "Roger Federer Reflects On Nishikori Rivalry In Tokyo",
+   "text_words": 1482
+  },
+  "https://lastwordonsports.com/tennis/feed/": {
+   "status": 200,
+   "entries": 10,
+   "with_image": 10,
+   "sample": "WTA Ningbo Round of 16 Best Bets Including Alexandra Eala ",
+   "text_words": 558
+  },
+  "https://www.tennisworldusa.org/rss/news/1/tennis-news.xml": {
+   "error": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  "https://hoopshype.com/feed/": {
+   "error": "HTTPError: HTTP Error 402: Payment Required"
+  },
+  "https://www.slamonline.com/feed/": {
+   "error": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  "https://basketball.realgm.com/rss/news.xml": {
+   "error": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  "https://www.eurohoops.net/feed/": {
+   "status": 200,
+   "entries": 20,
+   "with_image": 20,
+   "sample": "Kevin Durant: \u201cAlperen\u2019in Bu Gece Ne Kadar Verimli Oldu\u011fun",
+   "text_words": 252
+  },
+  "https://www.espn.com/espn/rss/soccer/news": {
+   "status": 202,
+   "entries": 0,
+   "with_image": 0,
+   "sample": ""
+  },
+  "https://www.goal.com/feeds/en/news": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "https://www.animationmagazine.net/feed/": {
+   "status": 200,
+   "entries": 20,
+   "with_image": 0,
+   "sample": "Pen\u00ednsula Films Boards \u2018Insectario\u2019 Mexican Stop-Motion Fe",
+   "text_words": 0
+  },
+  "https://kidscreen.com/feed/": {
+   "status": 200,
+   "entries": 10,
+   "with_image": 8,
+   "sample": "Kidscreened",
+   "text_words": 42
+  },
+  "https://www.dogonews.com/feed": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  }
+ },
+ "gn": {
+  "tennis analysis": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "tennis technique tips": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "how to improve tennis forehand": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "tennis coaching drills": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "junior tennis training": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "tennis match analysis": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "football tactics analysis": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "basketball tactics analysis": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "kids movie release": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "new animated family film": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  }
+ }
+}
