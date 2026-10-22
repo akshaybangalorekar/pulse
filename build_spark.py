@@ -46,7 +46,7 @@ DULL = re.compile(
     r"parliament|bill|committee|revenue|earnings|stock|shares|ipo|merger|inflation|"
     r"quarterly|profit|stake|tender|tariff|compliance|protocol|bureau|standards?)\b", re.I)
 CORP = re.compile(r"\b(sue[sd]?|lawsuit|shareholder\w*|investor\w*|ceo|board|acquisition|deal)\b", re.I)
-MIN_WORDS = 40
+MIN_WORDS = 32
 
 # --- sources (photo-rich publisher feeds) -------------------------------
 FEEDS = {
@@ -293,7 +293,7 @@ def main():
     # groups whose publishers we can actually fetch and retell; the Vedic/Bharat-tech/
     # gaming reads come from the hand-written library in the app instead
     order = ["kids", "science", "sport"]
-    per_group = 2
+    per_group = 3
     for g in order:
         items = gather(FEEDS.get(g, []), KEYWORDS.get(g, []))
         if g == "bharat_tech":
