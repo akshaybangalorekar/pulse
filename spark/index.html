@@ -150,6 +150,58 @@
   .askinput::placeholder{color:#7b83a6}
   @keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
   .anim{animation:up .45s var(--ease) both}
+
+  /* ============ responsive: phone / tablet / laptop ============ */
+  :root{--wrap:680px;--heroH:270px;--tileW:196px;--artH:110px;--read:16.5px;--h1:27px;--pad:16px}
+  html[data-size="tablet"]{--wrap:860px;--heroH:340px;--tileW:252px;--artH:144px;--read:17.5px;--h1:35px;--pad:22px}
+  html[data-size="desktop"]{--wrap:1180px;--heroH:440px;--tileW:300px;--artH:172px;--read:18.5px;--h1:46px;--pad:26px}
+  .wrap{max-width:var(--wrap)}
+  .hero{min-height:var(--heroH);margin-left:var(--pad);margin-right:var(--pad)}
+  .hero h1{font-size:var(--h1)}
+  .hero .sub{font-size:calc(var(--read) - 3px)}
+  p.read{font-size:var(--read);max-width:72ch}
+  .tile{width:var(--tileW)}
+  .art{width:var(--tileW);height:var(--artH)}
+  .tile .tt{font-size:calc(var(--read) - 3px)}
+  .rhead,.strip,.hint{padding-left:var(--pad);padding-right:var(--pad)}
+  .tile .tm{font-size:calc(var(--read) - 6px)}
+  .tabs button{font-size:calc(var(--read) - 2.5px)}
+  .brand{font-size:calc(var(--read) + 2.5px)}
+  .rhead h2{font-size:calc(var(--read) + .5px)}
+
+  /* tablet: roomier taps, slightly larger chrome */
+  html[data-size="tablet"] .hero .tx{padding:22px}
+  html[data-size="tablet"] .tabs{padding-left:20px;padding-right:20px}
+
+  /* laptop: rails become mouse-friendly grids, nothing hidden off-screen */
+  html[data-size="desktop"] .strip{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:16px;overflow:visible;
+    padding-top:2px;padding-bottom:12px;scroll-snap-type:none}
+  html[data-size="desktop"] .tile{width:auto;transition:transform .22s var(--ease)}
+  html[data-size="desktop"] .art{width:100%;height:auto;aspect-ratio:16/10}
+  html[data-size="desktop"] .tile:hover{transform:translateY(-5px)}
+  html[data-size="desktop"] .tile:hover .art{box-shadow:0 16px 34px rgba(0,0,0,.55)}
+  html[data-size="desktop"] .hero .tx{padding:32px 34px}
+  html[data-size="desktop"] .hero h1{max-width:20ch}
+  html[data-size="desktop"] .hero .sub{max-width:60ch}
+  html[data-size="desktop"] .hero .cta{padding:14px 28px;font-size:16px}
+  html[data-size="desktop"] .hbar{padding-left:var(--pad);padding-right:var(--pad)}
+  html[data-size="desktop"] .tabs{padding-left:var(--pad);padding-right:var(--pad);max-width:520px}
+
+  /* detail: bottom sheet on a phone, centred modal on tablet + laptop */
+  html[data-size="tablet"] .sheet,html[data-size="desktop"] .sheet{
+    left:50%;right:auto;bottom:auto;top:50%;width:min(780px,92vw);max-height:88vh;
+    border-radius:26px;border-bottom:1px solid var(--line);
+    transform:translate(-50%,-46%) scale(.97);opacity:0;
+    transition:transform .3s var(--ease),opacity .3s var(--ease)}
+  html[data-size="tablet"] .sheet.on,html[data-size="desktop"] .sheet.on{
+    transform:translate(-50%,-50%) scale(1);opacity:1}
+  html[data-size="tablet"] .grab,html[data-size="desktop"] .grab{display:none}
+  html[data-size="tablet"] .sheet h1,html[data-size="desktop"] .sheet h1{font-size:28px}
+  html[data-size="desktop"] .sin{padding:24px 30px 0}
+  html[data-size="desktop"] .snav{padding:18px 30px 10px}
+  html[data-size="desktop"] .simg,html[data-size="desktop"] .sph{max-height:380px}
+  html[data-size="desktop"] .sclose{right:20px;top:20px}
 </style>
 </head>
 <body>
@@ -235,6 +287,24 @@ function lastOpened(){ return get("spark_last",null); }
 function rememberOpen(o){ set("spark_last",{id:o.id,t:Date.now()}); }
 
 let EDITION=null, TAB="news", RAILS=[], CUR=null, CUR_RAIL=0, CUR_IDX=0;
+
+/* ---- understand the screen we are on and lay out for it ---- */
+function detectSize(){
+  const w=window.innerWidth, h=window.innerHeight;
+  const fine=matchMedia("(hover:hover) and (pointer:fine)").matches;
+  document.documentElement.dataset.size = w>=1100 ? "desktop" : w>=700 ? "tablet" : "phone";
+  document.documentElement.dataset.pointer = fine ? "fine" : "touch";
+  document.documentElement.dataset.orient = h>=w ? "portrait" : "landscape";
+  return document.documentElement.dataset.size;
+}
+let _lastSize="";
+function onResize(){
+  const prev=_lastSize; const now=detectSize();
+  if(prev && now!==prev){ _lastSize=now; render(); }
+  else _lastSize=now;
+}
+window.addEventListener("resize",onResize);
+window.addEventListener("orientationchange",()=>setTimeout(onResize,250));
 
 /* ---- images ---- */
 const imgCache={};
@@ -522,7 +592,7 @@ async function loadEdition(){
     if(r.ok){EDITION=await r.json(); return true;}}catch(e){}
   return false;
 }
-(async function(){ await loadEdition(); bumpStreak(); render(); })();
+(async function(){ detectSize(); _lastSize=document.documentElement.dataset.size; await loadEdition(); bumpStreak(); render(); })();
 </script>
 </body>
 </html>

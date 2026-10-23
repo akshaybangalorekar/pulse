@@ -116,6 +116,44 @@
   /* Pull to refresh */
   .ptr{height:0;overflow:hidden;text-align:center;color:var(--muted);font-size:12px;transition:height .15s}
   .ptr.on{height:38px;line-height:38px}
+
+  /* ============ responsive: phone / tablet / laptop ============ */
+  :root{--wrap:640px;--thumb:74px;--cols:1;--read:14.5px;--pad:14px}
+  html[data-size="tablet"]{--wrap:880px;--thumb:94px;--cols:2;--read:15.5px;--pad:20px}
+  html[data-size="desktop"]{--wrap:1200px;--thumb:106px;--cols:3;--read:16px;--pad:26px}
+  .wrap{max-width:var(--wrap)}
+  .thumb,.ph{width:var(--thumb);height:var(--thumb)}
+  .ctitle{font-size:var(--read)}
+  .cmeta{font-size:calc(var(--read) - 3px)}
+  .brand h1{font-size:calc(var(--read) + 1.5px)}
+  .chip{font-size:calc(var(--read) - 1px)}
+  main{padding-left:var(--pad);padding-right:var(--pad)}
+  nav.chips,.subchips,.hrow,.arearow{padding-left:var(--pad);padding-right:var(--pad)}
+  #feed{display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:10px;align-content:start}
+  #feed .card{margin-bottom:0}
+  #feed .skel{margin-bottom:0}
+  #feed .msg{grid-column:1/-1}
+
+  /* tablet + laptop: chips wrap instead of hiding off-screen */
+  html[data-size="tablet"] nav.chips,html[data-size="desktop"] nav.chips,
+  html[data-size="tablet"] .subchips,html[data-size="desktop"] .subchips{flex-wrap:wrap;overflow:visible}
+
+  /* laptop: comfortable reading measure and hover feedback */
+  html[data-size="desktop"] .card{padding:14px}
+  html[data-size="desktop"] .card:hover{background:var(--surface2);border-color:rgba(255,255,255,.15)}
+  html[data-size="desktop"] .ctitle{-webkit-line-clamp:4}
+  html[data-size="desktop"] .secdesc,html[data-size="desktop"] .updated{max-width:82ch}
+  html[data-size="desktop"] .langbar button{padding:7px 12px;font-size:13.5px}
+
+  /* settings: bottom sheet on a phone, centred modal on tablet + laptop */
+  html[data-size="tablet"] .sheet,html[data-size="desktop"] .sheet{
+    left:50%;right:auto;bottom:auto;top:50%;width:min(560px,92vw);border-radius:22px;
+    border-bottom:1px solid var(--line);
+    transform:translate(-50%,-46%) scale(.97);opacity:0;
+    transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .28s}
+  html[data-size="tablet"] .sheet.on,html[data-size="desktop"] .sheet.on{
+    transform:translate(-50%,-50%) scale(1);opacity:1}
+  html[data-size="tablet"] .sheet .grab,html[data-size="desktop"] .sheet .grab{display:none}
 </style>
 </head>
 <body>
@@ -384,6 +422,18 @@ try{
   l.href=URL.createObjectURL(new Blob([JSON.stringify(man)],{type:"application/json"}));
   document.head.appendChild(l);
 }catch(e){}
+
+/* ---- understand the screen we are on and lay out for it ---- */
+function detectSize(){
+  const w=window.innerWidth,h=window.innerHeight;
+  const fine=matchMedia("(hover:hover) and (pointer:fine)").matches;
+  document.documentElement.dataset.size = w>=1100?"desktop":w>=700?"tablet":"phone";
+  document.documentElement.dataset.pointer = fine?"fine":"touch";
+  document.documentElement.dataset.orient = h>=w?"portrait":"landscape";
+}
+window.addEventListener("resize",detectSize);
+window.addEventListener("orientationchange",()=>setTimeout(detectSize,250));
+detectSize();
 
 /* go */
 paintAll();
