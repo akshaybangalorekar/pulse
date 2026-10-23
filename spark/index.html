@@ -141,6 +141,29 @@
   .bday{margin:8px var(--pad) 2px;padding:14px 16px;border-radius:16px;font-weight:800;font-size:15px;
     background:linear-gradient(135deg,var(--pop),#ffb020);color:#20120a;
     box-shadow:0 10px 26px rgba(255,122,61,.35)}
+  .pwinput{width:100%;border:1px solid var(--line);border-radius:15px;padding:15px;font-size:20px;
+    letter-spacing:6px;font-family:inherit;background:rgba(255,255,255,.06);color:var(--ink);text-align:center}
+  .statgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:6px 0 4px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 15px}
+  .stat .n{font-size:27px;font-weight:900;line-height:1}
+  .stat .l{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:800;margin-top:5px}
+  .bar{margin:11px 0}
+  .bar .bl{display:flex;justify-content:space-between;font-size:13.5px;font-weight:750;margin-bottom:5px}
+  .bar .bl em{font-style:normal;color:var(--muted);font-weight:800}
+  .bar .bt{height:11px;border-radius:7px;background:rgba(255,255,255,.08);overflow:hidden}
+  .bar .bt i{display:block;height:100%;border-radius:7px;
+    background:linear-gradient(90deg,var(--pop),var(--pop2));transition:width .5s var(--ease)}
+  .days{display:flex;gap:8px;align-items:flex-end;height:130px;margin:16px 0 6px}
+  .days .d{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px;height:100%}
+  .days .d i{width:100%;border-radius:7px 7px 0 0;min-height:4px;
+    background:linear-gradient(180deg,var(--pop),rgba(255,122,61,.3))}
+  .days .d span{font-size:10px;color:var(--muted);font-weight:800}
+  .recent{font-size:13.5px;line-height:1.5;padding:11px 0;border-bottom:1px solid var(--line)}
+  .recent:last-child{border-bottom:0}
+  .recent b{font-weight:750}
+  .recent em{font-style:normal;color:var(--muted);font-size:11.5px;font-weight:700;display:block;margin-top:3px}
+  .sect2{font-size:13px;font-weight:900;letter-spacing:.9px;text-transform:uppercase;color:var(--muted);
+    margin:22px 2px 8px}
   .wisdom{font-size:13px;color:#8b93b4;font-style:italic;line-height:1.5;margin:16px 0 4px;
     padding-left:13px;border-left:3px solid rgba(255,122,61,.5)}
   .snav{display:flex;gap:10px;padding:14px 18px 4px}
@@ -313,6 +336,17 @@ function streak(){
   return s;
 }
 function readSet(){ return new Set(get("spark_read",[])); }
+function isUnlocked(){ return get("spark_unlocked",0)===1; }
+function trackRead(o){
+  try{
+    const s=get("spark_stats",{cats:{},days:{},recent:[]});
+    const cat=o.cat||"other";
+    s.cats[cat]=(s.cats[cat]||0)+1;
+    const d=today(); s.days[d]=(s.days[d]||0)+1;
+    s.recent=[{t:o.title,c:cat,ts:Date.now()}].concat(s.recent||[]).slice(0,50);
+    set("spark_stats",s);
+  }catch(e){}
+}
 function markRead(id){ const s=readSet(); if(!s.has(id)){ s.add(id); set("spark_read",[...s]); } }
 function savedSet(){ return new Set(get("spark_saved",[])); }
 function toggleSave(id){ const s=savedSet(); if(s.has(id)) s.delete(id); else s.add(id); set("spark_saved",[...s]); return s.has(id); }
@@ -432,8 +466,11 @@ function chrome(){
     <div class="grow"></div>
     <div class="pill">🔥 ${streak()}</div>
     <button class="iconbtn" onclick="surprise()" title="Surprise me">🎲</button>
-    <button class="iconbtn" onclick="askSheet()" title="Ask">💬</button>`;
-  $("#tabs").innerHTML=[["news","News"],["tennis","Tennis"],["ball","Ball sports"]]
+    <button class="iconbtn" onclick="askSheet()" title="Ask">💬</button>
+    <button class="iconbtn" onclick="lockSheet()" title="Settings">⚙️</button>`;
+  const tabs=[["news","News"],["tennis","Tennis"],["ball","Ball sports"]];
+  if(isUnlocked()) tabs.push(["settings","Settings"]);
+  $("#tabs").innerHTML=tabs
     .map(x=>`<button class="${TAB===x[0]?"on":""}" onclick="setTab('${x[0]}')">${x[1]}</button>`).join("");
 }
 function setTab(t){ TAB=t; render(); window.scrollTo({top:0,behavior:"smooth"}); }
@@ -464,6 +501,7 @@ function render(){
   if(locked()){ $("#app").innerHTML=`<div class="finish"><div class="big">⚡</div>
     <h2>That's plenty for now</h2><p>You've had a good dose. Go play, run around, build something — fresh stories will be here when you're back.</p></div>`;
     $("#foot").textContent=""; return; }
+  if(TAB==="settings") return renderSettings();
   if(TAB==="tennis") return renderTennis();
   if(TAB==="ball") return renderBall();
   return renderNews();
@@ -518,6 +556,70 @@ function renderNews(){
   hydrate();
 }
 
+function lockSheet(){
+  $("#sbody").innerHTML=`<div class="sin">
+    <div class="skick">Grown-ups only</div>
+    <h1>Settings</h1>
+    <p class="read">Enter the password to open the reading dashboard.</p>
+    <input id="pw" class="pwinput" type="password" inputmode="numeric" autocomplete="off" placeholder="••••">
+    <div class="snav" style="display:flex;gap:10px;padding:16px 0 4px">
+      <button class="more" style="flex:1;justify-content:center" onclick="tryUnlock()">Unlock</button></div>
+    <div class="credit" id="pwerr" style="color:#ff8f8f"></div></div>`;
+  $("#scrim").classList.add("on"); $("#sheet").classList.add("on"); lockScroll(true);
+  setTimeout(function(){ const el=$("#pw"); if(el){ el.focus(); el.addEventListener("keydown",function(e){ if(e.key==="Enter") tryUnlock(); }); } },120);
+}
+function tryUnlock(){
+  const el=$("#pw"); const v=el?String(el.value).trim():"";
+  if(v==="1981"){ set("spark_unlocked",1); closeSheet(); render(); }
+  else { const e=$("#pwerr"); if(e) e.textContent="That is not it."; if(el) el.value=""; }
+}
+function relock(){ set("spark_unlocked",0); TAB="news"; render(); }
+function catLabel(id){ const c=CATS.find(x=>x.id===id); return c?c.name:"Other"; }
+function renderSettings(){
+  const s=get("spark_stats",{cats:{},days:{},recent:[]});
+  const cats=s.cats||{}, days=s.days||{}, recent=s.recent||[];
+  const total=Object.values(cats).reduce((a,b)=>a+b,0);
+  const shelves=Object.keys(cats).length;
+  const todayN=days[today()]||0;
+  const maxc=Math.max(1,...Object.values(cats));
+  const order=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  const d7=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i);
+    const k=d.toISOString().slice(0,10); d7.push([d.toLocaleDateString(undefined,{weekday:"narrow"}), days[k]||0, k]); }
+  const maxd=Math.max(1,...d7.map(x=>x[1]));
+  let html=`<div class="hint">Reading dashboard — only on this device.</div>
+    <div class="statgrid">
+      <div class="stat"><div class="n">${total}</div><div class="l">Stories opened</div></div>
+      <div class="stat"><div class="n">${shelves}</div><div class="l">Shelves explored</div></div>
+      <div class="stat"><div class="n">${todayN}</div><div class="l">Opened today</div></div>
+      <div class="stat"><div class="n">${streak()}</div><div class="l">Day streak</div></div>
+    </div>`;
+  html+=`<div class="sect2">What he reads most</div>`;
+  if(order.length){
+    order.slice(0,10).forEach(function(e){
+      const pct=Math.round(e[1]/maxc*100);
+      html+=`<div class="bar"><div class="bl"><span>${esc(catLabel(e[0]))}</span><em>${e[1]}</em></div>
+        <div class="bt"><i style="width:${pct}%"></i></div></div>`;
+    });
+  } else html+=`<div class="hint">Nothing yet. Open a few stories and this fills in.</div>`;
+  html+=`<div class="sect2">Last 7 days</div>
+    <div class="days">${d7.map(x=>`<div class="d" title="${x[2]}">
+      <i style="height:${Math.round(x[1]/maxd*100)}%"></i><span>${esc(x[0])}</span></div>`).join("")}</div>`;
+  html+=`<div class="sect2">Recently opened</div>`;
+  if(recent.length){
+    recent.slice(0,12).forEach(function(r){
+      html+=`<div class="recent"><b>${esc((r.t||"").slice(0,90))}</b><em>${esc(catLabel(r.c))}</em></div>`;
+    });
+  } else html+=`<div class="hint">Nothing yet.</div>`;
+  html+=`<div class="snav" style="display:flex;gap:10px;padding:22px 0 8px">
+      <button class="more" style="flex:1;justify-content:center" onclick="relock()">🔒 Lock settings</button>
+      <button class="more" style="flex:1;justify-content:center" onclick="wipeStats()">Clear data</button></div>`;
+  $("#app").innerHTML=html;
+  $("#foot").textContent="Reading data is stored on this device only.";
+}
+function wipeStats(){
+  if(!confirm("Clear the reading dashboard on this device?")) return;
+  set("spark_stats",{cats:{},days:{},recent:[]}); render();
+}
 function renderTennis(){
   const sport=(EDITION&&EDITION.sport)||[];
   const ana=sport.filter(x=>x.section==="Match analysis").map(analysisItem);
@@ -595,6 +697,7 @@ function openObj(o,railIdx){
     $("#scrim").classList.add("on"); $("#sheet").classList.add("on");
     lockScroll(true);
     if(o.id){ markRead(o.id); rememberOpen(o); }
+    trackRead(o);
     bumpStreak(); chrome();
     hydrate();
   }catch(err){
