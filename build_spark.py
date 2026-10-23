@@ -147,6 +147,7 @@ def apply_tip(title, paras=None):
 
 
 BAD_OPEN = ("read more", "subscribe", "follow us", "click here", "sign up", "watch:",
+            "just in case", "credit:", "getty", "photo:", "advertisement", "sponsored",
             "advertisement", "get our", "download the", "share this", "you can also",
             "account subscription", "premium stories", "sign in", "image source",
             "image caption", "copy link", "click for next", "editorials", "opinions")
@@ -338,7 +339,7 @@ THINK = {
 
 LLM_BASE = "https://text.pollinations.ai/"
 LLM_SLEEP = 31          # the free endpoint allows about one reply every 30s
-LLM_BUDGET = 11         # cap per run, so the job stays quick
+LLM_BUDGET = 18         # cap per run, so the job stays quick
 _llm = {"n": 0}
 
 
@@ -397,18 +398,18 @@ def parse_llm(out):
 
 
 def rewrite(age, title, paras):
-    """Try a real rewrite; fall back to the plain condensed extract."""
+    """Rewrite with the model. Returns (paras, curious, rewritten?)."""
     text = " ".join(paras)[:2600]
     short = simplify(paras, word_budget(age))
     if not text:
-        return short, ""
+        return short, "", False
     out = llm(kid_prompt(age, title, text))
     if not out:
-        return short, ""
+        return short, "", False
     lp, curious = parse_llm(out)
     if lp and sum(len(p.split()) for p in lp) >= 45:
-        return lp, curious
-    return short, ""
+        return lp, curious, True
+    return short, "", False
 
 
 def build_news(age, budget):
@@ -423,7 +424,8 @@ def build_news(age, budget):
         print("GROUP", g, len(items))
         n = 0
         want = PER_GROUP.get(g, 2)
-        for it in items[:8]:
+        fallback = []
+        for it in items[:9]:
             if n >= want:
                 break
             key = " ".join(it["title"].lower().split()[:4])
@@ -432,17 +434,30 @@ def build_news(age, budget):
             paras = article_paragraphs(it["link"]) if it["link"].startswith("http") else []
             if not paras:
                 paras = [it["desc"]] if it["desc"] else []
-            short, curious = rewrite(age, it["title"], paras)
+            short, curious, was_rewritten = rewrite(age, it["title"], paras)
             if sum(len(p.split()) for p in short) < MIN_WORDS:
+                continue
+            entry = {"kind": "news", "cat": g, "show": GROUP_NAME.get(g, g),
+                     "title": it["title"][:110], "paras": short, "curious": curious,
+                     "image": it["image"], "source": it["source"], "date": it["date"],
+                     "link": it["link"]}
+            if not was_rewritten:
+                # hold it back: a raw extract is only used if the model gave us nothing
+                fallback.append((key, entry))
                 continue
             seen.add(key)
             th = THINK.get(g, THINK["science"])
-            news.append({"kind": "news", "cat": g, "show": GROUP_NAME.get(g, g),
-                         "title": it["title"][:110], "paras": short, "curious": curious,
-                         "image": it["image"], "source": it["source"], "date": it["date"],
-                         "link": it["link"], "think": th[taken.get(g, 0) % len(th)]})
+            entry["think"] = th[taken.get(g, 0) % len(th)]
+            news.append(entry)
             taken[g] = taken.get(g, 0) + 1
             n += 1
+        if n < want and fallback:
+            key, entry = fallback[0]
+            seen.add(key)
+            th = THINK.get(g, THINK["science"])
+            entry["think"] = th[taken.get(g, 0) % len(th)]
+            news.append(entry)
+            taken[g] = taken.get(g, 0) + 1
     return news
 
 
@@ -457,7 +472,7 @@ def build_analysis(age, budget):
         paras = article_paragraphs(it["link"]) if it["link"].startswith("http") else []
         if not paras:
             paras = [it["desc"]] if it["desc"] else []
-        short, curious = rewrite(age, it["title"], paras)
+        short, curious, _rw = rewrite(age, it["title"], paras)
         if sum(len(p.split()) for p in short) < 28:
             continue
         seen.add(key)
