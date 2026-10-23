@@ -174,6 +174,12 @@
   .htx b{font-size:14.5px;font-weight:750;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;
     -webkit-box-orient:vertical;overflow:hidden}
   .htx em{font-style:normal;display:block;font-size:11px;color:var(--muted);font-weight:700;margin-top:4px}
+  .mcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    padding:13px 15px;margin:0 var(--pad) 11px}
+  .mhead{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:900;cursor:pointer}
+  .mhead span{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:800}
+  .mrow{font-size:14.5px;line-height:1.35;padding:10px 0 0;cursor:pointer;color:#dfe4f7;font-weight:650}
+  .mrow:active{opacity:.7}
   .wisdom{font-size:13px;color:#8b93b4;font-style:italic;line-height:1.5;margin:16px 0 4px;
     padding-left:13px;border-left:3px solid rgba(255,122,61,.5)}
   .snav{display:flex;gap:10px;padding:14px 18px 4px}
@@ -489,6 +495,71 @@ function railHTML(title,items,badge){
     <div class="strip">${items.map((o,i)=>tileHTML(o,i)).join("")}</div></section>`;
 }
 
+/* ---- suggestions: what to read next, leaning STEM + social, based on his reading ---- */
+const STEM_CATS=["frontier","science","maths","experiments","thinking","bharat_tech"];
+const SOCIAL_CATS=["friends","coaching"];
+function catName(id){ const c=CATS.find(x=>x.id===id); return c?c.name:id; }
+function catEmoji(id){ const c=CATS.find(x=>x.id===id); return c?c.emoji:"\uD83D\uDCDA"; }
+function affinity(){ const s=get("spark_stats",{cats:{}}); return s.cats||{}; }
+function jitter(t){ return ((t.id.charCodeAt(0)*37+t.id.length*11)%19)/19; }
+function topicScore(t,aff){
+  /* what he reads earns a boost - except the shelves we are tapering,
+     so comfort reads get gently replaced by STEM and people skills */
+  const taper=(t.cat==="trending"||t.cat==="games")?-3:0;
+  const a=Math.min(aff[t.cat]||0,3);          // a binge must not swamp everything else
+  return a + taper + (STEM_CATS.indexOf(t.cat)>-1?2.4:0)
+       + (SOCIAL_CATS.indexOf(t.cat)>-1?1.7:0) + jitter(t);
+}
+function suggestPicks(n){
+  const aff=affinity();
+  const pool=TOPICS.filter(t=>!readToday("t:"+t.id));
+  if(!pool.length) return [];
+  const sorted=pool.slice().sort((a,b)=>topicScore(b,aff)-topicScore(a,aff));
+  const out=[];
+  const take=function(list,k){ list.slice(0,k).forEach(t=>{ if(out.length<n && out.indexOf(t)<0) out.push(t); }); };
+  take(sorted.filter(t=>STEM_CATS.indexOf(t.cat)>-1),2);     // always some science
+  take(sorted.filter(t=>SOCIAL_CATS.indexOf(t.cat)>-1),1);   // always some people skills
+  take(sorted,n);                                            // then whatever he leans towards
+  return out.slice(0,n);
+}
+function moreToExplore(k){
+  const aff=affinity();
+  const cats=[]; TOPICS.forEach(t=>{ if(cats.indexOf(t.cat)<0) cats.push(t.cat); });
+  const ranked=cats.map(c=>({c:c, s:Math.min(aff[c]||0,3)*1.1+(STEM_CATS.indexOf(c)>-1?1.6:0)
+    +(SOCIAL_CATS.indexOf(c)>-1?1.3:0)+((c==="trending"||c==="games")?-2.6:0)}))
+    .sort((a,b)=>b.s-a.s);
+  const out=[];
+  for(let i=0;i<ranked.length && out.length<k;i++){
+    const items=TOPICS.filter(t=>t.cat===ranked[i].c && !readToday("t:"+t.id)).slice(0,3);
+    if(items.length>=2) out.push({cat:ranked[i].c, items:items});
+  }
+  return out;
+}
+function openTopicById(id){ const t=TOPICS.find(x=>x.id===id); if(t) openObj(topicItem(t),-1); }
+function jumpTo(cat){
+  const want=catName(cat);
+  const rails=[...document.querySelectorAll(".rail")];
+  const r=rails.find(function(x){ const hh=x.querySelector("h2"); return hh && hh.textContent.indexOf(want)>-1; });
+  if(r) r.scrollIntoView({behavior:"smooth", block:"start"});
+}
+function suggestHTML(){
+  const picks=suggestPicks(6);
+  if(!picks.length) return "";
+  let html=railHTML("\u2728 Suggested for you", picks.map(topicItem), "FOR YOU");
+  const more=moreToExplore(3);
+  if(more.length){
+    html+=`<div class="sect2">\uD83E\uDDED More to explore</div>`;
+    more.forEach(function(m){
+      html+=`<div class="mcard"><div class="mhead" onclick="jumpTo('${m.cat}')">${catEmoji(m.cat)} ${esc(catName(m.cat))}<span>see all \u2192</span></div>`;
+      m.items.forEach(function(t){
+        html+=`<div class="mrow" onclick="openTopicById('${t.id}')">${esc(t.t)}</div>`;
+      });
+      html+=`</div>`;
+    });
+  }
+  return html;
+}
+
 /* ---- chrome ---- */
 function birthdayToday(){
   const d=new Date(); return d.getDate()===9 && d.getMonth()===5;
@@ -578,6 +649,7 @@ function renderNews(){
   if(cont) html+=railHTML("▶ Continue", [cont], "PICK UP");
   if(saved.length) html+=railHTML("🔖 Saved", saved);
   html+=railHTML("✨ New today", items, "FRESH");
+  html+=suggestHTML();
   html+=railHTML("🚀 Frontier tech", pick("frontier"));
   html+=railHTML("🔬 Science & space", pick("science"));
   html+=railHTML("🔢 Maths magic", pick("maths"));
