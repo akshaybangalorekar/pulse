@@ -164,6 +164,16 @@
   .recent em{font-style:normal;color:var(--muted);font-size:11.5px;font-weight:700;display:block;margin-top:3px}
   .sect2{font-size:13px;font-weight:900;letter-spacing:.9px;text-transform:uppercase;color:var(--muted);
     margin:22px 2px 8px}
+  .hrow{display:flex;gap:12px;align-items:center;padding:11px 2px;border-bottom:1px solid var(--line);
+    cursor:pointer}
+  .hrow:active{opacity:.75}
+  .hth{width:64px;height:64px;border-radius:13px;overflow:hidden;flex:none;background:#20243f;
+    display:grid;place-items:center;font-size:24px;position:relative}
+  .hth img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .htx{flex:1;min-width:0}
+  .htx b{font-size:14.5px;font-weight:750;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;
+    -webkit-box-orient:vertical;overflow:hidden}
+  .htx em{font-style:normal;display:block;font-size:11px;color:var(--muted);font-weight:700;margin-top:4px}
   .wisdom{font-size:13px;color:#8b93b4;font-style:italic;line-height:1.5;margin:16px 0 4px;
     padding-left:13px;border-left:3px solid rgba(255,122,61,.5)}
   .snav{display:flex;gap:10px;padding:14px 18px 4px}
@@ -494,7 +504,7 @@ function chrome(){
     <button class="iconbtn" onclick="surprise()" title="Surprise me">🎲</button>
     <button class="iconbtn" onclick="askSheet()" title="Ask">💬</button>
     <button class="iconbtn" onclick="lockSheet()" title="Settings">⚙️</button>`;
-  const tabs=[["news","News"],["tennis","Tennis"],["ball","Ball sports"]];
+  const tabs=[["news","News"],["tennis","Tennis"],["ball","Ball sports"],["history","History"]];
   if(isUnlocked()) tabs.push(["settings","Settings"]);
   $("#tabs").innerHTML=tabs
     .map(x=>`<button class="${TAB===x[0]?"on":""}" onclick="setTab('${x[0]}')">${x[1]}</button>`).join("");
@@ -527,6 +537,7 @@ function render(){
   if(locked()){ $("#app").innerHTML=`<div class="finish"><div class="big">⚡</div>
     <h2>That's plenty for now</h2><p>You've had a good dose. Go play, run around, build something — fresh stories will be here when you're back.</p></div>`;
     $("#foot").textContent=""; return; }
+  if(TAB==="history") return renderHistory();
   if(TAB==="settings") return renderSettings();
   if(TAB==="tennis") return renderTennis();
   if(TAB==="ball") return renderBall();
@@ -565,8 +576,6 @@ function renderNews(){
   if(birthdayToday()) html+=`<div class="bday anim">\uD83C\uDF89 Happy birthday! A special edition, just for you.</div>`;
   html+=`<div class="hint" style="padding-top:12px">Tap a card to open it. Swipe the rows sideways for more.</div>`;
   if(cont) html+=railHTML("▶ Continue", [cont], "PICK UP");
-  const hist=histList();
-  if(hist.length) html+=railHTML("📜 History", hist);
   if(saved.length) html+=railHTML("🔖 Saved", saved);
   html+=railHTML("✨ New today", items, "FRESH");
   html+=railHTML("🚀 Frontier tech", pick("frontier"));
@@ -590,6 +599,38 @@ function renderNews(){
   hydrate();
 }
 
+function ago(ts){
+  const s=Math.max(0,(Date.now()-ts)/1000);
+  if(s<90) return "just now";
+  const m=s/60; if(m<60) return Math.round(m)+" min ago";
+  const hh=m/60; if(hh<24) return Math.round(hh)+" hr ago";
+  const d=hh/24; if(d<2) return "yesterday";
+  if(d<30) return Math.round(d)+" days ago";
+  return Math.round(d/30)+" months ago";
+}
+function histRaw(){ return histPrune(); }
+function renderHistory(){
+  const rows=histRaw();
+  if(!rows.length){
+    $("#app").innerHTML=`<div class="hint">Nothing here yet. A story lands here once you have spent a while reading it, and it stays for a month.</div>`;
+    $("#foot").textContent=""; return;
+  }
+  let html=`<div class="hint">${rows.length} stor${rows.length===1?"y":"ies"} you have read. Tap one to open it again.</div>`;
+  rows.forEach(function(r,i){
+    const o=r.item||{};
+    const th = o.img
+      ? `<div class="hth"><img src="${esc(o.img)}" alt="" loading="lazy" onerror="this.style.display='none'"><span>${o.emoji||"📰"}</span></div>`
+      : o.wid
+      ? `<div class="hth" data-wid="${o.wid}"><img alt="" style="display:none"><span>${o.emoji||"✨"}</span></div>`
+      : `<div class="hth"><span>${o.emoji||"📰"}</span></div>`;
+    html+=`<div class="hrow" onclick="openHist(${i})">${th}
+      <div class="htx"><b>${esc(o.title||"")}</b><em>${esc(o.show||"")} \u00B7 ${esc(ago(r.ts))}</em></div></div>`;
+  });
+  $("#app").innerHTML=html;
+  $("#foot").textContent="History lives on this device. Anything you save stays for good.";
+  hydrate();
+}
+function openHist(i){ const rows=histRaw(); const r=rows[i]; if(r&&r.item) openObj(r.item,-1); }
 function lockSheet(){
   $("#sbody").innerHTML=`<div class="sin">
     <div class="skick">Grown-ups only</div>
@@ -724,6 +765,7 @@ function openObj(o,railIdx){
   settleTime();                     // bank the time spent on the previous story
   openedAt=Date.now(); openedItem=o;
   if(railIdx===null||railIdx===undefined){ const f=findRail(o); CUR_RAIL=f[0]; CUR_IDX=f[1]; }
+  else if(railIdx<0){ CUR_RAIL=-1; CUR_IDX=0; }
   else { CUR_RAIL=railIdx; const k=(RAILS[railIdx]||[]).findIndex(x=>x.id===o.id); CUR_IDX=k>-1?k:0; }
   CUR={o:o};
   try{
@@ -747,6 +789,7 @@ function openItem(railIdx,idx){
   openObj(o,railIdx);
 }
 function nextInRail(){
+  if(CUR_RAIL<0){ closeSheet(); return; }
   const rail=RAILS[CUR_RAIL]||[];
   const n=CUR_IDX+1;
   if(n>=rail.length){ closeSheet(); return; }
