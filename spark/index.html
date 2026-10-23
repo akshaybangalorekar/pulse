@@ -101,15 +101,17 @@
   .scrim{position:fixed;inset:0;background:rgba(4,6,14,.72);opacity:0;pointer-events:none;
     transition:opacity .28s var(--ease);z-index:50;backdrop-filter:blur(2px)}
   .scrim.on{opacity:1;pointer-events:auto}
-  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:51;max-height:93vh;display:flex;flex-direction:column;
+  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:51;max-height:min(92vh,940px);display:flex;flex-direction:column;
     background:linear-gradient(180deg,#171a33,#0e1020);border-top-left-radius:26px;border-top-right-radius:26px;
     border:1px solid var(--line);border-bottom:0;transform:translateY(102%);
     transition:transform .34s var(--ease);box-shadow:0 -20px 60px rgba(0,0,0,.6)}
   .sheet.on{transform:translateY(0)}
   .grab{width:40px;height:4px;border-radius:3px;background:rgba(255,255,255,.22);margin:10px auto 0;flex:none}
-  .sbody{overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(18px + env(safe-area-inset-bottom))}
-  .simg{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#20243f}
-  .sph{width:100%;aspect-ratio:16/9;display:grid;place-items:center;font-size:64px;background:#20243f}
+  .sbody{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+  .simg{width:100%;height:auto;max-height:38vh;object-fit:cover;display:block;background:#20243f}
+  .sph{position:relative;width:100%;height:30vh;min-height:150px;max-height:280px;display:grid;
+    place-items:center;font-size:56px;background:#20243f}
   .sin{padding:16px 18px 0}
   .skick{font-size:10.5px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--pop)}
   .sheet h1{font-size:22px;line-height:1.22;font-weight:900;margin:8px 0 12px;letter-spacing:-.3px}
@@ -134,9 +136,15 @@
     border-radius:14px;padding:14px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer}
   .snav button.pri{background:linear-gradient(135deg,var(--pop),var(--pop2));border:0;color:#0a0c16;flex:2}
   .snav button:disabled{opacity:.35}
-  .sclose{position:absolute;right:14px;top:14px;z-index:2;width:36px;height:36px;border-radius:999px;
-    background:rgba(10,12,22,.7);border:1px solid var(--line);color:#fff;display:grid;place-items:center;
-    font-size:16px;cursor:pointer}
+  .shead{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:10px;flex:none;
+    padding:11px 14px 11px 18px;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#171a33,rgba(23,26,51,.92));
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .shead .lbl{font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+  .shead .x{margin-left:auto;width:38px;height:38px;border-radius:999px;background:rgba(255,255,255,.10);
+    border:1px solid var(--line);color:#fff;display:grid;place-items:center;font-size:16px;cursor:pointer;
+    font-family:inherit;flex:none}
+  .shead .x:active{transform:scale(.94)}
 
   .hint{font-size:12.5px;color:var(--muted);padding:0 18px 2px;line-height:1.5}
   .finish{text-align:center;padding:56px 24px}
@@ -152,11 +160,20 @@
   .anim{animation:up .45s var(--ease) both}
 
   /* ============ responsive: phone / tablet / laptop ============ */
-  :root{--wrap:680px;--heroH:270px;--tileW:196px;--artH:110px;--read:16.5px;--h1:27px;--pad:16px}
-  html[data-size="tablet"]{--wrap:860px;--heroH:340px;--tileW:252px;--artH:144px;--read:17.5px;--h1:35px;--pad:22px}
-  html[data-size="desktop"]{--wrap:1180px;--heroH:440px;--tileW:300px;--artH:172px;--read:18.5px;--h1:46px;--pad:26px}
+  :root{--wrap:680px;--heroH:clamp(210px,40vh,290px);--tileW:196px;--artH:110px;--read:16.5px;--h1:27px;--pad:16px}
+  html[data-size="tablet"]{--wrap:860px;--heroH:clamp(240px,42vh,350px);--tileW:252px;--artH:144px;--read:17.5px;--h1:35px;--pad:22px}
+  html[data-size="desktop"]{--wrap:1180px;--heroH:clamp(220px,38vh,400px);--tileW:300px;--artH:172px;--read:18.5px;--h1:46px;--pad:26px}
   .wrap{max-width:var(--wrap)}
-  .hero{min-height:var(--heroH);margin-left:var(--pad);margin-right:var(--pad)}
+  .hero{min-height:var(--heroH);max-height:54vh;margin-left:var(--pad);margin-right:var(--pad)}
+  /* short screens (small laptops, landscape phones): keep the billboard from swallowing the page */
+  @media (max-height:720px){
+    .hero{max-height:48vh}
+    .hero h1{font-size:calc(var(--h1) * .74)}
+    .hero .tx{padding:16px 18px}
+    .hero .sub{font-size:calc(var(--read) - 4px);margin-bottom:10px}
+    .hero .cta{padding:10px 18px;font-size:14px}
+    .hero .chip{margin-bottom:7px}
+  }
   .hero h1{font-size:var(--h1)}
   .hero .sub{font-size:calc(var(--read) - 3px)}
   p.read{font-size:var(--read);max-width:72ch}
@@ -200,8 +217,11 @@
   html[data-size="tablet"] .sheet h1,html[data-size="desktop"] .sheet h1{font-size:28px}
   html[data-size="desktop"] .sin{padding:24px 30px 0}
   html[data-size="desktop"] .snav{padding:18px 30px 10px}
-  html[data-size="desktop"] .simg,html[data-size="desktop"] .sph{max-height:380px}
-  html[data-size="desktop"] .sclose{right:20px;top:20px}
+  html[data-size="tablet"] .simg{max-height:34vh}
+  html[data-size="desktop"] .simg{max-height:min(32vh,330px)}
+  html[data-size="desktop"] .sph{height:26vh;max-height:250px}
+  @media (orientation:landscape) and (max-height:600px){
+    .simg{max-height:44vh} .sph{height:34vh} .sheet{max-height:96vh}}
 </style>
 </head>
 <body>
@@ -216,8 +236,8 @@
 
 <div class="scrim" id="scrim" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet">
-  <button class="sclose" onclick="closeSheet()">✕</button>
-  <div class="grab"></div>
+  <div class="shead"><span class="lbl" id="sheetLbl">Spark</span>
+    <button class="x" onclick="closeSheet()" aria-label="Close">✕</button></div>
   <div class="sbody" id="sbody"></div>
 </div>
 
@@ -402,7 +422,14 @@ function chrome(){
 function setTab(t){ TAB=t; render(); window.scrollTo({top:0,behavior:"smooth"}); }
 
 /* ---- render ---- */
+function resetOverlays(){
+  const s=$("#sheet"), c=$("#scrim");
+  if(s) s.classList.remove("on");
+  if(c) c.classList.remove("on");
+  document.body.style.overflow="";
+}
 function render(){
+  resetOverlays();
   tick(); chrome(); RAILS=[]; CUR_RAIL=0;
   if(locked()){ $("#app").innerHTML=`<div class="finish"><div class="big">⚡</div>
     <h2>That's plenty for now</h2><p>You've had a good dose. Go play, run around, build something — fresh stories will be here when you're back.</p></div>`;
@@ -527,12 +554,19 @@ function openObj(o,railIdx){
   if(railIdx===null||railIdx===undefined){ const f=findRail(o); CUR_RAIL=f[0]; CUR_IDX=f[1]; }
   else { CUR_RAIL=railIdx; const k=(RAILS[railIdx]||[]).findIndex(x=>x.id===o.id); CUR_IDX=k>-1?k:0; }
   CUR={o:o};
-  $("#sbody").innerHTML=bodyHTML(o);
-  $("#scrim").classList.add("on"); $("#sheet").classList.add("on");
-  document.body.style.overflow="hidden";
-  if(o.id){ markRead(o.id); rememberOpen(o); }
-  bumpStreak(); chrome();
-  hydrate();
+  try{
+    $("#sbody").innerHTML=bodyHTML(o);
+    const lbl=$("#sheetLbl"); if(lbl) lbl.textContent=o.show||"Spark";
+    $("#sbody").scrollTop=0;
+    $("#scrim").classList.add("on"); $("#sheet").classList.add("on");
+    document.body.style.overflow="hidden";
+    if(o.id){ markRead(o.id); rememberOpen(o); }
+    bumpStreak(); chrome();
+    hydrate();
+  }catch(err){
+    resetOverlays();
+    console.warn("open failed",err);
+  }
 }
 function openItem(railIdx,idx){
   const rail=RAILS[railIdx]||[];
@@ -551,9 +585,13 @@ function toggleSaveCurrent(){
   const b=$("#saveBtn"); if(b) b.textContent=on?"🔖 Saved":"🔖 Save";
 }
 function closeSheet(){
-  $("#scrim").classList.remove("on"); $("#sheet").classList.remove("on");
+  const s=$("#sheet"), c=$("#scrim");
+  if(s) s.classList.remove("on");
+  if(c) c.classList.remove("on");
   document.body.style.overflow="";
 }
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSheet(); });
+window.addEventListener("pageshow",()=>resetOverlays());
 
 /* ---- ask ---- */
 function askSheet(){
