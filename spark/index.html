@@ -303,7 +303,7 @@ function tileHTML(o,i){
       ${o.show?`<div class="badge2">${esc(o.show)}</div>`:""}
       ${sv?`<div class="saved">🔖</div>`:""}</div>
     <div class="tt">${esc(o.title)}</div>
-    <div class="tm">${esc(o.kind==="topic"?"Cool stuff":(o.source||""))}</div>
+    <div class="tm">${esc(o.source||o.show||"")}</div>
   </div>`;
 }
 function railHTML(title,items,badge){
