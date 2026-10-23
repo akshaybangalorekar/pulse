@@ -49,7 +49,9 @@ BOILER = re.compile(
     r"premium stories|the view from india|kyb and kyc|business behind the wealth creator|"
     r"editorials\s*,\s*opinions|first day first show|looking at world affairs|"
     r"get unlimited access|to continue reading|already a subscriber|log ?in|register now|"
-    r"this article is|available exclusively|part \d+$|click for next)", re.I)
+    r"this article is|available exclusively|part \d+$|click for next|today'?s cache|"
+    r"your download of|weekly newsletter|will become available on the|share a a a|"
+    r"most weeks open with|science for all|the top \d+ technology stories)", re.I)
 CREDIT = re.compile(r"^\s*[\(\[]\s*(photo|image|credit|source|file|reuters|ap|pti|afp|bloomberg|getty)[^)\]]*[\)\]]\s*", re.I)
 
 MIN_WORDS = 40
@@ -379,6 +381,9 @@ def impact_line(paras):
     return ""
 
 
+USED = set()
+
+
 def build_story_section(sec):
     items = gather(sec.get("feeds"), sec.get("queries"), tag_only=sec.get("must_tag", False),
                    prefer_tag=sec.get("prefer_tag", False))
@@ -388,7 +393,7 @@ def build_story_section(sec):
         if n >= sec["want"]:
             break
         key = " ".join(it["title"].lower().split()[:4])
-        if key in seen:
+        if key in seen or it["title"].lower() in USED:
             continue
         paras = article_text(it["link"]) if it["link"].startswith("http") else []
         if not paras:
@@ -399,6 +404,7 @@ def build_story_section(sec):
         if sum(len(p.split()) for p in short) < MIN_WORDS:
             continue
         seen.add(key)
+        USED.add(it["title"].lower())
         out.append({"kind": "story", "title": it["title"][:120], "paras": short,
                     "impact": impact_line(paras), "image": it["image"],
                     "source": it["source"], "link": it["link"], "date": it["date"]})
@@ -414,9 +420,10 @@ def build_head_section(sec):
         if len(out) >= sec["want"]:
             break
         k = it["title"].lower()
-        if k in seen:
+        if k in seen or k in USED:
             continue
         seen.add(k)
+        USED.add(k)
         out.append({"kind": "head", "title": it["title"][:120], "source": it["source"],
                     "link": it["link"], "date": it["date"], "image": it["image"]})
     return out
