@@ -39,6 +39,15 @@ DULL = re.compile(r"\b(horoscope|astrology|zodiac|celebrity|gossip|royal\w*|"
 US_TAG = re.compile(r"\b(india|indian|bharat|australia|australian|melbourne|sydney|rupee|"
                     r"sensex|nifty|asx|rbi|reserve\s+bank\s+of\s+australia)\b", re.I)
 
+BOILER = re.compile(
+    r"(stock tips|share market|budget 20\d\d|track latest|market news\s*,|whatsapp|telegram|"
+    r"download (the|our) app|follow us|subscribe|also read|read more|click here|trending|"
+    r"top gainers|top losers|sensex and nifty|disclaimer|investment advice|views expressed|"
+    r"photo credit|getty images|ai quick read|quick read|advertisement|sponsored|"
+    r"copyright|all rights reserved|terms of use|privacy policy|toi\.in|be the first to comment|"
+    r"catch all the|live updates|stay tuned|for more|first published)", re.I)
+CREDIT = re.compile(r"^\s*[\(\[]\s*(photo|image|credit|source|file|reuters|ap|pti|afp|bloomberg|getty)[^)\]]*[\)\]]\s*", re.I)
+
 MIN_WORDS = 40
 BAD_OPEN = ("read more", "subscribe", "follow us", "click here", "sign up", "watch:",
             "advertisement", "get our", "download the", "also read", "read |", "image source",
@@ -51,7 +60,7 @@ TENNIS_FEEDS = ["https://www.tennismajors.com/feed/",
 
 SECTIONS = [
     {"id": "economy", "name": "Economy & geopolitics", "emoji": "\U0001F30F", "kind": "story",
-     "want": 7,
+     "want": 7, "prefer_tag": True,
      "feeds": ["https://www.thehindu.com/business/Economy/feeder/default.rss",
                "https://www.livemint.com/rss/economy",
                "https://www.livemint.com/rss/markets",
@@ -278,7 +287,7 @@ def score(it):
     return (2 if ENGAGE.search(t) else 0) - (2 if DULL.search(t) else 0)
 
 
-def gather(feeds, queries=None, tag_only=False):
+def gather(feeds, queries=None, tag_only=False, prefer_tag=False):
     urls = list(feeds or []) + [gn(q, l) for q, l in (queries or [])]
     items, seen = [], set()
     for u in urls:
@@ -297,7 +306,11 @@ def gather(feeds, queries=None, tag_only=False):
             items.append(it)
     if tag_only:
         items = [i for i in items if US_TAG.search(i["title"])]
-    items.sort(key=lambda x: (score(x), x["date"]), reverse=True)
+    if prefer_tag:
+        items.sort(key=lambda x: (1 if US_TAG.search(x["title"]) else 0, score(x), x["date"]),
+                   reverse=True)
+    else:
+        items.sort(key=lambda x: (score(x), x["date"]), reverse=True)
     return items
 
 
@@ -321,12 +334,20 @@ def sentences(paras):
     sents = []
     for p in paras:
         for s in re.split(r"(?<=[.!?])\s+", p):
-            s = s.strip()
+            s = CREDIT.sub("", s).strip()
             w = len(s.split())
             low = s.lower()
-            if 8 <= w <= 42 and not low.startswith(BAD_OPEN) and "subscribe" not in low \
-                    and "sign in" not in low:
-                sents.append(s)
+            if w < 8 or w > 42:
+                continue
+            if low.startswith(BAD_OPEN) or BOILER.search(s):
+                continue
+            if s.count("(") != s.count(")") or s.count("[") != s.count("]"):
+                continue
+            if re.search(r"[\u00bb\u2022|]", s):
+                continue
+            if not re.match(r"^[A-Z0-9\"\u2018\u201c]", s):
+                continue
+            sents.append(s)
     return sents
 
 
@@ -354,7 +375,8 @@ def impact_line(paras):
 
 
 def build_story_section(sec):
-    items = gather(sec.get("feeds"), sec.get("queries"), tag_only=sec.get("must_tag", False))
+    items = gather(sec.get("feeds"), sec.get("queries"), tag_only=sec.get("must_tag", False),
+                   prefer_tag=sec.get("prefer_tag", False))
     print("SECTION", sec["id"], len(items))
     out, seen, n = [], set(), 0
     for it in items[:16]:
