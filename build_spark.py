@@ -336,6 +336,81 @@ THINK = {
 }
 
 
+LLM_BASE = "https://text.pollinations.ai/"
+LLM_SLEEP = 31          # the free endpoint allows about one reply every 30s
+LLM_BUDGET = 11         # cap per run, so the job stays quick
+_llm = {"n": 0}
+
+
+def llm(prompt):
+    """Ask a free language model to rewrite a story. Returns None on any failure."""
+    if _llm["n"] >= LLM_BUDGET:
+        return None
+    _llm["n"] += 1
+    try:
+        req = urllib.request.Request(LLM_BASE + urllib.parse.quote(prompt),
+                                     headers={"User-Agent": UA})
+        with urllib.request.urlopen(req, timeout=75) as r:
+            txt = r.read().decode("utf-8", "ignore").strip()
+        low = txt.lower()
+        if len(txt) > 60 and "free limit" not in low and "rate limit" not in low \
+                and "payment required" not in low and not txt.startswith("{"):
+            time.sleep(LLM_SLEEP)
+            return txt
+    except Exception as ex:
+        print("  ! llm", type(ex).__name__)
+    time.sleep(LLM_SLEEP)
+    return None
+
+
+def kid_prompt(age, title, text):
+    return (
+        "You write news for a %d-year-old boy who lives in Melbourne, Australia and whose "
+        "family is Indian. He is smart and curious but has a short attention span.\n\n"
+        "Rewrite the story below so he fully understands it and is left curious.\n\n"
+        "Rules:\n"
+        "- Two short paragraphs, 70 to 95 words in total.\n"
+        "- Paragraph 1: what happened, in plain words. If a hard word cannot be avoided, "
+        "explain it in the same sentence.\n"
+        "- Paragraph 2: why it matters or what happens next, so the story does not feel "
+        "unfinished.\n"
+        "- Then one final line of at most 15 words that makes him wonder about something. "
+        "Begin that line with 'Curious: '.\n"
+        "- Use only facts from the story. Never invent names, numbers or quotes.\n"
+        "- Simple warm English. No emojis, no links, no headline, no bullet points.\n\n"
+        "TITLE: %s\n\nSTORY: %s\n" % (age, title, text[:2400])
+    )
+
+
+def parse_llm(out):
+    curious = ""
+    m = re.search(r"Curious:\s*(.+?)\s*$", out, re.I | re.S)
+    if m:
+        curious = re.sub(r"\s+", " ", m.group(1)).strip()
+        out = out[:m.start()].strip()
+    out = re.sub(r"```[a-z]*|```", "", out).strip()
+    paras = [re.sub(r"\s+", " ", p).strip() for p in re.split(r"\n\s*\n", out) if p.strip()]
+    paras = [p for p in paras if len(p.split()) >= 8][:2]
+    if not paras and out:
+        paras = [out]
+    return paras, curious[:170]
+
+
+def rewrite(age, title, paras):
+    """Try a real rewrite; fall back to the plain condensed extract."""
+    text = " ".join(paras)[:2600]
+    short = simplify(paras, word_budget(age))
+    if not text:
+        return short, ""
+    out = llm(kid_prompt(age, title, text))
+    if not out:
+        return short, ""
+    lp, curious = parse_llm(out)
+    if lp and sum(len(p.split()) for p in lp) >= 45:
+        return lp, curious
+    return short, ""
+
+
 def build_news(age, budget):
     news, seen, taken = [], set(), {}
     for g, feeds in FEEDS.items():
@@ -357,13 +432,13 @@ def build_news(age, budget):
             paras = article_paragraphs(it["link"]) if it["link"].startswith("http") else []
             if not paras:
                 paras = [it["desc"]] if it["desc"] else []
-            short = simplify(paras, budget)
+            short, curious = rewrite(age, it["title"], paras)
             if sum(len(p.split()) for p in short) < MIN_WORDS:
                 continue
             seen.add(key)
             th = THINK.get(g, THINK["science"])
             news.append({"kind": "news", "cat": g, "show": GROUP_NAME.get(g, g),
-                         "title": it["title"][:110], "paras": short,
+                         "title": it["title"][:110], "paras": short, "curious": curious,
                          "image": it["image"], "source": it["source"], "date": it["date"],
                          "link": it["link"], "think": th[taken.get(g, 0) % len(th)]})
             taken[g] = taken.get(g, 0) + 1
@@ -382,12 +457,12 @@ def build_analysis(age, budget):
         paras = article_paragraphs(it["link"]) if it["link"].startswith("http") else []
         if not paras:
             paras = [it["desc"]] if it["desc"] else []
-        short = simplify(paras, budget)
+        short, curious = rewrite(age, it["title"], paras)
         if sum(len(p.split()) for p in short) < 28:
             continue
         seen.add(key)
         out.append({"kind": "analysis", "section": "Match analysis", "title": it["title"][:110],
-                    "paras": short, "image": it["image"], "source": it["source"],
+                    "paras": short, "curious": curious, "image": it["image"], "source": it["source"],
                     "date": it["date"], "link": it["link"], "apply": apply_tip(it["title"], short)})
         if len(out) >= 6:
             break
@@ -463,7 +538,8 @@ def main():
     with open(os.path.join("spark", "edition.json"), "w", encoding="utf-8") as f:
         json.dump({"generated": gen, "age": age, "news": news, "sport": sport,
                    "screen": screen}, f, ensure_ascii=False, separators=(",", ":"))
-    print("WROTE spark/edition.json:", len(news), "news |", len(sport), "sport |", len(screen), "screen")
+    print("WROTE spark/edition.json:", len(news), "news |", len(sport), "sport |", len(screen), "screen",
+          "| llm calls:", _llm["n"])
 
 
 if __name__ == "__main__":
