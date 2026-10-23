@@ -366,21 +366,62 @@ def llm(prompt):
 
 def kid_prompt(age, title, text):
     return (
-        "You write news for a %d-year-old boy who lives in Melbourne, Australia and whose "
-        "family is Indian. He is smart and curious but has a short attention span.\n\n"
-        "Rewrite the story below so he fully understands it and is left curious.\n\n"
-        "Rules:\n"
+        "You write for a %d-year-old who lives in Melbourne, Australia and whose family is Indian. "
+        "He is curious but has a short attention span.\n\n"
+        "Rewrite the story below so that he understands EVERY sentence without needing any outside "
+        "knowledge, and finishes curious.\n\n"
+        "Hard rules:\n"
         "- Two short paragraphs, 70 to 95 words in total.\n"
-        "- Paragraph 1: what happened, in plain words. If a hard word cannot be avoided, "
-        "explain it in the same sentence.\n"
-        "- Paragraph 2: why it matters or what happens next, so the story does not feel "
-        "unfinished.\n"
-        "- Then one final line of at most 15 words that makes him wonder about something. "
-        "Begin that line with 'Curious: '.\n"
+        "- Every sentence must be 20 words or fewer. If a sentence runs longer, split it in two.\n"
+        "- No jargon. If a technical word cannot be avoided, explain it in the same sentence, in "
+        "plain words.\n"
+        "- Never use an abbreviation without spelling it out (say 'the United Nations', not 'the UN').\n"
+        "- Explain why it matters, so the story does not feel unfinished.\n"
+        "- Then one final line of at most 15 words that makes him wonder. Begin that line with "
+        "'Curious: '.\n"
         "- Use only facts from the story. Never invent names, numbers or quotes.\n"
-        "- Simple warm English. No emojis, no links, no headline, no bullet points.\n\n"
+        "- Warm, plain English. No emojis, no links, no headline, no bullet points.\n\n"
+        "Before you answer, check your own work: would a 10-year-old who knows nothing about this "
+        "understand every sentence? If not, rewrite that sentence. Then output only the final text.\n\n"
         "TITLE: %s\n\nSTORY: %s\n" % (age, title, text[:2400])
     )
+
+
+def simpler_prompt(age, title, draft):
+    return (
+        "This text is for a %d-year-old and it is still too hard to read.\n\n"
+        "Rewrite it so every sentence is 20 words or fewer, every hard word is explained in the "
+        "same sentence, and no abbreviation is left unexplained. Keep two short paragraphs of 70 "
+        "to 95 words, and keep the final 'Curious: ' line.\n\n"
+        "TEXT:\n%s\n" % (age, draft[:1600])
+    )
+
+
+def clarity_ok(paras):
+    """Nothing unclear ever reaches him. Returns (ok, reason)."""
+    text = " ".join(paras).strip()
+    sents = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
+    if not sents:
+        return False, "empty"
+    words = sum(len(s.split()) for s in sents)
+    if words < 55:
+        return False, "too short (%d words)" % words
+    if words > 115:
+        return False, "too long (%d words)" % words
+    longest = max(len(s.split()) for s in sents)
+    if longest > 24:
+        return False, "sentence of %d words" % longest
+    mean = words / len(sents)
+    if mean > 17:
+        return False, "mean %.1f words per sentence" % mean
+    if any(";" in s for s in sents):
+        return False, "semicolon"
+    if any(s.count(",") >= 4 for s in sents):
+        return False, "run-on"
+    if not re.search(r"\b(because|so that|which means|that is why|this means|as a result|"
+                     r"so |that is because)\b", text, re.I):
+        return False, "does not explain why"
+    return True, ""
 
 
 def parse_llm(out):
@@ -398,7 +439,8 @@ def parse_llm(out):
 
 
 def rewrite(age, title, paras):
-    """Rewrite with the model. Returns (paras, curious, rewritten?)."""
+    """Rewrite with the model and hold it to the clarity gate.
+    Returns (paras, curious, rewritten?)."""
     text = " ".join(paras)[:2600]
     short = simplify(paras, word_budget(age))
     if not text:
@@ -407,9 +449,18 @@ def rewrite(age, title, paras):
     if not out:
         return short, "", False
     lp, curious = parse_llm(out)
-    if lp and sum(len(p.split()) for p in lp) >= 45:
-        return lp, curious, True
-    return short, "", False
+    ok, why = clarity_ok(lp)
+    if not ok:
+        print("  ~ clarity:", why, "-> retrying")
+        out2 = llm(simpler_prompt(age, title, " ".join(lp)))
+        if out2:
+            lp2, c2 = parse_llm(out2)
+            ok2, why2 = clarity_ok(lp2)
+            if ok2:
+                return lp2, c2, True
+            print("  ~ clarity still failing:", why2)
+        return short, "", False
+    return lp, curious, True
 
 
 def build_news(age, budget):
@@ -540,6 +591,25 @@ def build_screen():
     print("SCREEN", len(items))
     return [{"kind": "head", "title": it["title"][:110], "source": it["source"],
              "date": it["date"]} for it in items[:6]]
+
+
+def lint_library():
+    """Report hand-written cards whose sentences are too long for a young reader."""
+    try:
+        data = json.load(open("spark_content.json", encoding="utf-8"))
+    except Exception:
+        return
+    bad = []
+    for t in data.get("topics", []):
+        text = " ".join([t.get("hook", "")] + t.get("body", []))
+        sents = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
+        longest = max((len(s.split()) for s in sents), default=0)
+        if longest > 24:
+            bad.append((longest, t.get("t", "?")))
+    bad.sort(reverse=True)
+    print("CLARITY LINT: %d cards have a sentence over 24 words" % len(bad))
+    for w, ti in bad[:15]:
+        print("   %2d words  %s" % (w, ti))
 
 
 def main():
