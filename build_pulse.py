@@ -45,7 +45,11 @@ BOILER = re.compile(
     r"top gainers|top losers|sensex and nifty|disclaimer|investment advice|views expressed|"
     r"photo credit|getty images|ai quick read|quick read|advertisement|sponsored|"
     r"copyright|all rights reserved|terms of use|privacy policy|toi\.in|be the first to comment|"
-    r"catch all the|live updates|stay tuned|for more|first published)", re.I)
+    r"catch all the|live updates|stay tuned|for more|first published|account subscription|"
+    r"premium stories|the view from india|kyb and kyc|business behind the wealth creator|"
+    r"editorials\s*,\s*opinions|first day first show|looking at world affairs|"
+    r"get unlimited access|to continue reading|already a subscriber|log ?in|register now|"
+    r"this article is|available exclusively|part \d+$|click for next)", re.I)
 CREDIT = re.compile(r"^\s*[\(\[]\s*(photo|image|credit|source|file|reuters|ap|pti|afp|bloomberg|getty)[^)\]]*[\)\]]\s*", re.I)
 
 MIN_WORDS = 40
@@ -60,13 +64,14 @@ TENNIS_FEEDS = ["https://www.tennismajors.com/feed/",
 
 SECTIONS = [
     {"id": "economy", "name": "Economy & geopolitics", "emoji": "\U0001F30F", "kind": "story",
-     "want": 7, "prefer_tag": True,
-     "feeds": ["https://www.thehindu.com/business/Economy/feeder/default.rss",
+     "want": 8, "prefer_tag": True,
+     "feeds": ["https://feeds.bbci.co.uk/news/world/rss.xml",
+               "https://www.theguardian.com/world/rss",
+               "https://feeds.bbci.co.uk/news/business/rss.xml",
+               "https://www.abc.net.au/news/feed/51120/rss.xml",
+               "https://www.smh.com.au/rss/business.xml",
                "https://www.livemint.com/rss/economy",
-               "https://www.livemint.com/rss/markets",
-               "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
-               "https://feeds.bbci.co.uk/news/world/rss.xml",
-               "https://www.theguardian.com/world/rss"]},
+               "https://www.thehindu.com/business/Economy/feeder/default.rss"]},
 
     {"id": "bharat_au", "name": "Bharat & Australia", "emoji": "\U0001F1E6\U0001F1FA", "kind": "story",
      "want": 6, "must_tag": True,
