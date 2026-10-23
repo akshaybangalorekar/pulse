@@ -51,7 +51,9 @@ BOILER = re.compile(
     r"get unlimited access|to continue reading|already a subscriber|log ?in|register now|"
     r"this article is|available exclusively|part \d+$|click for next|today'?s cache|"
     r"your download of|weekly newsletter|will become available on the|share a a a|"
-    r"most weeks open with|science for all|the top \d+ technology stories)", re.I)
+    r"most weeks open with|science for all|the top \d+ technology stories|health matters|"
+    r"writes to you on|books of the week|the hindu on books|e-?paper|today'?s paper|"
+    r"newsletter from|subscribe to our|sign up for our|our newsletter)", re.I)
 CREDIT = re.compile(r"^\s*[\(\[]\s*(photo|image|credit|source|file|reuters|ap|pti|afp|bloomberg|getty)[^)\]]*[\)\]]\s*", re.I)
 
 MIN_WORDS = 40
