@@ -458,6 +458,19 @@ function deviceTotals(){
   return out;
 }
 
+/* one-tap setup: open .../spark/?sync=TOKEN once on a device, then the link is cleaned */
+(function adoptSyncLink(){
+  try{
+    const u=new URL(location.href);
+    const t=u.searchParams.get("sync");
+    if(t && t.length>20){
+      set("spark_gh_token", t.trim());
+      u.searchParams.delete("sync");
+      history.replaceState(null,"",u.pathname+(u.search||"")+(u.hash||""));
+    }
+  }catch(e){}
+})();
+
 /* ---- history: only things he actually read (50s+), kept a month unless saved ---- */
 const HIST_KEY="spark_history", HIST_DAYS=30, READ_MS=50000;
 let openedAt=0, openedItem=null;
@@ -857,6 +870,9 @@ function renderSettings(){
         <button onclick="saveSync()">Save</button>
         <button onclick="syncNow()">Sync now</button>
       </div>
+      <div class="row2" style="margin-top:9px">
+        <button onclick="copySetupLink()">Copy setup link</button>
+      </div>
       <div class="st ${stt&&stt.indexOf('"ok":true')>-1?'ok':(stt?'bad':'')}" id="syncst">${stt?(stt.indexOf('"ok":true')>-1?"Last sync worked.":"Last sync: "+esc((JSON.parse(stt).why||""))):"Tap Sync now to connect."}</div>
       <div class="devlist" id="devlist"></div>
     </div>`;
@@ -883,6 +899,17 @@ function renderSettings(){
   $("#app").innerHTML=html;
   $("#foot").textContent=ghToken()?"Reading data syncs to your repository.":"Reading data is stored on this device only.";
   paintDevices();
+}
+function copySetupLink(){
+  const tok=ghToken();
+  const el=$("#syncst");
+  if(!tok){ if(el){ el.className="st bad"; el.textContent="Save a token on this device first."; } return; }
+  const link=location.origin+location.pathname+"?sync="+encodeURIComponent(tok);
+  const done=function(){ if(el){ el.className="st ok";
+    el.textContent="Setup link copied \u2014 open it once on your other device, then delete the message."; } };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(link).then(done).catch(function(){ prompt("Copy this link, open it once on your other device:", link); });
+  } else { prompt("Copy this link, open it once on your other device:", link); }
 }
 function saveSync(){
   const t=$("#ghtoken"), n=$("#devname");
