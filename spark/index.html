@@ -174,6 +174,17 @@
   .htx b{font-size:14.5px;font-weight:750;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;
     -webkit-box-orient:vertical;overflow:hidden}
   .htx em{font-style:normal;display:block;font-size:11px;color:var(--muted);font-weight:700;margin-top:4px}
+  .sync{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:15px;margin:8px 0}
+  .sync h3{font-size:14px;margin:0 0 6px;font-weight:900}
+  .sync p{font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 10px}
+  .sync input{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:14px;
+    font-family:inherit;background:rgba(255,255,255,.06);color:var(--ink);margin-bottom:9px}
+  .sync .row2{display:flex;gap:9px}
+  .sync .row2 button{flex:1;border:1px solid var(--line);background:rgba(255,255,255,.09);color:var(--ink);
+    border-radius:12px;padding:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer}
+  .sync .st{font-size:12px;font-weight:800;margin-top:9px;color:var(--muted)}
+  .sync .st.ok{color:#5fe6a8}.sync .st.bad{color:#ff8f8f}
+  .devlist{font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:8px}
   .mcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;
     padding:13px 15px;margin:0 var(--pad) 11px}
   .mhead{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:900;cursor:pointer}
@@ -354,6 +365,99 @@ function streak(){
 function readSet(){ return new Set(get("spark_read",[])); }
 function isUnlocked(){ return get("spark_unlocked",0)===1; }
 
+/* ---- cross-device sync: history + dashboard committed back to the repo ---- */
+const STATE_FILE="spark-state.json";
+const GH_API="https://api.github.com/repos/akshaybangalorekar/pulse/contents/"+STATE_FILE;
+const MYID=(function(){ let v=get("spark_device_id",""); if(!v){ v="d"+Math.random().toString(36).slice(2,10); set("spark_device_id",v);} return v; })();
+function b64e(s){ return btoa(unescape(encodeURIComponent(s))); }
+function b64d(s){ return decodeURIComponent(escape(atob(s.replace(/\s/g,"")))); }
+function devName(){ return get("spark_device_name","This device"); }
+function setDevName(v){ set("spark_device_name", String(v||"").slice(0,24)||"This device"); }
+function ghToken(){ return get("spark_gh_token",""); }
+function localStats(){ return get("spark_stats",{cats:{},days:{},recent:[]}); }
+function buildState(){
+  const st=get("spark_state",{updated:0,history:[],devices:{}});
+  const hist=histGet();
+  const byId={};
+  (st.history||[]).concat(hist).forEach(function(x){ if(!x||!x.item) return;
+    const k=x.item.id; if(!byId[k]||x.ts>(byId[k].ts||0)) byId[k]=x; });
+  const mergedHist=Object.keys(byId).map(k=>byId[k]).sort((a,b)=>b.ts-a.ts).slice(0,120);
+  const devs=Object.assign({},st.devices||{});
+  devs[MYID]=Object.assign({},localStats(),{name:devName(),updated:Date.now()});
+  return {updated:Date.now(), history:mergedHist, devices:devs};
+}
+function mergeState(remote){
+  if(!remote||typeof remote!=="object") return;
+  set("spark_state",remote);
+  // bring remote history into this device's local history
+  const local=histGet(), byId={};
+  local.concat(remote.history||[]).forEach(function(x){ if(!x||!x.item) return;
+    const k=x.item.id; if(!byId[k]||x.ts>(byId[k].ts||0)) byId[k]=x; });
+  const merged=Object.keys(byId).map(k=>byId[k]).sort((a,b)=>b.ts-a.ts).slice(0,120);
+  set(HIST_KEY,merged);
+}
+async function pullState(){
+  try{
+    const r=await fetch(STATE_FILE+"?t="+Date.now(),{cache:"no-store"});
+    if(!r.ok) return false;
+    const j=await r.json(); mergeState(j); return true;
+  }catch(e){ return false; }
+}
+async function pushState(){
+  const tok=ghToken();
+  if(!tok) return {ok:false,why:"No token saved on this device."};
+  const body=JSON.stringify(buildState());
+  for(let attempt=0;attempt<3;attempt++){
+    let sha=null;
+    try{
+      const g=await fetch(GH_API+"?t="+Date.now(),{headers:{"Authorization":"Bearer "+tok,"Accept":"application/vnd.github+json"}});
+      if(g.ok){ const gj=await g.json(); sha=gj.sha; }
+    }catch(e){}
+    try{
+      const payload={message:"Spark state sync", content:b64e(body), branch:"main"};
+      if(sha) payload.sha=sha;
+      const p=await fetch(GH_API,{method:"PUT",headers:{"Authorization":"Bearer "+tok,
+        "Accept":"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify(payload)});
+      if(p.ok) return {ok:true,at:Date.now()};
+      if(p.status===409||p.status===422){ await new Promise(r=>setTimeout(r,1200)); continue; }
+      const t=await p.text();
+      return {ok:false,why:"GitHub said "+(p.status||"?")+": "+t.slice(0,90)};
+    }catch(e){ return {ok:false,why:String(e.message||e).slice(0,90)}; }
+  }
+  return {ok:false,why:"Could not write (conflict). Try again."};
+}
+let syncTimer=null;
+function scheduleSync(){
+  if(!ghToken()) return;
+  if(syncTimer) clearTimeout(syncTimer);
+  syncTimer=setTimeout(async function(){ const r=await pushState();
+    set("spark_sync_last", JSON.stringify(r)); }, 45000);
+}
+async function syncNow(){
+  const st=$("#syncst"); if(st){ st.className="st"; st.textContent="Syncing\u2026"; }
+  await pullState();
+  const r=await pushState();
+  set("spark_sync_last", JSON.stringify(r));
+  render();
+  return r;
+}
+function deviceTotals(){
+  const st=get("spark_state",{devices:{}}), devs=st.devices||{};
+  const mine=localStats(); const out={cats:{},days:{}};
+  const keys=Object.keys(devs);
+  if(!keys.length){ return {cats:mine.cats||{},days:mine.days||{}}; }
+  keys.forEach(function(k){
+    const d=(k===MYID)?mine:(devs[k]||{});
+    Object.keys(d.cats||{}).forEach(function(c){ out.cats[c]=(out.cats[c]||0)+(d.cats[c]||0); });
+    Object.keys(d.days||{}).forEach(function(c){ out.days[c]=(out.days[c]||0)+(d.days[c]||0); });
+  });
+  if(!keys.some(k=>k===MYID)){
+    Object.keys(mine.cats||{}).forEach(function(c){ out.cats[c]=(out.cats[c]||0)+mine.cats[c]; });
+    Object.keys(mine.days||{}).forEach(function(c){ out.days[c]=(out.days[c]||0)+mine.days[c]; });
+  }
+  return out;
+}
+
 /* ---- history: only things he actually read (50s+), kept a month unless saved ---- */
 const HIST_KEY="spark_history", HIST_DAYS=30, READ_MS=50000;
 let openedAt=0, openedItem=null;
@@ -372,7 +476,7 @@ function histAdd(o){
 }
 function histList(){ return histPrune().map(x=>x.item); }
 function settleTime(){
-  if(openedItem && openedAt && (Date.now()-openedAt) >= READ_MS) histAdd(openedItem);
+  if(openedItem && openedAt && (Date.now()-openedAt) >= READ_MS){ histAdd(openedItem); scheduleSync(); }
   openedAt=0; openedItem=null;
 }
 function trackRead(o){
@@ -724,7 +828,8 @@ function relock(){ set("spark_unlocked",0); TAB="news"; render(); }
 function catLabel(id){ const c=CATS.find(x=>x.id===id); return c?c.name:"Other"; }
 function renderSettings(){
   const s=get("spark_stats",{cats:{},days:{},recent:[]});
-  const cats=s.cats||{}, days=s.days||{}, recent=s.recent||[];
+  const tot=deviceTotals();
+  const cats=tot.cats||{}, days=tot.days||{}, recent=s.recent||[];
   const total=Object.values(cats).reduce((a,b)=>a+b,0);
   const shelves=Object.keys(cats).length;
   const todayN=days[today()]||0;
@@ -739,6 +844,21 @@ function renderSettings(){
       <div class="stat"><div class="n">${shelves}</div><div class="l">Shelves explored</div></div>
       <div class="stat"><div class="n">${todayN}</div><div class="l">Opened today</div></div>
       <div class="stat"><div class="n">${streak()}</div><div class="l">Day streak</div></div>
+    </div>`;
+  const stt=get("spark_sync_last",null);
+  const tok=ghToken();
+  html+=`<div class="sect2">Sync across devices</div>
+    <div class="sync">
+      <h3>${tok?"Connected to GitHub":"Not connected yet"}</h3>
+      <p>History and this dashboard are saved into your repository as <b>spark-state.json</b>, so every device sees the same thing.</p>
+      <input id="devname" type="text" placeholder="Device name" value="${esc(devName())}">
+      <input id="ghtoken" type="password" placeholder="GitHub token (fine-grained, Contents: read and write)" value="">
+      <div class="row2">
+        <button onclick="saveSync()">Save</button>
+        <button onclick="syncNow()">Sync now</button>
+      </div>
+      <div class="st ${stt&&stt.indexOf('"ok":true')>-1?'ok':(stt?'bad':'')}" id="syncst">${stt?(stt.indexOf('"ok":true')>-1?"Last sync worked.":"Last sync: "+esc((JSON.parse(stt).why||""))):"Tap Sync now to connect."}</div>
+      <div class="devlist" id="devlist"></div>
     </div>`;
   html+=`<div class="sect2">What he reads most</div>`;
   if(order.length){
@@ -761,7 +881,24 @@ function renderSettings(){
       <button class="more" style="flex:1;justify-content:center" onclick="relock()">🔒 Lock settings</button>
       <button class="more" style="flex:1;justify-content:center" onclick="wipeStats()">Clear data</button></div>`;
   $("#app").innerHTML=html;
-  $("#foot").textContent="Reading data is stored on this device only.";
+  $("#foot").textContent=ghToken()?"Reading data syncs to your repository.":"Reading data is stored on this device only.";
+  paintDevices();
+}
+function saveSync(){
+  const t=$("#ghtoken"), n=$("#devname");
+  if(n) setDevName(n.value);
+  if(t && t.value.trim()) set("spark_gh_token", t.value.trim());
+  render();
+}
+function paintDevices(){
+  const el=$("#devlist"); if(!el) return;
+  const st=get("spark_state",{devices:{}}), devs=st.devices||{};
+  const keys=Object.keys(devs);
+  if(!keys.length){ el.textContent=""; return; }
+  el.innerHTML=keys.map(function(k){
+    const d=devs[k]||{}; const n=Object.values(d.cats||{}).reduce((a,b)=>a+b,0);
+    return `${esc(d.name||k)} \u2014 ${n} opens`;
+  }).join("<br>");
 }
 function wipeStats(){
   if(!confirm("Clear the reading dashboard on this device?")) return;
@@ -919,7 +1056,9 @@ async function loadEdition(){
     if(r.ok){EDITION=await r.json(); return true;}}catch(e){}
   return false;
 }
-(async function(){ detectSize(); _lastSize=document.documentElement.dataset.size; histPrune(); await loadEdition(); bumpStreak(); render(); })();
+(async function(){ detectSize(); _lastSize=document.documentElement.dataset.size; histPrune();
+  await pullState().catch(function(){});
+  await loadEdition(); bumpStreak(); render(); })();
 
 /* keep the edition fresh through the day: re-check every 30 seconds, so stories
    he has already read stay gone and anything newer rises. Never while he is reading. */

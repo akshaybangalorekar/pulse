@@ -9,6 +9,7 @@ on:
     paths-ignore:
       - "feed.json"
       - "pulse.json"
+      - "spark-state.json"
 
 permissions:
   contents: write
