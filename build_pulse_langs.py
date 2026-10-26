@@ -21,7 +21,9 @@ UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
 TIMEOUT = 25
 MIN_WORDS = 30
 
-BAD = re.compile(r"(reels?\s*व्हिडिओ|जाहिरात|व्हिडिओ पहा|subscribe|advertisement)", re.I)
+BAD = re.compile(r"(reels?\s*व्हिडिओ|जाहिरात|व्हिडिओ पहा|subscribe|advertisement|"
+                 r"हत्या|खून|बलात्कार|अत्याचार|अपघात|मृत्यू|आत्महत्या|अंत्यविधी|"
+                 r"पोलीस कोठडी|अटक)", re.I)
 BOILER = re.compile(r"(आणखी वाचा|हेही वाचा|जाहिरात|सदस्यता|subscribe|also read|"
                     r"copyright|all rights reserved)", re.I)
 
@@ -192,8 +194,6 @@ MR_SECTIONS = [
      "match": r"मस्करी|विनोद|हास्य|ठिणगी|कॉमेडी|फनी"},
     {"id": "anks", "name": "दिवाळी अंक आणि मासिके", "emoji": "\U0001F4DA", "want": 5,
      "match": r"दिवाळी अंक|दिवाळीअंक|अंक|मासिक|मासिके|चित्रलेखा|माहेर|लोकप्रभा|साप्ताहिक|नियतकालिक"},
-    {"id": "recipes", "name": "पाककृती", "emoji": "\U0001F372", "want": 4,
-     "match": r"पाककृती|रेसिपी|पदार्थ|खाद्य|स्वयंपाक|पोहे|मिसळ|थालीपीठ|मोदक|पुरणपोळी"},
 ]
 
 # hand-written Marathi recipes, always present
