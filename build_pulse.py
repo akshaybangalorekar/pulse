@@ -80,8 +80,9 @@ SECTIONS = [
      "feeds": ["https://economictimes.indiatimes.com/news/economy/rssfeeds/1373380680.cms",
                "https://economictimes.indiatimes.com/industry/rssfeeds/13352306.cms",
                "https://www.livemint.com/rss/economy",
-               "https://theprint.in/category/economy/feed/",
                "https://organiser.org/feed/",
+               "https://www.aninews.in/rss/feed/category/world.xml",
+               "https://www.aninews.in/rss/feed/category/national.xml",
                "https://feeds.bbci.co.uk/news/business/rss.xml",
                "https://feeds.bbci.co.uk/news/world/rss.xml",
                "https://www.smh.com.au/rss/business.xml",
@@ -94,12 +95,13 @@ SECTIONS = [
                "https://www.macrobusiness.com.au/feed/",
                "https://economictimes.indiatimes.com/news/economy/rssfeeds/1373380680.cms",
                "https://www.livemint.com/rss/economy",
-               "https://theprint.in/category/economy/feed/"]},
+               "https://www.aninews.in/rss/feed/category/national.xml"]},
 
     {"id": "finance", "name": "Finance & markets", "emoji": "\U0001F4C8", "kind": "story",
      "want": 2, "rewrite": True,
      "feeds": ["https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
                "https://www.livemint.com/rss/markets",
+               "https://www.aninews.in/rss/feed/category/business.xml",
                "https://www.smh.com.au/rss/business.xml"]},
 
     {"id": "tech", "name": "Technology & AI", "emoji": "\U0001F916", "kind": "story",
@@ -119,6 +121,7 @@ SECTIONS = [
 
     {"id": "indiasport", "name": "Indian sports", "emoji": "\U0001F3CF", "kind": "head", "want": 6,
      "feeds": [],
+     "feeds": ["https://www.aninews.in/rss/feed/category/sports.xml"],
      "queries": [("India cricket team", "en-in"), ("Indian hockey team", "en-in"),
                  ("Indian badminton", "en-in"), ("India athletics", "en-in")]},
 
