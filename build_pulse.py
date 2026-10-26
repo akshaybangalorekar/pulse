@@ -409,6 +409,38 @@ def impact_line(paras):
 
 
 USED = set()
+SEEN_FILE = "pulse-seen.json"
+SEEN_DAYS = 60
+SEEN = {}
+
+
+def key_of(title):
+    t = re.sub(r"[^a-z0-9 ]", " ", (title or "").lower())
+    return " ".join(t.split()[:8])
+
+
+def load_seen():
+    global SEEN
+    try:
+        raw = json.load(open(SEEN_FILE, encoding="utf-8"))
+        if isinstance(raw, dict):
+            cut = time.time() - SEEN_DAYS * 86400
+            SEEN = {k: v for k, v in raw.items() if isinstance(v, (int, float)) and v >= cut}
+    except Exception:
+        SEEN = {}
+    print("SEEN memory:", len(SEEN), "stories in the last %d days" % SEEN_DAYS)
+
+
+def mark_seen(title):
+    SEEN[key_of(title)] = time.time()
+
+
+def save_seen():
+    cut = time.time() - SEEN_DAYS * 86400
+    keep = {k: v for k, v in SEEN.items() if v >= cut}
+    with open(SEEN_FILE, "w", encoding="utf-8") as f:
+        json.dump(keep, f, separators=(",", ":"))
+    print("SEEN saved:", len(keep))
 
 
 LLM_BASE = "https://text.pollinations.ai/"
@@ -509,12 +541,15 @@ def build_story_section(sec):
     items = gather(sec.get("feeds"), sec.get("queries"), tag_only=sec.get("must_tag", False),
                    prefer_tag=sec.get("prefer_tag", False))
     print("SECTION", sec["id"], len(items))
-    out, seen, n = [], set(), 0
+    out, seen, n, stale = [], set(), 0, []
     for it in items[:16]:
         if n >= sec["want"]:
             break
         key = " ".join(it["title"].lower().split()[:4])
         if key in seen or it["title"].lower() in USED:
+            continue
+        if key_of(it["title"]) in SEEN:
+            stale.append(it)
             continue
         paras = article_text(it["link"]) if it["link"].startswith("http") else []
         if not paras:
@@ -537,27 +572,43 @@ def build_story_section(sec):
                     "impact": imp, "image": it["image"],
                     "source": it["source"], "link": it["link"], "date": it["date"]})
         n += 1
+    if not out and stale:
+        stale.sort(key=lambda x: SEEN.get(key_of(x["title"]), 0))
+        it = stale[0]
+        paras = article_text(it["link"]) if it["link"].startswith("http") else []
+        if not paras:
+            paras = [it["desc"]] if it["desc"] else []
+        short = condense(paras)
+        if sum(len(p.split()) for p in short) >= MIN_WORDS:
+            out.append({"kind": "story", "title": it["title"][:120], "paras": short,
+                        "impact": impact_line(paras), "image": it["image"],
+                        "source": it["source"], "link": it["link"], "date": it["date"]})
     return out
 
 
 def build_head_section(sec):
     items = gather(sec.get("feeds"), sec.get("queries"))
     print("SECTION", sec["id"], len(items))
-    out, seen = [], set()
+    out, seen, stale = [], set(), []
     for it in items:
         if len(out) >= sec["want"]:
             break
         k = it["title"].lower()
         if k in seen or k in USED:
             continue
+        if key_of(it["title"]) in SEEN:
+            stale.append(it)
+            continue
         seen.add(k)
         USED.add(k)
+        mark_seen(it["title"])
         out.append({"kind": "head", "title": it["title"][:120], "source": it["source"],
                     "link": it["link"], "date": it["date"], "image": it["image"]})
     return out
 
 
 def main():
+    load_seen()
     gen = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     sections = []
     for sec in SECTIONS:
@@ -571,6 +622,7 @@ def main():
     payload = {"generated": gen, "sections": sections}
     with open("pulse.json", "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, separators=(",", ":"))
+    save_seen()
     print("WROTE pulse.json:", sum(len(s["items"]) for s in sections), "items in",
           len(sections), "sections | llm calls:", _llm["n"])
 

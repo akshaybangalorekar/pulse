@@ -463,11 +463,54 @@ def rewrite(age, title, paras):
     return lp, curious, True
 
 
+SEEN_FILE = "spark-seen.json"
+SEEN_DAYS = 60
+SEEN = {}
+
+
+def key_of(title):
+    t = re.sub(r"[^a-z0-9 ]", " ", (title or "").lower())
+    return " ".join(t.split()[:8])
+
+
+def load_seen():
+    global SEEN
+    try:
+        raw = json.load(open(SEEN_FILE, encoding="utf-8"))
+        if isinstance(raw, dict):
+            cut = time.time() - SEEN_DAYS * 86400
+            SEEN = {k: v for k, v in raw.items() if isinstance(v, (int, float)) and v >= cut}
+    except Exception:
+        SEEN = {}
+    print("SEEN memory:", len(SEEN), "stories in the last %d days" % SEEN_DAYS)
+
+
+def mark_seen(title):
+    SEEN[key_of(title)] = time.time()
+
+
+def save_seen():
+    cut = time.time() - SEEN_DAYS * 86400
+    keep = {k: v for k, v in SEEN.items() if v >= cut}
+    with open(SEEN_FILE, "w", encoding="utf-8") as f:
+        json.dump(keep, f, separators=(",", ":"))
+    print("SEEN saved:", len(keep))
+
+
+def fresh_first(items):
+    """Drop anything shown in the last two months; reuse the oldest only if nothing is new."""
+    fresh = [x for x in items if key_of(x["title"]) not in SEEN]
+    if fresh:
+        return fresh
+    return sorted(items, key=lambda x: SEEN.get(key_of(x["title"]), 0))
+
+
 def build_news(age, budget):
     news, seen, taken = [], set(), {}
     for g, feeds in FEEDS.items():
         urls = list(feeds) + [gn(q, l) for q, l in KEYWORDS.get(g, [])]
         items = gather(urls, screen=(g == "screen"))
+        items = fresh_first(items)
         if g == "frontier":
             items.sort(key=lambda x: (5 if FRONTIER.search(x["title"]) else 0) + score(x), reverse=True)
         else:
@@ -497,6 +540,7 @@ def build_news(age, budget):
                 fallback.append((key, entry))
                 continue
             seen.add(key)
+            mark_seen(it["title"])
             th = THINK.get(g, THINK["science"])
             entry["think"] = th[taken.get(g, 0) % len(th)]
             news.append(entry)
@@ -513,7 +557,7 @@ def build_news(age, budget):
 
 
 def build_analysis(age, budget):
-    items = gather(TENNIS_FEEDS, sport=True)
+    items = fresh_first(gather(TENNIS_FEEDS, sport=True))
     items.sort(key=lambda x: (1 if ANALYSIS.search(x["title"]) else 0, x["date"]), reverse=True)
     out, seen = [], set()
     for it in items[:12]:
@@ -527,6 +571,7 @@ def build_analysis(age, budget):
         if sum(len(p.split()) for p in short) < 28:
             continue
         seen.add(key)
+        mark_seen(it["title"])
         out.append({"kind": "analysis", "section": "Match analysis", "title": it["title"][:110],
                     "paras": short, "curious": curious, "image": it["image"], "source": it["source"],
                     "date": it["date"], "link": it["link"], "apply": apply_tip(it["title"], short)})
@@ -623,6 +668,7 @@ def main():
     with open(os.path.join("spark", "edition.json"), "w", encoding="utf-8") as f:
         json.dump({"generated": gen, "age": age, "news": news, "sport": sport,
                    "screen": screen}, f, ensure_ascii=False, separators=(",", ":"))
+    save_seen()
     print("WROTE spark/edition.json:", len(news), "news |", len(sport), "sport |", len(screen), "screen",
           "| llm calls:", _llm["n"])
 

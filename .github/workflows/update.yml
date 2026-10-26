@@ -10,6 +10,8 @@ on:
       - "feed.json"
       - "pulse.json"
       - "spark-state.json"
+      - "pulse-seen.json"
+      - "spark-seen.json"
 
 permissions:
   contents: write
@@ -44,7 +46,7 @@ jobs:
         run: |
           git config user.name "pulse-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add feed.json pulse.json spark/world.json spark/feed.json spark/edition.json
+          git add feed.json pulse.json pulse-seen.json spark-seen.json spark/world.json spark/feed.json spark/edition.json
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
