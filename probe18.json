@@ -1,0 +1,52 @@
+{
+ "https://www.daijiworld.com/rssfeed": {
+  "error": "HTTPError: HTTP Error 403: Forbidden"
+ },
+ "https://www.daijiworld.com/rss/news.xml": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.daijiworld.com/common/commonPage": {
+  "entries": 0
+ },
+ "https://www.daijiworld.com/news/newsfeed": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://thegoan.net/feed/": {
+  "entries": 0
+ },
+ "https://www.thegoan.net/feed/": {
+  "entries": 0
+ },
+ "https://thegoan.net/rss": {
+  "entries": 0
+ },
+ "https://www.thegoan.net/rss": {
+  "entries": 0
+ },
+ "https://epaper.thegoan.net/rss": {
+  "entries": 0
+ },
+ "https://chitralekha.com/feed": {
+  "entries": 10,
+  "sample": "\u0a85\u0ab0\u0ac1\u0aa3\u0abe\u0a9a\u0ab2\u0aae\u0abe\u0a82 \u0a9a\u0ac0\u0aa8\u0ac0 \u0ab8\u0ac7\u0aa8\u0abe\u0a8f \u0a95\u0aac\u0a9c\u0acb \u0a95\u0ab0\u0ac0 \u0ab2\u0ac0\u0aa7\u0acb?",
+  "link": "https://chitralekha.com/news/chinese-army-occupied-in-arunachal/",
+  "text_words": 648,
+  "og_image": true
+ },
+ "https://www.chitralekha.com/feed/": {
+  "entries": 10,
+  "sample": "\u0a85\u0ab0\u0ac1\u0aa3\u0abe\u0a9a\u0ab2\u0aae\u0abe\u0a82 \u0a9a\u0ac0\u0aa8\u0ac0 \u0ab8\u0ac7\u0aa8\u0abe\u0a8f \u0a95\u0aac\u0a9c\u0acb \u0a95\u0ab0\u0ac0 \u0ab2\u0ac0\u0aa7\u0acb?",
+  "link": "https://chitralekha.com/news/chinese-army-occupied-in-arunachal/",
+  "text_words": 648,
+  "og_image": true
+ },
+ "https://lokprabha.com/feed": {
+  "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] ce"
+ },
+ "https://www.mahermarathi.com/feed": {
+  "error": "URLError: <urlopen error [Errno -2] Name or service not know"
+ },
+ "https://divyamarathi.com/rss": {
+  "entries": 0
+ }
+}
