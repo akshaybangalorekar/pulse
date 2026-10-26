@@ -639,10 +639,17 @@ def load_prev():
         return {}
 
 
-def merge_section(new_items, prev_items, want):
-    """New stories first, then whatever is still current from the last edition.
-    Nothing already published is ever brought back after it has aged out."""
-    cut = (time.time() - MAX_AGE_H * 3600) * 1000
+STACK_MAX = 15          # a category keeps at most fifteen stories
+
+
+def stack_section(new_items, prev_items, want):
+    """First in, first out.
+
+    New stories go to the front of the category and everything already there
+    slides to the right. The stack only grows, and it is only ever trimmed from
+    the oldest end once it passes STACK_MAX. A quiet hour adds nothing and
+    removes nothing.
+    """
     out, titles = [], set()
     for it in new_items:
         t = key_of(it.get("title", ""))
@@ -651,18 +658,16 @@ def merge_section(new_items, prev_items, want):
         titles.add(t)
         out.append(it)
         if len(out) >= want:
-            return out
+            break
     for it in prev_items:
-        if len(out) >= want:
+        if len(out) >= STACK_MAX:
             break
         t = key_of(it.get("title", ""))
         if t in titles:
             continue
-        if it.get("date") and it["date"] < cut:
-            continue                      # too old - let it go
         titles.add(t)
         out.append(it)
-    return out
+    return out[:STACK_MAX]
 
 
 def main():
@@ -673,7 +678,7 @@ def main():
     sections = []
     for sec in SECTIONS:
         items = build_story_section(sec) if sec["kind"] == "story" else build_head_section(sec)
-        items = merge_section(items, prev_by_id.get(sec["id"], []), sec["want"])
+        items = stack_section(items, prev_by_id.get(sec["id"], []), sec["want"])
         if items:
             sections.append({"id": sec["id"], "name": sec["name"], "emoji": sec["emoji"],
                              "items": items})

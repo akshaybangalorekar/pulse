@@ -342,26 +342,29 @@ def load_prev(path):
         return {}
 
 
+STACK_MAX = 15          # a category keeps at most fifteen stories
+
+
 def carry(new, prev_items, want):
-    cut = (time.time() - MAX_AGE_H * 3600) * 1000
-    out, seen = [], set()
+    """First in, first out: new at the left, older sliding right, capped at 15."""
+    out, titles = [], set()
     for it in new:
-        t = it["title"].lower()[:60]
-        if t in seen:
+        t = it.get("title", "").lower()[:60]
+        if t in titles:
             continue
-        seen.add(t)
+        titles.add(t)
         out.append(it)
-        if len(out) >= want:
-            return out
-    for it in prev_items:
         if len(out) >= want:
             break
+    for it in prev_items:
+        if len(out) >= STACK_MAX:
+            break
         t = it.get("title", "").lower()[:60]
-        if t in seen or (it.get("date") and it["date"] < cut):
+        if t in titles:
             continue
-        seen.add(t)
+        titles.add(t)
         out.append(it)
-    return out
+    return out[:STACK_MAX]
 
 
 def main():

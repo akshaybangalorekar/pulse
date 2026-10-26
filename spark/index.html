@@ -772,7 +772,10 @@ function renderNews(){
   const news=(EDITION&&EDITION.news)||[];
   const scr=(EDITION&&EDITION.screen)||[];
   const topics=TOPICS.slice();
-  const all=news.map(x=>newsItem(x,x.cat,x.show)).sort((a,b)=>(b.date||0)-(a.date||0));
+  const all=news.map(x=>newsItem(x,x.cat,x.show)).sort(function(a,b){
+    // unread first, then newest to oldest - a read story rolls to the right
+    return ((readToday(a.id)?1:0)-(readToday(b.id)?1:0)) || ((b.date||0)-(a.date||0));
+  });
   const unread=all.filter(o=>!readToday(o.id));
   const items=unread.length?unread:all;          // read today = gone for today
   const tItems=topics.map(topicItem).sort((a,b)=>(readToday(a.id)?1:0)-(readToday(b.id)?1:0));

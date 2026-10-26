@@ -681,18 +681,35 @@ def load_prev_news():
         return []
 
 
+STACK_MAX = 15          # each category keeps at most fifteen stories
+
+
 def carry_over(news, prev):
-    """Keep the last edition's stories while they are still current, so a quiet
-    hour never empties a shelf - but never resurrect one that has aged out."""
-    cut = (time.time() - MAX_AGE_H * 3600) * 1000
-    keep = [x for x in prev if not x.get("date") or x["date"] >= cut]
-    have = {key_of(x["title"]) for x in news}
-    for x in keep:
-        if key_of(x["title"]) in have:
+    """First in, first out, per category.
+
+    New stories go to the front of their category and older ones slide right.
+    The stack grows as material arrives and is trimmed only from the oldest end
+    once it passes STACK_MAX, so a quiet run never empties a shelf.
+    """
+    by_cat, titles = {}, set()
+    for x in news:
+        c = x.get("cat")
+        by_cat.setdefault(c, []).append(x)
+        titles.add(key_of(x["title"]))
+    for x in prev:
+        c = x.get("cat")
+        k = key_of(x["title"])
+        if k in titles:
             continue
-        have.add(key_of(x["title"]))
-        news.append(x)
-    return news
+        lst = by_cat.setdefault(c, [])
+        if len(lst) >= STACK_MAX:
+            continue
+        titles.add(k)
+        lst.append(x)
+    out = []
+    for c, lst in by_cat.items():
+        out.extend(lst[:STACK_MAX])
+    return out
 
 
 def main():
