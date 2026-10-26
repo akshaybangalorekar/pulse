@@ -54,6 +54,8 @@ BOILER = re.compile(
     r"editorials\s*,\s*opinions|first day first show|looking at world affairs|"
     r"get unlimited access|to continue reading|already a subscriber|log ?in|register now|"
     r"bond yield and cds|business of odd things|will they decide the fate|"
+    r"text settings|story text|size small|standard wide|links standard|subscribers only|"
+    r"credit:|getty images|afp/|aurich lawson|photo:|image:|"
     r"inside an industry th|top gainers and losers|mutual fund|ipo watch|"
     r"this article is|available exclusively|part \d+$|click for next|today'?s cache|"
     r"your download of|weekly newsletter|will become available on the|share a a a|"
@@ -95,13 +97,13 @@ SECTIONS = [
                "https://theprint.in/category/economy/feed/"]},
 
     {"id": "finance", "name": "Finance & markets", "emoji": "\U0001F4C8", "kind": "story",
-     "want": 3, "rewrite": True,
+     "want": 2, "rewrite": True,
      "feeds": ["https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
                "https://www.livemint.com/rss/markets",
                "https://www.smh.com.au/rss/business.xml"]},
 
     {"id": "tech", "name": "Technology & AI", "emoji": "\U0001F916", "kind": "story",
-     "want": 4, "rewrite": True,
+     "want": 3, "rewrite": True,
      "feeds": ["https://feeds.arstechnica.com/arstechnica/index",
                "https://spectrum.ieee.org/feeds/feed.rss",
                "https://www.newscientist.com/feed/home/",
@@ -411,7 +413,7 @@ USED = set()
 
 LLM_BASE = "https://text.pollinations.ai/"
 LLM_SLEEP = 31
-LLM_BUDGET = 10
+LLM_BUDGET = 12
 _llm = {"n": 0}
 
 
