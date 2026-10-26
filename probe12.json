@@ -1,0 +1,128 @@
+{
+ "ani_advertised": [
+  "https://www.aninews.in/rss-feed/",
+  "https://www.aninews.in/rss/feed/category/national.xml",
+  "https://www.aninews.in/rss/feed/category/national/general-news.xml",
+  "https://www.aninews.in/rss/feed/category/national/politics.xml",
+  "https://www.aninews.in/rss/feed/category/national/features.xml",
+  "https://www.aninews.in/rss/feed/category/business.xml",
+  "https://www.aninews.in/rss/feed/category/entertainment.xml",
+  "https://www.aninews.in/rss/feed/category/entertainment/bollywood.xml",
+  "https://www.aninews.in/rss/feed/category/entertainment/hollywood.xml",
+  "https://www.aninews.in/rss/feed/category/entertainment/music.xml",
+  "https://www.aninews.in/rss/feed/category/entertainment/out-of-box.xml",
+  "https://www.aninews.in/rss/feed/category/sports.xml"
+ ],
+ "results": {
+  "https://www.aninews.in/rss-feed/": {
+   "status": 200,
+   "entries": 0,
+   "img10": 0
+  },
+  "https://www.aninews.in/rss/feed/category/national.xml": {
+   "status": 200,
+   "entries": 20,
+   "img10": 0,
+   "sample": "\"Survey of the affected areas is being conducted\": Karnataka",
+   "text_words": 617
+  },
+  "https://www.aninews.in/rss/feed/category/national/general-news.xml": {
+   "status": 200,
+   "entries": 0,
+   "img10": 0
+  },
+  "https://www.aninews.in/rss/feed/category/national/politics.xml": {
+   "status": 200,
+   "entries": 20,
+   "img10": 0,
+   "sample": "Maharashtra Assembly elections: BJP leader Nalin Kohli takes",
+   "text_words": 616
+  },
+  "https://www.aninews.in/rss/feed/category/national/features.xml": {
+   "status": 200,
+   "entries": 20,
+   "img10": 0,
+   "sample": "Stray dog Goa, adopted by Ratan Tata visits NCPA to pay last",
+   "text_words": 757
+  },
+  "https://www.aninews.in/rss/feed/category/business.xml": {
+   "status": 200,
+   "entries": 20,
+   "img10": 0,
+   "sample": "AdClear Launches Innovative Surge Model to Revolutionize Dig",
+   "text_words": 880
+  },
+  "https://www.aninews.in/rss/feed/category/entertainment.xml": {
+   "status": 200,
+   "entries": 20,
+   "img10": 0,
+   "sample": "Producer Ram Kumar Pal offers prayers at Hanuman Garhi templ",
+   "text_words": 512
+  },
+  "https://www.aninews.in/rss/feed/category/entertainment/bollywood.xml": {
+   "status": 200,
+   "entries": 20,
+   "img10": 0,
+   "sample": "Producer Ram Kumar Pal offers prayers at Hanuman Garhi templ",
+   "text_words": 512
+  },
+  "https://www.aninews.in/rss/feed/category/entertainment/hollywood.xml": {
+   "status": 200,
+   "entries": 20,
+   "img10": 0,
+   "sample": "Peter Dinklage joins Channing Tatum in 'Roofman'",
+   "text_words": 427
+  },
+  "https://www.aninews.in/rss/feed/category/entertainment/music.xml": {
+   "status": 200,
+   "entries": 20,
+   "img10": 0,
+   "sample": "Adele bursts into tears as she meets Celine Dion at Las Vega",
+   "text_words": 664
+  },
+  "https://www.aninews.in/rss/feed/category/entertainment/out-of-box.xml": {
+   "status": 200,
+   "entries": 0,
+   "img10": 0
+  },
+  "https://www.aninews.in/rss/feed/category/sports.xml": {
+   "status": 200,
+   "entries": 20,
+   "img10": 0,
+   "sample": "Cricket not to be part of Commowealth Games 2026",
+   "text_words": 713
+  },
+  "https://www.aninews.in/rss/feed/category/world.xml": {
+   "status": 200,
+   "entries": 20,
+   "img10": 0,
+   "sample": "PM Narendra Modi welcomed with 'Krishna Bhajan' upon his arr",
+   "text_words": 858
+  },
+  "https://www.aninews.in/rss/feed/category/top.xml": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "https://swarajyamag.com/api/rss": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "https://swarajyamag.com/feed/rss": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "https://swarajyamag.com/rssfeed": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "https://swarajyamag.com/feed/all": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "https://www.ptinews.com/rss/feed/category/national.xml": {
+   "status": 200,
+   "entries": 0,
+   "img10": 0
+  },
+  "https://www.ptinews.com/rssfeed": {
+   "status": 200,
+   "entries": 0,
+   "img10": 0
+  }
+ }
+}
