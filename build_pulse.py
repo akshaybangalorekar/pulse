@@ -28,6 +28,10 @@ KID_BLOCK = re.compile(
 SPAM = re.compile(r"(live\s*stream|streaming|watch\s+(live|online|free)|\u3010|\u3011|live\s*now|"
                   r"horoscope|astrolog\w*|zodiac|cricket\s+score|dream11|betting\s+tips)", re.I)
 OPINION = re.compile(r"^(opinion|editorial|comment|analysis:)\b", re.I)
+# the brief is economics and geopolitics, so keep inflammatory communal framing out
+INFLAME = re.compile(
+    r"\b(communal\w*|riots?|jihad\w*|love\s+jihad|anti-?national|urban\s+naxal\w*|"
+    r"tukde|traitor\w*|appeasement|vote\s+bank|infiltrat\w*|lynch\w*|conversion)\b", re.I)
 ENGAGE = re.compile(
     r"\b(econom\w*|market\w*|trade|tariff\w*|inflation|interest\s+rate|growth|gdp|export\w*|"
     r"import\w*|rupee|dollar|investment|manufactur\w*|semiconductor\w*|energy|oil|supply\s+chain|"
@@ -69,21 +73,24 @@ TENNIS_FEEDS = ["https://www.tennismajors.com/feed/",
 SECTIONS = [
     {"id": "economy", "name": "Economy & geopolitics", "emoji": "\U0001F30F", "kind": "story",
      "want": 8, "prefer_tag": True,
-     "feeds": ["https://feeds.bbci.co.uk/news/world/rss.xml",
-               "https://www.theguardian.com/world/rss",
-               "https://feeds.bbci.co.uk/news/business/rss.xml",
-               "https://www.abc.net.au/news/feed/51120/rss.xml",
-               "https://www.smh.com.au/rss/business.xml",
+     "feeds": ["https://economictimes.indiatimes.com/news/economy/rssfeeds/1373380680.cms",
+               "https://economictimes.indiatimes.com/industry/rssfeeds/13352306.cms",
                "https://www.livemint.com/rss/economy",
-               "https://www.thehindu.com/business/Economy/feeder/default.rss"]},
+               "https://theprint.in/category/economy/feed/",
+               "https://organiser.org/feed/",
+               "https://feeds.bbci.co.uk/news/business/rss.xml",
+               "https://feeds.bbci.co.uk/news/world/rss.xml",
+               "https://www.smh.com.au/rss/business.xml",
+               "https://www.spectator.com.au/feed/"]},
 
     {"id": "bharat_au", "name": "Bharat & Australia", "emoji": "\U0001F1E6\U0001F1FA", "kind": "story",
      "want": 6, "must_tag": True,
-     "feeds": ["https://www.abc.net.au/news/feed/51120/rss.xml",
-               "https://www.smh.com.au/rss/business.xml",
-               "https://www.theguardian.com/au/business/rss",
-               "https://feeds.bbci.co.uk/news/business/rss.xml",
-               "https://www.thehindu.com/business/feeder/default.rss"]},
+     "feeds": ["https://www.smh.com.au/rss/business.xml",
+               "https://www.spectator.com.au/feed/",
+               "https://www.macrobusiness.com.au/feed/",
+               "https://economictimes.indiatimes.com/news/economy/rssfeeds/1373380680.cms",
+               "https://www.livemint.com/rss/economy",
+               "https://theprint.in/category/economy/feed/"]},
 
     {"id": "tennis", "name": "Tennis", "emoji": "\U0001F3BE", "kind": "story",
      "want": 5, "feeds": TENNIS_FEEDS},
@@ -288,7 +295,8 @@ def parse(raw):
 
 def ok(it):
     t = it["title"]
-    return not (SPAM.search(t) or KID_BLOCK.search(t) or DULL.search(t) or OPINION.search(t))
+    return not (SPAM.search(t) or KID_BLOCK.search(t) or DULL.search(t)
+                or OPINION.search(t) or INFLAME.search(t))
 
 
 def score(it):
