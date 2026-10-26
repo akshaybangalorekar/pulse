@@ -1,0 +1,25 @@
+{
+ "swarajya": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "pti": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "ani": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "swarajya_extra": {
+  "https://swarajyamag.com/rss/feed/category/national.xml": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "https://swarajyamag.com/rss/feed/category/economy.xml": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "https://swarajyamag.com/news/feed": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "https://swarajyamag.com/feed/economy": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  }
+ }
+}
