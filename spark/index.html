@@ -1060,6 +1060,12 @@ function closeSheet(){
   if(s) s.classList.remove("on");
   if(c) c.classList.remove("on");
   lockScroll(false);
+  // a story he has just read drops behind the row and a fresh one moves up
+  try{
+    const y=window.scrollY;
+    render();
+    window.scrollTo(0,y);
+  }catch(e){}
 }
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSheet(); });
 window.addEventListener("pageshow",()=>resetOverlays());

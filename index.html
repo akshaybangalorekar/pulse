@@ -63,6 +63,12 @@
   .langbar button{border:0;background:transparent;color:var(--muted);font-size:12px;font-weight:800;
     padding:6px 9px;border-radius:8px;cursor:pointer;font-family:inherit}
   .langbar button.on{background:var(--pop);color:#04231d}
+  .refresh{border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--ink);
+    width:30px;height:28px;border-radius:9px;font-size:14px;line-height:1;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;margin-left:6px}
+  .refresh:active{transform:scale(.94)}
+  .refresh.spin{animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
 
   main{padding:4px 0 16px}
   .hero{position:relative;margin:6px var(--pad);border-radius:20px;overflow:hidden;cursor:pointer;
@@ -187,6 +193,7 @@
       <div class="langbar" id="langbar">
         <button data-lang="en">EN</button><button data-lang="mr">मराठी</button><button data-lang="kok">कोंकणी</button>
       </div>
+      <button class="refresh" id="refreshBtn" title="Refresh" onclick="refreshPage()">↻</button>
       <button class="iconbtn" id="refreshBtn" title="Refresh">&#8635;</button>
     </div>
   </header>
@@ -377,6 +384,14 @@ function render(){
   $("#app").innerHTML=html;
   $("#foot").textContent=t("foot");
 }
+async function refreshPage(){
+  const b=$("#refreshBtn");
+  if(b){ b.classList.add("spin"); }
+  CUR=null;
+  await load(true);
+  if(b){ b.classList.remove("spin"); }
+}
+
 async function load(force){
   try{
     const r=await fetch((LANG_FILE[LANG]||"pulse.json")+(force?"?t="+Date.now():""),{cache:"no-store"});

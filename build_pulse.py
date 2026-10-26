@@ -548,6 +548,20 @@ def rewrite_story(title, paras):
     return paras, False
 
 
+def og_image(url):
+    try:
+        page = fetch_bytes(url).decode("utf-8", "ignore")
+    except Exception:
+        return ""
+    for pat in (r'property=["\']og:image["\'][^>]*content=["\']([^"\']+)',
+                r'content=["\']([^"\']+)["\'][^>]*property=["\']og:image',
+                r'name=["\']twitter:image["\'][^>]*content=["\']([^"\']+)'):
+        m = re.search(pat, page, re.I)
+        if m and m.group(1).startswith("http"):
+            return m.group(1)
+    return ""
+
+
 def build_story_section(sec):
     items = gather(sec.get("feeds"), sec.get("queries"), tag_only=sec.get("must_tag", False),
                    prefer_tag=sec.get("prefer_tag", False))
@@ -579,6 +593,8 @@ def build_story_section(sec):
             body = " ".join(short).lower()
             if imp.lower().strip(" .")[:60] in body:
                 imp = ""      # already in the text - do not repeat it
+        if not it["image"]:
+            it["image"] = og_image(it["link"]) if it["link"].startswith("http") else ""
         out.append({"kind": "story", "title": it["title"][:120], "paras": short,
                     "impact": imp, "image": it["image"],
                     "source": it["source"], "link": it["link"], "date": it["date"]})

@@ -74,7 +74,7 @@ FRONTIER = re.compile(
     r"chip\w*|laser\w*|fusion|battery|batteries|satellite\w*|rocket\w*|brain-?computer|"
     r"3d[- ]print\w*|soft robot\w*|swarm\w*|autonomous|algorithm\w*|protein\w*|vaccine\w*|"
     r"telescope\w*|particle\w*|physics|mathematic\w*|superconduct\w*|nanotech\w*)\b", re.I)
-MIN_WORDS = 32
+MIN_WORDS = 45
 
 # kid-facing news sources the family asked for (those that publish usable feeds)
 FEEDS = {
@@ -97,7 +97,8 @@ KEYWORDS = {
 GROUP_NAME = {"pressgang": "Press Gang News", "timeforkids": "TIME for Kids",
               "newsround": "Kid news", "science": "Science & space",
               "frontier": "Frontier tech", "screen": "Screen"}
-PER_GROUP = {"frontier": 3, "science": 2, "screen": 2}
+PER_GROUP = {"frontier": 6, "science": 6, "screen": 4}
+WANT_DEFAULT = 6
 
 # sport: headline updates + junior achievements
 TENNIS_FEEDS = ["https://www.tennismajors.com/feed/",
@@ -517,9 +518,9 @@ def build_news(age, budget):
             items.sort(key=score, reverse=True)
         print("GROUP", g, len(items))
         n = 0
-        want = PER_GROUP.get(g, 2)
+        want = PER_GROUP.get(g, WANT_DEFAULT)
         fallback = []
-        for it in items[:9]:
+        for it in items[:22]:
             if n >= want:
                 break
             key = " ".join(it["title"].lower().split()[:4])
@@ -547,12 +548,17 @@ def build_news(age, budget):
             taken[g] = taken.get(g, 0) + 1
             n += 1
         if n < want and fallback:
-            key, entry = fallback[0]
-            seen.add(key)
-            th = THINK.get(g, THINK["science"])
-            entry["think"] = th[taken.get(g, 0) % len(th)]
-            news.append(entry)
-            taken[g] = taken.get(g, 0) + 1
+            # top up from the raw extracts so the shelf still holds a full row
+            for key, entry in fallback:
+                if n >= want:
+                    break
+                seen.add(key)
+                mark_seen(entry["title"])
+                th = THINK.get(g, THINK["science"])
+                entry["think"] = th[taken.get(g, 0) % len(th)]
+                news.append(entry)
+                taken[g] = taken.get(g, 0) + 1
+                n += 1
     return news
 
 

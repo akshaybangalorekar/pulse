@@ -130,6 +130,22 @@ def condense(paras, budget=110):
     return [" ".join(out[:third]), " ".join(out[third:2 * third]), " ".join(out[2 * third:])]
 
 
+def og_image(url):
+    try:
+        page = get(url, "text/html,*/*").decode("utf-8", "ignore")
+    except Exception:
+        return ""
+    for pat in (r'property=["\']og:image["\'][^>]*content=["\']([^"\']+)',
+                r'content=["\']([^"\']+)["\'][^>]*property=["\']og:image',
+                r'name=["\']twitter:image["\'][^>]*content=["\']([^"\']+)'):
+        m = re.search(pat, page, re.I)
+        if m:
+            u = m.group(1)
+            if u.startswith("http"):
+                return u
+    return ""
+
+
 def article_paras(url):
     try:
         txt = get(url, "text/html,*/*").decode("utf-8", "ignore")
@@ -179,7 +195,12 @@ MR_QUERIES = [
     gn("माहेर दिवाळी अंक"),
     gn("लोकप्रभा"),
     gn("साप्ताहिक सकाळ"),
-    gn("मराठी पाककृती रेसिपी"),
+    gn("दिवाळी फराळ"),
+    gn("फराळ पदार्थ चकली अनारसे"),
+    gn("दिवाळी सण परंपरा"),
+    gn("मराठी अभिनेता मुलाखत"),
+    gn("मराठी सेलिब्रिटी गप्पा"),
+    gn("मराठी साहित्य संमेलन"),
     gn("पुणे मुंबई बातम्या"),
 ]
 
@@ -190,6 +211,12 @@ MR_SECTIONS = [
      "match": r"नाटक|रंगभूमी|नाट्य|थिएटर|नाट्यसंमेलन|नाट्यस्पर्धा"},
     {"id": "serial", "name": "मालिका आणि मनोरंजन", "emoji": "\U0001F4FA", "want": 4,
      "match": r"मालिका|अभिनेता|अभिनेत्री|चित्रपट|मनोरंजन|झी मराठी|स्टार प्रवाह|सोनी मराठी|कलर्स मराठी"},
+    {"id": "gappa", "name": "गप्पा मजा", "emoji": "\U0001F4AC", "want": 4,
+     "match": r"मुलाखत|गप्पा|अभिनेता|अभिनेत्री|सेलिब्रिटी|कलाकार|दिग्दर्शक|निर्माता"},
+    {"id": "faral", "name": "दिवाळी फराळ", "emoji": "\U0001F36A", "want": 4,
+     "match": r"फराळ|चकली|अनारसे|शंकरपाळी|करंजी|चिवडा|लाडू|दिवाळी पदार्थ"},
+    {"id": "sant", "name": "सण आणि परंपरा", "emoji": "\U0001F3EE", "want": 3,
+     "match": r"दिवाळी|लक्ष्मीपूजन|भाऊबीज|नरकचतुर्दशी|गुडी पाडवा|गणेशोत्सव|नवरात्र|सण|उत्सव|परंपरा"},
     {"id": "maskari", "name": "मस्करी", "emoji": "\U0001F602", "want": 3,
      "match": r"मस्करी|विनोद|हास्य|ठिणगी|कॉमेडी|फनी"},
     {"id": "anks", "name": "दिवाळी अंक आणि मासिके", "emoji": "\U0001F4DA", "want": 5,
@@ -198,26 +225,31 @@ MR_SECTIONS = [
 
 # hand-written Marathi recipes, always present
 MR_RECIPES = [
-    {"t": "कांदा पोहे", "hook": "मराठी घरातला सकाळचा आवडता नाश्ता.",
-     "body": ["पोहे पाण्यात ५ मिनिटे भिजत ठेवा आणि नंतर पाणी पूर्ण निथळून टाका.",
-              "कढईत तेल गरम करा. मोहरी, जिरे, कढीपत्ता आणि हिरवी मिरची घाला. नंतर बारीक चिरलेला कांदा आणि गाजर घालून परता.",
-              "भिजलेले पोहे, मीठ आणि हळद घाला. २ मिनिटे ढवळा. वरून लिंबू आणि कोथिंबीर घालून सजवा."],
-     "wow": "पोहे हा महाराष्ट्राचा नाश्ता आहे, पण आता तो जगभरच्या मराठी घरांत मिळतो."},
-    {"t": "थालीपीठ", "hook": "एका तव्यावर संपूर्ण जेवण.",
-     "body": ["बाजरी किंवा गव्हाचे पीठ, बारीक चिरलेला कांदा, कोथिंबीर, मेथी, मीठ आणि तिखट एकत्र मिसळा.",
-              "पाणी घालून गुळगुळीत कणीक मळा. तवा गरम करा आणि हाताने कणीक पसरवा.",
-              "दोन्ही बाजूंनी तूप घालून भाजा. वरून ताक किंवा लोणचे घालून खा."],
-     "wow": "थालीपीठ हे मराठी घरांत 'भाजणी' च्या रूपात पिढ्यानपिढ्या चालत आले आहे."},
-    {"t": "कोल्हापुरी तांबडा रस्सा", "hook": "तिखट, चटकदार आणि अगदी मराठमोळा.",
-     "body": ["सुक्या खोबऱ्याचा, तिळाचा, मसाल्यांचा आणि कांद्याचा भाजलेला मसाला बारीक वाटा.",
-              "कढईत तेल गरम करा, कांदा आणि आले-लसूण वाटण घाला. नंतर टोमॅटो आणि वाटलेला मसाला घाला.",
-              "पाणी घालून उकळा. तयार रस्सा भात, भाकरी किंवा वड्याबरोबर खा."],
-     "wow": "कोल्हापूरचा रस्सा तिखटाईसाठी प्रसिद्ध आहे. तिथे 'तांबडा रस्सा' हा स्वतंत्र पदार्थ म्हणूनच ओळखला जातो."},
-    {"t": "श्रीखंड", "hook": "सणाच्या दिवशीची गोडी.",
-     "body": ["दही चाळणीत बांधून रात्रभर टांगून ठेवा, जेणेकरून पाणी निघून जाईल.",
-              "चक्का गुळगुळीत होईपर्यंत हलवा. त्यात साखर, वेलची पूड आणि केशर घाला.",
-              "वरून सुकामेवा आणि आमच्या घरची आवडती बारीक चिरलेली फळे घालून थंड करा."],
-     "wow": "श्रीखंड हे गुजरातच्या 'શ્રીખંડ' सारखेच आहे, पण महाराष्ट्रात ते विशेषतः गुढीपाडवा आणि दिवाळीला बनते."},
+    {"t": "चकली", "hook": "दिवाळीचा पहिला फराळ, आणि सर्वात आवडता.",
+     "body": ["एक वाटी बेसन, दोन वाट्या तांदळाची पिठी, मीठ, तिखट, तीळ आणि गरम तेलाचा मोहरा एकत्र करा.",
+              "पाणी घालून घट्ट कणीक मळा. चकलीच्या साच्यातून तव्यावर गोल आकारात पाडा.",
+              "मंद आगीवर दोन्ही बाजूंनी खरपूस तळा. थंड झाल्यावर हवाबंद डब्यात ठेवा."],
+     "wow": "चकली नीट शिजली की आवाज करते. म्हणूनच पुराण्या घरांत तिला 'खडक चकली' म्हणतात."},
+    {"t": "अनारसे", "hook": "गोड आणि खमंग, दिवाळीची खासियत.",
+     "body": ["तांदूळ भिजवून वाळवा आणि बारीक पिठी करा. गूळ पाण्यात वितळवून गाळून घ्या.",
+              "पिठी, गूळाचा पाक, तीळ आणि वेलची एकत्र करून गुळगुळीत कणीक मळा.",
+              "ओल्या कापडावर छोट्या पुऱ्या लाटा आणि मंद आगीवर तळा."],
+     "wow": "अनारसे जास्त दिवस टिकतात, म्हणूनच दिवाळीत भेट म्हणून देण्याची प्रथा आहे."},
+    {"t": "शंकरपाळी", "hook": "चहाबरोबर सर्वात जास्त चालणारा फराळ.",
+     "body": ["मैदा, साखर, तूप, मीठ आणि दूध एकत्र करून कणीक मळा. अर्धा तास झाकून ठेवा.",
+              "पुऱ्या लाटून चौकोनात कापा. मंद आगीवर सोनेरी रंग येईपर्यंत तळा.",
+              "थंड झाल्यावर साखरेच्या पावडरमध्ये एकदा ढवळून घ्या."],
+     "wow": "शंकरपाळीला इंग्रजीत 'diamond cuts' म्हणतात, कारण तिचा आकार हिऱ्यासारखा असतो."},
+    {"t": "करंजी", "hook": "आत गोड, बाहेर खरपूस.",
+     "body": ["मैदा, तूप आणि मीठ घेऊन कणीक मळा. ओल्या कापडाखाली ठेवा.",
+              "सुकामेवा, खोबरे, गूळ आणि वेलचीचे सारण भाजून तयार करा.",
+              "पुऱ्या लाटा, कडेला पाणी लावा, सारण भरा आणि चंद्रकोरीत बंद करा. मंद आगीवर तळा."],
+     "wow": "करंजी महाराष्ट्रात 'करंजी' आहे, तर गुजरातेत ती 'घुघरा' म्हणून ओळखली जाते."},
+    {"t": "पोहे चिवडा", "hook": "फराळात तिखटाची गरज भागवायला.",
+     "body": ["पातळ पोहे कोरडे तळा आणि बाजूला ठेवा. शेंगदाणे आणि डाळही तळा.",
+              "कढईत तेल गरम करा, मोहरी, जिरे, कढीपत्ता, हिरवी मिरची आणि आले घाला.",
+              "हळद, मीठ, साखर आणि तिखट घाला. नंतर तळलेले पोहे आणि शेंगदाणे घालून मिसळा."],
+     "wow": "चिवडा दिवाळीतलाच नाही, पुण्यात वर्षभर मिळतो. पण फराळात त्याला वेगळीच चव येते."},
 ]
 
 MR_ANKS = [
@@ -250,61 +282,28 @@ MR_ANKS = [
 
 # ---------------------------------------------------------------- Konkani
 KOK_QUERIES = [
+    gn("Goa news", "en", "IN", "IN:en"),
+    gn("Mangalore news", "en", "IN", "IN:en"),
+    gn("Udupi Karnataka news", "en", "IN", "IN:en"),
+    gn("Konkani", "en", "IN", "IN:en"),
     gn("Chitrapur Math Shirali", "en", "IN", "IN:en"),
     gn("Kashi Math Goud Saraswat", "en", "IN", "IN:en"),
-    gn("Partagali Jeevottam Math", "en", "IN", "IN:en"),
-    gn("Shantadurga temple Goa", "en", "IN", "IN:en"),
-    gn("Mangeshi temple Goa", "en", "IN", "IN:en"),
-    gn("Konkani language", "en", "IN", "IN:en"),
-    gn("Gaud Saraswat Brahmin community", "en", "IN", "IN:en"),
+    gn("Shantadurga Mangeshi temple", "en", "IN", "IN:en"),
+    gn("Gaud Saraswat Brahmin", "en", "IN", "IN:en"),
+    gn("Kanhangad Konkani", "en", "IN", "IN:en"),
+    gn("Kochi Konkani community", "en", "IN", "IN:en"),
 ]
+KOK_FEEDS = ["https://www.mangalorean.com/feed/"]
 
 KOK_SECTIONS = [
-    {"id": "maths", "name": "मठ", "emoji": "\U0001F6D5", "want": 5,
-     "match": r"math|matha|shirali|chitrapur|kashi|partagali|jeevottam|swamiji|pontiff|sanyasi"},
-    {"id": "temples", "name": "मंदिरे", "emoji": "\U0001F549", "want": 5,
-     "match": r"temple|shantadurga|mangesh|manguesh|devsthan|devasthan|utsav|jatra|palkhi|festival"},
-    {"id": "community", "name": "समाज", "emoji": "\U0001F91D", "want": 5,
-     "match": r"saraswat|konkani|gaud|chitrapur|community|samaj|mangalore|udupi|kanhangad|kochi|goa"},
-]
-
-# hand-written Konkani-community cards (English; the app shows the Marathi/Konkani names)
-KOK_CARDS = [
-    {"t": "Shri Chitrapur Math, Shirali", "hook": "The spiritual home of the Chitrapur Saraswat community.",
-     "body": ["The Shri Chitrapur Math is the math of the Chitrapur Saraswat Brahmin community. Its headquarters is at Shirali, in Uttara Kannada district of Karnataka.",
-              "The community traces its roots to the Saraswat Brahmins who settled along the Kanara coast. The math has guided the community's religious and cultural life for generations, and runs schools, hostels and charitable work alongside its spiritual role.",
-              "Its temples and shrines are cared for by the math, and the community gathers at Shirali through the year."],
-     "wow": "The community's members are spread across Maharashtra, Karnataka, Goa and overseas, but Shirali remains the centre."},
-    {"t": "Shrimad Partagali Jeevottam Math", "hook": "The Gaud Saraswat math in Goa.",
-     "body": ["The Shrimad Partagali Jeevottam Math stands at Partagali in Canacona, south Goa, and is one of the principal maths of the Gaud Saraswat Brahmin community.",
-              "It is named after Shrimad Jeevottam Teerth, and its deity is Shri Ramnath. The math has a long tradition of scholarship and of looking after temples in the region.",
-              "Its annual festivals draw GSB families from Goa, Karnataka, Maharashtra and beyond."],
-     "wow": "The Gaud Saraswat community is often called the GSB, and its maths in Goa and at Kashi are both central to its identity."},
-    {"t": "Shri Kashi Math Samsthan", "hook": "A Konkani community's math, far away in Varanasi.",
-     "body": ["The Shri Kashi Math Samsthan is a math of the Gaud Saraswat Brahmin community with its headquarters at Varanasi (Kashi).",
-              "It traces its line of spiritual heads back centuries, and its branches and followers are spread through coastal Karnataka, Goa, Kerala and Maharashtra.",
-              "The math runs temples, schools and charitable institutions, and its swamijis travel to the community's centres through the year."],
-     "wow": "For a coastal community, having its math in Kashi is a reminder of how far Saraswat families travelled for scholarship."},
-    {"t": "Shri Shantadurga Temple, Kavlem", "hook": "The goddess who is said to have settled a quarrel.",
-     "body": ["The Shri Shantadurga temple at Kavlem in Ponda, Goa, is one of the most visited temples of the Gaud Saraswat community.",
-              "The name Shantadurga means the goddess of peace. Tradition says she mediated between Shiva and Vishnu, and the temple's annual jatra is a major event in Goa.",
-              "The present temple was built in the 18th century, after the original shrine was moved from its older site."],
-     "wow": "Several Goan temples, including this one, were relocated inland in the 16th century to keep them safe."},
-    {"t": "Shri Mangesh Temple, Priol", "hook": "A Shiva temple that belongs to the community.",
-     "body": ["The Shri Mangesh temple at Priol (Mangeshi) in Ponda, Goa, is dedicated to Shiva and is closely tied to the Gaud Saraswat Brahmin community.",
-              "The temple is known for its deepstambha, its tank and its distinctive Goan architecture, and its annual festivals draw large crowds.",
-              "Like Shantadurga, the temple was moved to its present site in the 16th century."],
-     "wow": "The Mangesh temple's architecture mixes Goan and Konkani styles, and it is one of the best-known temples in Goa."},
-    {"t": "Konkani across four states", "hook": "One language, many coastlines.",
-     "body": ["Konkani is spoken along the western coast, from Maharashtra through Goa and coastal Karnataka to northern Kerala.",
-              "It is the official language of Goa and is written in Devanagari, though Roman script is also widely used by communities in Mangalore and Kochi.",
-              "Konkani-speaking communities settled in Kanhangad in Kerala and in Kochi over centuries, and their temples and maths are still active today."],
-     "wow": "Konkani was added to the Eighth Schedule of the Indian Constitution in 1992."},
-    {"t": "The Saraswat thread", "hook": "Chitrapur and Gaud Saraswat are not the same community.",
-     "body": ["The Konkani Saraswat world has two large branches: the Gaud Saraswat Brahmins and the Chitrapur Saraswats.",
-              "The Gaud Saraswats are spread across Goa, coastal Karnataka and Kerala, and follow the Partagali and Kashi maths.",
-              "The Chitrapur Saraswats are a smaller community centred on Shirali in Karnataka, with their own math and their own traditions."],
-     "wow": "Both branches share the Konkani language and a coastal heritage, but their maths and customs are distinct."},
+    {"id": "goa", "name": "\u0917\u094b\u0935\u093e", "emoji": "\U0001F3D6", "want": 5,
+     "match": r"goa|panaji|panjim|margao|ponda|vasco|mapusa|canacona"},
+    {"id": "mangalore", "name": "\u092e\u0902\u0917\u0933\u0942\u0930 \u0906\u0923\u093f \u0915\u0930\u094d\u0928\u093e\u091f\u0915", "emoji": "\U0001F30A", "want": 5,
+     "match": r"mangal|udupi|kundapur|karkala|uttara kannada|shirali|karwar|kanara|kanhangad|kasaragod"},
+    {"id": "maths", "name": "\u092e\u0920 \u0906\u0923\u093f \u092e\u0902\u0926\u093f\u0930\u0947", "emoji": "\U0001F6D5", "want": 5,
+     "match": r"math|shirali|chitrapur|kashi|partagali|jeevottam|shantadurga|mangesh|temple|swamiji"},
+    {"id": "community", "name": "\u0938\u092e\u093e\u091c", "emoji": "\U0001F91D", "want": 5,
+     "match": r"konkani|saraswat|gaud|gsb|community|kochi|kerala"},
 ]
 
 
@@ -326,8 +325,9 @@ def build_section(items, sec, used):
         if sum(len(p.split()) for p in short) < MIN_WORDS:
             continue
         used.add(k)
+        img = it["image"] or og_image(it["link"])
         out.append({"kind": "story", "title": it["title"][:120], "paras": short,
-                    "image": it["image"], "source": it["source"],
+                    "image": img, "source": it["source"],
                     "link": it["link"], "date": it["date"]})
     return out
 
@@ -347,9 +347,6 @@ def main():
             mr_sections.append({"id": sec["id"], "name": sec["name"],
                                 "emoji": sec["emoji"], "items": got})
     # recipes always present, hand-written
-    mr_sections.append({"id": "anksabout", "name": "दिवाळी अंक: परंपरा", "emoji": "\U0001F4D6",
-                        "items": [{"kind": "card", "title": a["t"], "hook": a["hook"],
-                                   "paras": a["body"], "wow": a["wow"]} for a in MR_ANKS]})
     mr_sections.append({"id": "pakkruti", "name": "पाककृती", "emoji": "\U0001F372",
                         "items": [{"kind": "card", "title": r["t"], "hook": r["hook"],
                                    "paras": r["body"], "wow": r["wow"]} for r in MR_RECIPES]})
@@ -358,7 +355,7 @@ def main():
                   f, ensure_ascii=False, separators=(",", ":"))
 
     # ---- Konkani edition ----
-    kok_items = gather([], KOK_QUERIES)
+    kok_items = gather(KOK_FEEDS, KOK_QUERIES)
     print("KOK gathered:", len(kok_items))
     used2 = set()
     kok_sections = []
@@ -368,13 +365,6 @@ def main():
         if got:
             kok_sections.append({"id": sec["id"], "name": sec["name"],
                                  "emoji": sec["emoji"], "items": got})
-    kok_sections.append({"id": "about", "name": "मठ आणि मंदिरे", "emoji": "\U0001F6D5",
-                         "items": [{"kind": "card", "title": c["t"], "hook": c["hook"],
-                                    "paras": c["body"], "wow": c["wow"]} for c in KOK_CARDS]})
-    with open("pulse-kok.json", "w", encoding="utf-8") as f:
-        json.dump({"generated": gen, "lang": "kok", "sections": kok_sections},
-                  f, ensure_ascii=False, separators=(",", ":"))
-
     print("WROTE pulse-mr.json and pulse-kok.json")
 
 
