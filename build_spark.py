@@ -87,6 +87,11 @@ FEEDS = {
     "pressgang": ["https://pressgang.news/feed/"],
     "timeforkids": ["https://www.timeforkids.com/feed/"],
     "newsround": ["https://feeds.bbci.co.uk/newsround/rss.xml"],
+    "current": ["https://feeds.bbci.co.uk/newsround/rss.xml",
+                "https://www.timeforkids.com/feed/",
+                "https://pressgang.news/feed/",
+                "https://www.sciencejournalforkids.org/feed/",
+                "https://feeds.bbci.co.uk/news/world/rss.xml"],
     "screen": [],
 }
 # keyword queries per group (turned into Google News feeds at run time)
@@ -95,9 +100,10 @@ KEYWORDS = {
                ("family film release", "en-au")],
 }
 GROUP_NAME = {"pressgang": "Press Gang News", "timeforkids": "TIME for Kids",
+              "current": "What's happening",
               "newsround": "Kid news", "science": "Science & space",
               "frontier": "Frontier tech", "screen": "Screen"}
-PER_GROUP = {"frontier": 6, "science": 6, "screen": 4}
+PER_GROUP = {"frontier": 6, "science": 6, "screen": 4, "current": 6}
 WANT_DEFAULT = 6
 
 # sport: headline updates + junior achievements
@@ -498,12 +504,16 @@ def save_seen():
     print("SEEN saved:", len(keep))
 
 
+MAX_AGE_H = 72          # current affairs: nothing older than three days
+
+
 def fresh_first(items):
-    """Drop anything shown in the last two months; reuse the oldest only if nothing is new."""
-    fresh = [x for x in items if key_of(x["title"]) not in SEEN]
-    if fresh:
-        return fresh
-    return sorted(items, key=lambda x: SEEN.get(key_of(x["title"]), 0))
+    """Only genuinely unseen, genuinely current stories - a read one never comes back."""
+    cut = (time.time() - MAX_AGE_H * 3600) * 1000
+    fresh = [x for x in items
+             if key_of(x["title"]) not in SEEN
+             and (not x.get("date") or x["date"] >= cut)]
+    return fresh
 
 
 def build_news(age, budget):
@@ -663,11 +673,33 @@ def lint_library():
         print("   %2d words  %s" % (w, ti))
 
 
+def load_prev_news():
+    try:
+        with open(os.path.join("spark", "edition.json"), encoding="utf-8") as f:
+            return json.load(f).get("news", [])
+    except Exception:
+        return []
+
+
+def carry_over(news, prev):
+    """Keep the last edition's stories while they are still current, so a quiet
+    hour never empties a shelf - but never resurrect one that has aged out."""
+    cut = (time.time() - MAX_AGE_H * 3600) * 1000
+    keep = [x for x in prev if not x.get("date") or x["date"] >= cut]
+    have = {key_of(x["title"]) for x in news}
+    for x in keep:
+        if key_of(x["title"]) in have:
+            continue
+        have.add(key_of(x["title"]))
+        news.append(x)
+    return news
+
+
 def main():
     age = age_now()
     gen = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print("age", age)
-    news = build_news(age, word_budget(age))
+    news = carry_over(build_news(age, word_budget(age)), load_prev_news())
     sport = build_sport(build_analysis(age, word_budget(age)))
     screen = build_screen()
     os.makedirs("spark", exist_ok=True)

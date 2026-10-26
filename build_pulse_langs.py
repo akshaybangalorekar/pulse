@@ -20,6 +20,7 @@ UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/124 Safari/537.36")
 TIMEOUT = 25
 MIN_WORDS = 30
+MAX_AGE_H = 48
 
 BAD = re.compile(r"(reels?\s*व्हिडिओ|जाहिरात|व्हिडिओ पहा|subscribe|advertisement|"
                  r"हत्या|खून|बलात्कार|अत्याचार|अपघात|मृत्यू|आत्महत्या|अंत्यविधी|"
@@ -178,7 +179,8 @@ def gather(feeds, queries):
             seen.add(k)
             items.append(it)
     items.sort(key=lambda x: x["date"], reverse=True)
-    return items
+    cut = (time.time() - MAX_AGE_H * 3600) * 1000
+    return [x for x in items if not x.get("date") or x["date"] >= cut]
 
 
 # ---------------------------------------------------------------- Marathi
@@ -332,16 +334,48 @@ def build_section(items, sec, used):
     return out
 
 
+def load_prev(path):
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def carry(new, prev_items, want):
+    cut = (time.time() - MAX_AGE_H * 3600) * 1000
+    out, seen = [], set()
+    for it in new:
+        t = it["title"].lower()[:60]
+        if t in seen:
+            continue
+        seen.add(t)
+        out.append(it)
+        if len(out) >= want:
+            return out
+    for it in prev_items:
+        if len(out) >= want:
+            break
+        t = it.get("title", "").lower()[:60]
+        if t in seen or (it.get("date") and it["date"] < cut):
+            continue
+        seen.add(t)
+        out.append(it)
+    return out
+
+
 def main():
     gen = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # ---- Marathi edition ----
+    mr_prev = {s.get("id"): s.get("items", []) for s in load_prev("pulse-mr.json").get("sections", [])}
     mr_items = gather(MR_FEEDS, MR_QUERIES)
     print("MR gathered:", len(mr_items))
     used = set()
     mr_sections = []
     for sec in MR_SECTIONS:
         got = build_section(mr_items, sec, used)
+        got = carry(got, mr_prev.get(sec["id"], []), sec["want"])
         print("  ", sec["id"], len(got))
         if got:
             mr_sections.append({"id": sec["id"], "name": sec["name"],
@@ -355,12 +389,14 @@ def main():
                   f, ensure_ascii=False, separators=(",", ":"))
 
     # ---- Konkani edition ----
+    kok_prev = {s.get("id"): s.get("items", []) for s in load_prev("pulse-kok.json").get("sections", [])}
     kok_items = gather(KOK_FEEDS, KOK_QUERIES)
     print("KOK gathered:", len(kok_items))
     used2 = set()
     kok_sections = []
     for sec in KOK_SECTIONS:
         got = build_section(kok_items, sec, used2)
+        got = carry(got, kok_prev.get(sec["id"], []), sec["want"])
         print("  ", sec["id"], len(got))
         if got:
             kok_sections.append({"id": sec["id"], "name": sec["name"],

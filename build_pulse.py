@@ -356,7 +356,12 @@ def gather(feeds, queries=None, tag_only=False, prefer_tag=False):
                    reverse=True)
     else:
         items.sort(key=lambda x: (score(x), x["date"]), reverse=True)
-    return items
+    # a news app serves current news: drop anything older than the window
+    cut = (time.time() - MAX_AGE_H * 3600) * 1000
+    fresh = [x for x in items if not x.get("date") or x["date"] >= cut]
+    if len(fresh) < len(items):
+        print("   aged out:", len(items) - len(fresh))
+    return fresh
 
 
 def article_text(url):
@@ -422,6 +427,7 @@ def impact_line(paras):
 USED = set()
 SEEN_FILE = "pulse-seen.json"
 SEEN_DAYS = 60
+MAX_AGE_H = 48          # only stories published in the last two days
 SEEN = {}
 
 
@@ -599,17 +605,7 @@ def build_story_section(sec):
                     "impact": imp, "image": it["image"],
                     "source": it["source"], "link": it["link"], "date": it["date"]})
         n += 1
-    if not out and stale:
-        stale.sort(key=lambda x: SEEN.get(key_of(x["title"]), 0))
-        it = stale[0]
-        paras = article_text(it["link"]) if it["link"].startswith("http") else []
-        if not paras:
-            paras = [it["desc"]] if it["desc"] else []
-        short = condense(paras)
-        if sum(len(p.split()) for p in short) >= MIN_WORDS:
-            out.append({"kind": "story", "title": it["title"][:120], "paras": short,
-                        "impact": impact_line(paras), "image": it["image"],
-                        "source": it["source"], "link": it["link"], "date": it["date"]})
+    # a section shows only genuinely unseen, genuinely recent stories - never a recycled one
     return out
 
 
@@ -634,12 +630,50 @@ def build_head_section(sec):
     return out
 
 
+def load_prev():
+    """The edition already published - its stories stay until they age out."""
+    try:
+        with open("pulse.json", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def merge_section(new_items, prev_items, want):
+    """New stories first, then whatever is still current from the last edition.
+    Nothing already published is ever brought back after it has aged out."""
+    cut = (time.time() - MAX_AGE_H * 3600) * 1000
+    out, titles = [], set()
+    for it in new_items:
+        t = key_of(it.get("title", ""))
+        if t in titles:
+            continue
+        titles.add(t)
+        out.append(it)
+        if len(out) >= want:
+            return out
+    for it in prev_items:
+        if len(out) >= want:
+            break
+        t = key_of(it.get("title", ""))
+        if t in titles:
+            continue
+        if it.get("date") and it["date"] < cut:
+            continue                      # too old - let it go
+        titles.add(t)
+        out.append(it)
+    return out
+
+
 def main():
     load_seen()
+    prev = load_prev()
+    prev_by_id = {s.get("id"): s.get("items", []) for s in prev.get("sections", [])}
     gen = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     sections = []
     for sec in SECTIONS:
         items = build_story_section(sec) if sec["kind"] == "story" else build_head_section(sec)
+        items = merge_section(items, prev_by_id.get(sec["id"], []), sec["want"])
         if items:
             sections.append({"id": sec["id"], "name": sec["name"], "emoji": sec["emoji"],
                              "items": items})

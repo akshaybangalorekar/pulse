@@ -628,6 +628,7 @@ function railHTML(title,items,badge){
 
 /* ---- suggestions: what to read next, leaning STEM + social, based on his reading ---- */
 const SHELVES=[
+  {key:"current",     title:"\uD83D\uDCF0 What's happening",          cats:["current","newsround","pressgang","timeforkids"]},
   {key:"frontier",    title:"\uD83D\uDE80 Frontier tech",            cats:["frontier"]},
   {key:"science",     title:"\uD83D\uDD2C Science & space",           cats:["science"]},
   {key:"maths",       title:"\uD83D\uDD22 Maths magic",               cats:["maths"]},
@@ -775,7 +776,8 @@ function renderNews(){
   const unread=all.filter(o=>!readToday(o.id));
   const items=unread.length?unread:all;          // read today = gone for today
   const tItems=topics.map(topicItem).sort((a,b)=>(readToday(a.id)?1:0)-(readToday(b.id)?1:0));
-  const pick=cat=>tItems.filter(o=>o.cat===cat);
+  const allItems=all.concat(tItems);
+  const pick=cat=>allItems.filter(o=>o.cat===cat);
   const hero=items[0]||tItems[0];
   if(hero) hero.sub=hero.paras?hero.paras[0]:"";
 
@@ -791,14 +793,17 @@ function renderNews(){
   if(saved.length) html+=railHTML("🔖 Saved", saved);
   html+=railHTML("\u2728 New today", items, "FRESH");
   html+=suggestHTML();
-  const promoted=recommendShelves(3);
+  // current affairs always lead: it is a news app
+  const promoted=["current"].concat(
+    recommendShelves(3).filter(function(k){ return k!=="current"; }).slice(0,2));
   promoted.forEach(function(key,i){
     const sh=SHELVES.find(function(s){ return s.key===key; });
-    if(sh) html+=shelfHTML(sh, tItems, i===0?"MORE TO EXPLORE":"");
+    if(!sh) return;
+    html+=shelfHTML(sh, allItems, key==="current"?"NEWS":(i===1?"MORE TO EXPLORE":""));
   });
   SHELVES.forEach(function(sh){
     if(promoted.indexOf(sh.key)>-1) return;      // already shown above
-    html+=shelfHTML(sh, tItems, "");
+    html+=shelfHTML(sh, allItems, "");
   });
   if(scr.length) html+=railHTML("🎬 Screen picks", scr.map(x=>headItem(x,"Screen")));
   $("#app").innerHTML=html;
