@@ -1,0 +1,59 @@
+{
+ "seen": {
+  "pulse-seen.json": {
+   "count": 216,
+   "sample": [
+    "kerala blasters takeover and inter kashi s wage",
+    "arsenal join man city at premier league summit",
+    "indian super league secures dual broadcast deal with",
+    "i persuaded my club to give me a"
+   ]
+  },
+  "spark-seen.json": {
+   "count": 36,
+   "sample": [
+    "atlas robot s new hand may outperform humanlike",
+    "robotic dog controlled with a computer powered by",
+    "intel gets waiver after worries fuzzy us ban",
+    "video friday quadruped robot solves giant rubik s"
+   ]
+  }
+ },
+ "feeds": {
+  "https://feeds.bbci.co.uk/newsround/rss.xml": {
+   "entries": 81,
+   "sample": "Watch Newsround"
+  },
+  "https://www.abc.net.au/news/feed/51120/rss.xml": {
+   "entries": 25,
+   "sample": "Farmers wear cost as starving flying foxes damage banan"
+  },
+  "https://www.abc.net.au/news/feed/45910/rss.xml": {
+   "entries": 25,
+   "sample": "The confronting data these childcare chains don't want "
+  },
+  "https://www.sciencejournalforkids.org/feed/": {
+   "entries": 12,
+   "sample": "How can magnets help deliver medicines?"
+  },
+  "https://www.smithsonianmag.com/rss/latest_articles/": {
+   "entries": 10,
+   "sample": "Shamonda Virus Infected and Killed a Person for the Fir"
+  },
+  "https://www.newscientist.com/feed/home/": {
+   "entries": 10,
+   "sample": "Wind turbines have killed 19 million bats in 40 years i"
+  },
+  "https://feeds.bbci.co.uk/news/world/rss.xml": {
+   "entries": 28,
+   "sample": "Lula wins fourth term in dramatic Brazil election comeb"
+  },
+  "https://www.thehindu.com/sci-tech/feeder/default.rss": {
+   "entries": 60,
+   "sample": "A ready solution to tackle anaemia"
+  },
+  "https://indianexpress.com/section/technology/feed/": {
+   "error": "HTTPError: HTTP Error 403: Forbidden"
+  }
+ }
+}
