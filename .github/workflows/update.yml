@@ -11,6 +11,8 @@ on:
       - "pulse.json"
       - "spark-state.json"
       - "pulse-seen.json"
+      - "pulse-mr.json"
+      - "pulse-kok.json"
       - "spark-seen.json"
 
 permissions:
@@ -42,11 +44,14 @@ jobs:
       - name: Build Pulse feed
         run: python build_pulse.py
 
+      - name: Build Marathi and Konkani editions
+        run: python build_pulse_langs.py
+
       - name: Commit feeds
         run: |
           git config user.name "pulse-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add feed.json pulse.json pulse-seen.json spark-seen.json spark/world.json spark/feed.json spark/edition.json
+          git add feed.json pulse.json pulse-mr.json pulse-kok.json pulse-seen.json spark-seen.json spark/world.json spark/feed.json spark/edition.json
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
