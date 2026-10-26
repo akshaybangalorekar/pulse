@@ -1,0 +1,64 @@
+{
+ "https://swarajyamag.com/feed": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://swarajyamag.com/rss": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://swarajyamag.com/feed/": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://swarajyamag.com/business/feed": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://swarajyamag.com/economy/feed": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://swarajyamag.com/india/feed": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.ptinews.com/rss": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://www.ptinews.com/rss/national": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://www.ptinews.com/feed": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://www.ptinews.com/rss/business": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://ptinews.com/rss": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://www.aninews.in/rss/": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.aninews.in/rss/national/": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.aninews.in/rss/business/": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://aninews.in/feed": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.aninews.in/rss/general/": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ }
+}
