@@ -22,6 +22,29 @@ CATS = [
 ]
 
 TOPICS = [
+ # ---------------- GEN Z / TRENDS ----------------
+ {"id":"scubadance","cat":"trending","t":"The Scuba Dance",
+  "hook":"One hand on your nose, the other waving, knees bouncing. That is the whole dance.",
+  "paras":[
+   "In October 2025 a rapper and creator called Desean Hawk Logan-Russell, who posts as h5wk, put up a TikTok of himself dancing to his own song \"Scuba Juke\". The move had three parts: pinch your nose shut with one hand, sweep the other arm across in front of you, and open and close your knees on the beat. It looked like someone about to dive, which is where the name came from.",
+   "It spread because it is almost impossible to get wrong. Most dance trends need you to learn a long routine. This one has three movements, and the arm sweep can be squeezed into a car seat, a hallway or an office chair.",
+   "Then it jumped off the phone. American football players used it as a touchdown celebration. Figure skaters and ice hockey players did it at the 2026 Winter Olympics while showing off their medals. By 2026 it was turning up at weddings, school hallways and graduation ceremonies."],
+  "wow":"A cartoon fox started the second wave. A GIF of Nick Wilde from Zootopia doing the dance went round, and the internet ended up arguing about whether the animation was drawn by hand or made by AI."},
+ {"id":"danceglobal","cat":"trending","t":"How a dance goes global",
+  "hook":"Every viral dance follows roughly the same recipe.",
+  "paras":[
+   "First, one person posts a move that anyone can copy in ten seconds. If it takes an hour to learn, it stays on one account.",
+   "Second, it needs a sound. The song and the move travel together, so hearing four bars tells you exactly what to do.",
+   "Third, it needs someone outside the app to do it. The moment a footballer, a cricketer or an athlete does your dance on live television, it stops being a phone thing and becomes a real-world thing.",
+   "Fourth, it needs a joke attached. A GIF, a parody or an argument about it keeps it alive long after the song stops charting."],
+  "wow":"That last step is why so many trends come back a second time. The dance does not get popular again because people forgot it. It comes back because someone made a funny version of it."},
+ {"id":"whycopy","cat":"trending","t":"Why your brain loves copying a trend",
+  "hook":"Copying is not lazy. It is how humans learn.",
+  "paras":[
+   "Humans are unusually good at copying. Watch someone do something once and your brain quietly rehearses it too, using the same circuits it would use to do the move yourself.",
+   "That is why a simple move spreads faster than a clever one. The easier it is to copy, the more brains can rehearse it, and the more people join in.",
+   "It also explains why trends feel like they happen to you rather than because of you. By the time you notice a dance, thousands of people have already rehearsed it."],
+  "wow":"Scientists call this mirroring. It is the same reason you yawn when someone else yawns."},
  # ---------------- MATHS ----------------
  {"id":"zero","cat":"maths","t":"Zero the Superhero","e":"0\u20E3","w":"0",
   "hook":"The number that changed the world came from India.",

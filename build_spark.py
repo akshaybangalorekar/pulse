@@ -98,12 +98,16 @@ FEEDS = {
 KEYWORDS = {
     "screen": [("new kids movie", "en-au"), ("new animated family film", "en-au"),
                ("family film release", "en-au")],
+    # what his classmates are actually talking about this week
+    "trending": [("viral dance trend", "en-au"), ("TikTok trend explained", "en-au"),
+                 ("Gen Z trend", "en-au"), ("internet meme explained", "en-au"),
+                 ("viral challenge kids", "en-au"), ("new app teenagers", "en-au")],
 }
 GROUP_NAME = {"pressgang": "Press Gang News", "timeforkids": "TIME for Kids",
               "current": "What's happening",
-              "newsround": "Kid news", "science": "Science & space",
+              "newsround": "Kid news", "trending": "Trending", "science": "Science & space",
               "frontier": "Frontier tech", "screen": "Screen"}
-PER_GROUP = {"frontier": 6, "science": 6, "screen": 4, "current": 6}
+PER_GROUP = {"frontier": 6, "science": 6, "screen": 4, "current": 6, "trending": 5}
 WANT_DEFAULT = 6
 
 # sport: headline updates + junior achievements
