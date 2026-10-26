@@ -189,12 +189,6 @@
   .sync .st{font-size:12px;font-weight:800;margin-top:9px;color:var(--muted)}
   .sync .st.ok{color:#5fe6a8}.sync .st.bad{color:#ff8f8f}
   .devlist{font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:8px}
-  .mcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;
-    padding:13px 15px;margin:0 var(--pad) 11px}
-  .mhead{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:900;cursor:pointer}
-  .mhead span{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:800}
-  .mrow{font-size:14.5px;line-height:1.35;padding:10px 0 0;cursor:pointer;color:#dfe4f7;font-weight:650}
-  .mrow:active{opacity:.7}
   .wisdom{font-size:13px;color:#8b93b4;font-style:italic;line-height:1.5;margin:16px 0 4px;
     padding-left:13px;border-left:3px solid rgba(255,122,61,.5)}
   .snav{display:flex;gap:10px;padding:14px 18px 4px}
@@ -617,6 +611,20 @@ function railHTML(title,items,badge){
 }
 
 /* ---- suggestions: what to read next, leaning STEM + social, based on his reading ---- */
+const SHELVES=[
+  {key:"frontier",    title:"\uD83D\uDE80 Frontier tech",            cats:["frontier"]},
+  {key:"science",     title:"\uD83D\uDD2C Science & space",           cats:["science"]},
+  {key:"maths",       title:"\uD83D\uDD22 Maths magic",               cats:["maths"]},
+  {key:"experiments", title:"\uD83E\uDDEA Experiments",               cats:["experiments"]},
+  {key:"thinking",    title:"\uD83E\uDDE0 Big ideas",                 cats:["thinking"]},
+  {key:"sport",       title:"\uD83C\uDFC6 Sport",                     cats:["sport"]},
+  {key:"bharat",      title:"\uD83D\uDED5 Bharat & the Vedas",        cats:["bharatiya","bharat_tech"]},
+  {key:"friends",     title:"\uD83D\uDC9B Friends & feelings",        cats:["friends"]},
+  {key:"creators",    title:"\uD83D\uDCF1 Creators & makers",         cats:["creators"], sort:"creators"},
+  {key:"games",       title:"\uD83C\uDFAE Games",                     cats:["games"]},
+  {key:"aussie",      title:"\uD83D\uDCDA Cool stuff",                cats:["aussie"]},
+  {key:"trending",    title:"\uD83D\uDD25 What your mates are into",  cats:["trending"], sort:"trending"}
+];
 const STEM_CATS=["frontier","science","maths","experiments","thinking","bharat_tech"];
 const SOCIAL_CATS=["friends","coaching"];
 function catName(id){ const c=CATS.find(x=>x.id===id); return c?c.name:id; }
@@ -643,18 +651,26 @@ function suggestPicks(n){
   take(sorted,n);                                            // then whatever he leans towards
   return out.slice(0,n);
 }
-function moreToExplore(k){
+function recommendShelves(k){
   const aff=affinity();
-  const cats=[]; TOPICS.forEach(t=>{ if(cats.indexOf(t.cat)<0) cats.push(t.cat); });
-  const ranked=cats.map(c=>({c:c, s:Math.min(aff[c]||0,3)*1.1+(STEM_CATS.indexOf(c)>-1?1.6:0)
-    +(SOCIAL_CATS.indexOf(c)>-1?1.3:0)+((c==="trending"||c==="games")?-2.6:0)}))
-    .sort((a,b)=>b.s-a.s);
-  const out=[];
-  for(let i=0;i<ranked.length && out.length<k;i++){
-    const items=TOPICS.filter(t=>t.cat===ranked[i].c && !readToday("t:"+t.id)).slice(0,3);
-    if(items.length>=2) out.push({cat:ranked[i].c, items:items});
-  }
-  return out;
+  const scored=SHELVES.map(function(sh){
+    const a=Math.min(sh.cats.reduce(function(n,c){ return n+(aff[c]||0); },0),4);
+    const stem=sh.cats.some(function(c){ return STEM_CATS.indexOf(c)>-1; });
+    const soc=sh.cats.some(function(c){ return SOCIAL_CATS.indexOf(c)>-1; });
+    const taper=(sh.key==="trending"||sh.key==="games")?-2.6:0;
+    return {key:sh.key, s:a+taper+(stem?1.6:0)+(soc?1.3:0)};
+  }).sort(function(x,y){ return y.s-x.s; });
+  return scored.slice(0,k).map(function(x){ return x.key; });
+}
+function shelfHTML(sh, tItems, badge){
+  let list=[];
+  sh.cats.forEach(function(c){ list=list.concat(tItems.filter(function(o){ return o.cat===c; })); });
+  if(sh.sort==="creators") list.sort(function(a,b){
+    return (/MrBeast|Viral/i.test(a.title)?1:0)-(/MrBeast|Viral/i.test(b.title)?1:0); });
+  if(sh.sort==="trending") list.sort(function(a,b){
+    return (/Roblox|Pokemon|Brainrot|Labubu/i.test(a.title)?1:0)
+          -(/Roblox|Pokemon|Brainrot|Labubu/i.test(b.title)?1:0); });
+  return railHTML(sh.title, list, badge);
 }
 function openTopicById(id){ const t=TOPICS.find(x=>x.id===id); if(t) openObj(topicItem(t),-1); }
 function jumpTo(cat){
@@ -666,19 +682,7 @@ function jumpTo(cat){
 function suggestHTML(){
   const picks=suggestPicks(6);
   if(!picks.length) return "";
-  let html=railHTML("\u2728 Suggested for you", picks.map(topicItem), "FOR YOU");
-  const more=moreToExplore(3);
-  if(more.length){
-    html+=`<div class="sect2">\uD83E\uDDED More to explore</div>`;
-    more.forEach(function(m){
-      html+=`<div class="mcard"><div class="mhead" onclick="jumpTo('${m.cat}')">${catEmoji(m.cat)} ${esc(catName(m.cat))}<span>see all \u2192</span></div>`;
-      m.items.forEach(function(t){
-        html+=`<div class="mrow" onclick="openTopicById('${t.id}')">${esc(t.t)}</div>`;
-      });
-      html+=`</div>`;
-    });
-  }
-  return html;
+  return railHTML("\u2728 Suggested for you", picks.map(topicItem), "FOR YOU");
 }
 
 /* ---- chrome ---- */
@@ -769,23 +773,17 @@ function renderNews(){
   html+=`<div class="hint" style="padding-top:12px">Tap a card to open it. Swipe the rows sideways for more.</div>`;
   if(cont) html+=railHTML("▶ Continue", [cont], "PICK UP");
   if(saved.length) html+=railHTML("🔖 Saved", saved);
-  html+=railHTML("✨ New today", items, "FRESH");
+  html+=railHTML("\u2728 New today", items, "FRESH");
   html+=suggestHTML();
-  html+=railHTML("🚀 Frontier tech", pick("frontier"));
-  html+=railHTML("🔬 Science & space", pick("science"));
-  html+=railHTML("🔢 Maths magic", pick("maths"));
-  html+=railHTML("🧪 Experiments", pick("experiments"));
-  html+=railHTML("🧠 Big ideas", pick("thinking"));
-  html+=railHTML("🏆 Sport", pick("sport"));
-  html+=railHTML("🛕 Bharat & the Vedas", pick("bharatiya").concat(pick("bharat_tech")));
-  html+=railHTML("💛 Friends & feelings", pick("friends"));
-  const cr=pick("creators").sort((a,b)=>(/MrBeast|Viral/i.test(a.title)?1:0)-(/MrBeast|Viral/i.test(b.title)?1:0));
-  html+=railHTML("📱 Creators & makers", cr);
-  html+=railHTML("🎮 Games", pick("games"));
-  html+=railHTML("📚 Cool stuff", pick("aussie"));
-  const tr=pick("trending").sort((a,b)=>(/Roblox|Pokemon|Brainrot|Labubu/i.test(a.title)?1:0)
-                                     -(/Roblox|Pokemon|Brainrot|Labubu/i.test(b.title)?1:0));
-  html+=railHTML("🔥 What your mates are into", tr);
+  const promoted=recommendShelves(3);
+  promoted.forEach(function(key,i){
+    const sh=SHELVES.find(function(s){ return s.key===key; });
+    if(sh) html+=shelfHTML(sh, tItems, i===0?"MORE TO EXPLORE":"");
+  });
+  SHELVES.forEach(function(sh){
+    if(promoted.indexOf(sh.key)>-1) return;      // already shown above
+    html+=shelfHTML(sh, tItems, "");
+  });
   if(scr.length) html+=railHTML("🎬 Screen picks", scr.map(x=>headItem(x,"Screen")));
   $("#app").innerHTML=html;
   $("#foot").textContent="Stories picked for you. Pictures from the publishers and Wikipedia.";
