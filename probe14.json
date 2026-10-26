@@ -1,0 +1,77 @@
+{
+ "https://www.loksatta.com/feed/": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.loksatta.com/rss": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.lokmat.com/feed/": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://www.lokmat.com/rss": {
+  "error": "HTTPError: HTTP Error 403: Forbidden"
+ },
+ "https://www.esakal.com/rss": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.esakal.com/feed": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://divyamarathi.com/rss": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://divyamarathi.com/feed": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://marathi.abplive.com/rss": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://marathi.abplive.com/feed": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.pudhari.co.in/rss": {
+  "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate "
+ },
+ "https://www.maharashtratimes.com/rssfeeds/default.aspx": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://maharashtratimes.com/rssfeeds/-2128936835.cms": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://zeenews.india.com/marathi/rss": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://lokmat.news18.com/rss": {
+  "error": "HTTPError: HTTP Error 403: Forbidden"
+ },
+ "https://www.daijiworld.com/rss": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.daijiworld.com/news/rss": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.mangalorean.com/feed/": {
+  "status": 200,
+  "entries": 10,
+  "img10": 0,
+  "sample": "CM Shivakumar to hold talks with mill owners, protesting sug",
+  "devanagari": false,
+  "text_words": 969
+ },
+ "https://konkaniworld.com/feed": {
+  "error": "URLError: <urlopen error timed out>"
+ },
+ "https://www.konkaniworld.com/rss": {
+  "error": "URLError: <urlopen error timed out>"
+ }
+}
