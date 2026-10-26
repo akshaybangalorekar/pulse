@@ -53,6 +53,8 @@ BOILER = re.compile(
     r"premium stories|the view from india|kyb and kyc|business behind the wealth creator|"
     r"editorials\s*,\s*opinions|first day first show|looking at world affairs|"
     r"get unlimited access|to continue reading|already a subscriber|log ?in|register now|"
+    r"bond yield and cds|business of odd things|will they decide the fate|"
+    r"inside an industry th|top gainers and losers|mutual fund|ipo watch|"
     r"this article is|available exclusively|part \d+$|click for next|today'?s cache|"
     r"your download of|weekly newsletter|will become available on the|share a a a|"
     r"most weeks open with|science for all|the top \d+ technology stories|health matters|"
@@ -415,8 +417,13 @@ def build_story_section(sec):
             continue
         seen.add(key)
         USED.add(it["title"].lower())
+        imp = impact_line(paras)
+        if imp:
+            body = " ".join(short).lower()
+            if imp.lower().strip(" .")[:60] in body:
+                imp = ""      # already in the text - do not repeat it
         out.append({"kind": "story", "title": it["title"][:120], "paras": short,
-                    "impact": impact_line(paras), "image": it["image"],
+                    "impact": imp, "image": it["image"],
                     "source": it["source"], "link": it["link"], "date": it["date"]})
         n += 1
     return out
