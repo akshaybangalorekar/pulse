@@ -1,0 +1,25 @@
+{
+ "swarajya": {
+  "home": "https://swarajyamag.com/",
+  "found": [],
+  "working": [],
+  "status": 200,
+  "html_len": 4742577
+ },
+ "pti": {
+  "home": "https://www.ptinews.com/",
+  "found": [],
+  "working": [],
+  "status": 200,
+  "html_len": 3535
+ },
+ "ani": {
+  "home": "https://www.aninews.in/",
+  "found": [
+   "https://www.aninews.in/rss-feed/"
+  ],
+  "working": [],
+  "status": 200,
+  "html_len": 442425
+ }
+}
