@@ -1,0 +1,99 @@
+{
+ "https://swarajyamag.com/feed": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://theprint.in/category/economy/feed/": {
+  "status": 200,
+  "entries": 20,
+  "img10": 0,
+  "sample": "India, Rotterdam port authorities engaged to digitalise carg",
+  "text_words": 610
+ },
+ "https://theprint.in/feed/": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://www.financialexpress.com/feed/": {
+  "error": "HTTPError: HTTP Error 403: Forbidden"
+ },
+ "https://www.firstpost.com/rss/business.xml": {
+  "error": "HTTPError: HTTP Error 403: Forbidden"
+ },
+ "https://www.firstpost.com/rss/india.xml": {
+  "error": "HTTPError: HTTP Error 403: Forbidden"
+ },
+ "https://economictimes.indiatimes.com/news/economy/rssfeeds/1373380680.cms": {
+  "status": 200,
+  "entries": 50,
+  "img10": 10,
+  "sample": "Ind AS 118: India Inc gears up for big changes to financial ",
+  "text_words": 1168
+ },
+ "https://economictimes.indiatimes.com/industry/rssfeeds/13352306.cms": {
+  "status": 200,
+  "entries": 50,
+  "img10": 10,
+  "sample": "Apple reports \u20b9650 crore India software revenue in FY26",
+  "text_words": 982
+ },
+ "https://www.livemint.com/rss/economy": {
+  "status": 200,
+  "entries": 35,
+  "img10": 10,
+  "sample": "Yen turns into better hedge against AI-driven market shock, ",
+  "text_words": 619
+ },
+ "https://organiser.org/feed/": {
+  "status": 200,
+  "entries": 10,
+  "img10": 10,
+  "sample": "\u201cModi Ka Baap Bhi Jayega\u201d: Congress leader Mallikarjun Kharg",
+  "text_words": 1011
+ },
+ "https://www.orfonline.org/feed/": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.news.com.au/content-feeds/latest-news-national/": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://www.skynews.com.au/rss": {
+  "status": 200,
+  "entries": 0,
+  "img10": 0
+ },
+ "https://www.theaustralian.com.au/feed/": {
+  "error": "HTTPError: HTTP Error 403: Forbidden"
+ },
+ "https://www.afr.com/rss": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.dailytelegraph.com.au/feed/": {
+  "error": "HTTPError: HTTP Error 403: Forbidden"
+ },
+ "https://www.smh.com.au/rss/business.xml": {
+  "status": 200,
+  "entries": 20,
+  "img10": 10,
+  "sample": "Red Metal cracks deeper Qld rare earths potential at Sybella",
+  "text_words": 949
+ },
+ "https://www.spectator.com.au/feed/": {
+  "status": 200,
+  "entries": 100,
+  "img10": 10,
+  "sample": "Politicians have changed their tune on crime",
+  "text_words": 680
+ },
+ "https://www.macrobusiness.com.au/feed/": {
+  "status": 200,
+  "entries": 30,
+  "img10": 0,
+  "sample": "\u201cParalysed\u201d housing market faces a 20% decline",
+  "text_words": 632
+ }
+}
