@@ -77,27 +77,33 @@ TENNIS_FEEDS = ["https://www.tennismajors.com/feed/",
                 "https://lastwordonsports.com/tennis/feed/"]
 
 SECTIONS = [
-    {"id": "economy", "name": "Economy & geopolitics", "emoji": "\U0001F30F", "kind": "story",
-     "want": 4, "prefer_tag": True, "rewrite": True,
+    {"id": "australia", "name": "Australia: economy & jobs", "emoji": "\U0001F1E6\U0001F1FA", "kind": "story",
+     "want": 5, "rewrite": True,
+     "feeds": ["https://www.theage.com.au/rss/business.xml",
+               "https://www.smh.com.au/rss/business.xml",
+               "https://www.abc.net.au/news/feed/51120/rss.xml",
+               "https://www.abc.net.au/news/feed/51892/rss.xml",
+               "https://www.macrobusiness.com.au/feed/",
+               "https://theconversation.com/au/business/articles.atom",
+               "https://www.rba.gov.au/rss/rss-cb-media-releases.xml",
+               "https://www.rba.gov.au/rss/rss-cb-speeches.xml",
+               "https://www.spectator.com.au/feed/"]},
+
+    {"id": "bharat", "name": "Bharat: economy & jobs", "emoji": "\U0001F1EE\U0001F1F3", "kind": "story",
+     "want": 5, "rewrite": True,
      "feeds": ["https://economictimes.indiatimes.com/news/economy/rssfeeds/1373380680.cms",
                "https://economictimes.indiatimes.com/industry/rssfeeds/13352306.cms",
                "https://www.livemint.com/rss/economy",
-               "https://organiser.org/feed/",
-               "https://www.aninews.in/rss/feed/category/world.xml",
+               "https://www.aninews.in/rss/feed/category/business.xml",
                "https://www.aninews.in/rss/feed/category/national.xml",
-               "https://feeds.bbci.co.uk/news/business/rss.xml",
-               "https://feeds.bbci.co.uk/news/world/rss.xml",
-               "https://www.smh.com.au/rss/business.xml",
-               "https://www.spectator.com.au/feed/"]},
+               "https://organiser.org/feed/",
+               "https://www.rbi.org.in/pressreleases_rss.xml"]},
 
-    {"id": "bharat_au", "name": "Bharat & Australia", "emoji": "\U0001F1E6\U0001F1FA", "kind": "story",
-     "want": 2, "must_tag": True, "rewrite": True,
-     "feeds": ["https://www.smh.com.au/rss/business.xml",
-               "https://www.spectator.com.au/feed/",
-               "https://www.macrobusiness.com.au/feed/",
-               "https://economictimes.indiatimes.com/news/economy/rssfeeds/1373380680.cms",
-               "https://www.livemint.com/rss/economy",
-               "https://www.aninews.in/rss/feed/category/national.xml"]},
+    {"id": "world", "name": "World economy & geopolitics", "emoji": "\U0001F30F", "kind": "story",
+     "want": 3, "prefer_tag": True, "rewrite": True,
+     "feeds": ["https://feeds.bbci.co.uk/news/world/rss.xml",
+               "https://feeds.bbci.co.uk/news/business/rss.xml",
+               "https://www.aninews.in/rss/feed/category/world.xml"]},
 
     {"id": "finance", "name": "Finance & markets", "emoji": "\U0001F4C8", "kind": "story",
      "want": 2, "rewrite": True,
@@ -450,7 +456,7 @@ def save_seen():
 
 LLM_BASE = "https://text.pollinations.ai/"
 LLM_SLEEP = 31
-LLM_BUDGET = 12
+LLM_BUDGET = 16
 _llm = {"n": 0}
 
 
