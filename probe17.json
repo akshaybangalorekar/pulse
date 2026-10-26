@@ -1,0 +1,73 @@
+{
+ "https://www.rba.gov.au/rss/rss-cb-media-releases.xml": {
+  "entries": 1,
+  "img_of_10": 0,
+  "sample": "Appointment of Chief Risk Officer",
+  "text_words": 144
+ },
+ "https://www.rba.gov.au/rss/rss-cb-speeches.xml": {
+  "entries": 1,
+  "img_of_10": 0,
+  "sample": "Speech: A Wage-price Spiral: What are the Chances?",
+  "text_words": 3439
+ },
+ "https://theconversation.com/au/business/articles.atom": {
+  "entries": 25,
+  "img_of_10": 0,
+  "sample": "Food insecurity is on the rise in Australia. We need more ",
+  "text_words": 1175
+ },
+ "https://theconversation.com/au/topics/employment/articles.atom": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.theage.com.au/rss/business.xml": {
+  "entries": 20,
+  "img_of_10": 10,
+  "sample": "ASX rebounds to end on a high; CSL names new chair",
+  "text_words": 1122
+ },
+ "https://www.smh.com.au/rss/business.xml": {
+  "entries": 20,
+  "img_of_10": 10,
+  "sample": "ASX rebounds to end on a high; CSL names new chair",
+  "text_words": 1132
+ },
+ "https://www.abc.net.au/news/feed/51120/rss.xml": {
+  "entries": 25,
+  "img_of_10": 10,
+  "sample": "Jury told alleged murder victim may have died from 'broken",
+  "text_words": 1061
+ },
+ "https://www.abc.net.au/news/feed/51892/rss.xml": {
+  "entries": 25,
+  "img_of_10": 10,
+  "sample": "As Sydney gets a brand new airport, will Perth's ever be u",
+  "text_words": 1368
+ },
+ "https://www.macrobusiness.com.au/feed/": {
+  "entries": 30,
+  "img_of_10": 0,
+  "sample": "CoreWeave: a loose thread in the fabric of AI",
+  "text_words": 1878
+ },
+ "https://www.spectator.com.au/feed/": {
+  "entries": 100,
+  "img_of_10": 10,
+  "sample": "Raging at the \u2018dying\u2019 of Wokeism",
+  "text_words": 1206
+ },
+ "https://www.rbi.org.in/pressreleases_rss.xml": {
+  "entries": 10,
+  "img_of_10": 0,
+  "sample": "Money Market Operations as on October 25, 2026",
+  "text_words": 164
+ },
+ "https://www.rbi.org.in/Scripts/Rss.aspx": {
+  "entries": 0,
+  "img_of_10": 0
+ },
+ "https://pib.gov.in/RssMain.aspx": {
+  "entries": 0,
+  "img_of_10": 0
+ }
+}
