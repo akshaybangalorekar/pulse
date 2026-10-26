@@ -74,7 +74,7 @@ TENNIS_FEEDS = ["https://www.tennismajors.com/feed/",
 
 SECTIONS = [
     {"id": "economy", "name": "Economy & geopolitics", "emoji": "\U0001F30F", "kind": "story",
-     "want": 5, "prefer_tag": True, "rewrite": True,
+     "want": 4, "prefer_tag": True, "rewrite": True,
      "feeds": ["https://economictimes.indiatimes.com/news/economy/rssfeeds/1373380680.cms",
                "https://economictimes.indiatimes.com/industry/rssfeeds/13352306.cms",
                "https://www.livemint.com/rss/economy",
@@ -86,7 +86,7 @@ SECTIONS = [
                "https://www.spectator.com.au/feed/"]},
 
     {"id": "bharat_au", "name": "Bharat & Australia", "emoji": "\U0001F1E6\U0001F1FA", "kind": "story",
-     "want": 3, "must_tag": True, "rewrite": True,
+     "want": 2, "must_tag": True, "rewrite": True,
      "feeds": ["https://www.smh.com.au/rss/business.xml",
                "https://www.spectator.com.au/feed/",
                "https://www.macrobusiness.com.au/feed/",
@@ -411,7 +411,7 @@ USED = set()
 
 LLM_BASE = "https://text.pollinations.ai/"
 LLM_SLEEP = 31
-LLM_BUDGET = 15
+LLM_BUDGET = 10
 _llm = {"n": 0}
 
 

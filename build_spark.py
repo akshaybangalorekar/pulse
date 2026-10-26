@@ -339,7 +339,7 @@ THINK = {
 
 LLM_BASE = "https://text.pollinations.ai/"
 LLM_SLEEP = 31          # the free endpoint allows about one reply every 30s
-LLM_BUDGET = 13         # cap per run, so the job stays quick
+LLM_BUDGET = 10         # cap per run, so the job stays quick
 _llm = {"n": 0}
 
 
