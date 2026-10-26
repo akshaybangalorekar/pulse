@@ -1,0 +1,53 @@
+{
+ "https://maharashtratimes.com/sitemap/rssfeed.xml": {
+  "status": 200,
+  "entries": 33,
+  "devanagari_of_10": 10,
+  "img_of_10": 10,
+  "sample": "AI \u0926\u094d\u0935\u093e\u0930\u0947 \u091a\u093f\u0924\u0947\u0935\u0930 \u092c\u0949\u0921\u0940\u091a\u093e \u092b\u094b\u091f\u094b, \u092c\u0915\u0930\u0940\u091a\u0947 \u0905\u0902\u0924\u094d\u092f\u0935\u093f\u0927\u0940, \u0939\u0924\u094d\u092f\u0947\u091a\u094d",
+  "text_words": 358
+ },
+ "https://maharashtratimes.com/langapi/sitemap/gstandrssfeed.xml": {
+  "status": 200,
+  "entries": 33,
+  "devanagari_of_10": 10,
+  "img_of_10": 10,
+  "sample": "AI \u0926\u094d\u0935\u093e\u0930\u0947 \u091a\u093f\u0924\u0947\u0935\u0930 \u092c\u0949\u0921\u0940\u091a\u093e \u092b\u094b\u091f\u094b, \u092c\u0915\u0930\u0940\u091a\u0947 \u0905\u0902\u0924\u094d\u092f\u0935\u093f\u0927\u0940, \u0939\u0924\u094d\u092f\u0947\u091a\u094d",
+  "text_words": 358
+ },
+ "https://divyamarathi.com/rss": {
+  "status": 200,
+  "entries": 0,
+  "devanagari_of_10": 0,
+  "img_of_10": 0
+ },
+ "https://www.lokmat.com/rss/news": {
+  "error": "HTTPError: HTTP Error 403: Forbidden"
+ },
+ "https://marathi.abplive.com/rss/news": {
+  "status": 200,
+  "entries": 0,
+  "devanagari_of_10": 0,
+  "img_of_10": 0
+ },
+ "https://www.esakal.com/rss/news": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.loksatta.com/rss/news": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.daijiworld.com/common/commonPage": {
+  "status": 200,
+  "entries": 0,
+  "devanagari_of_10": 0,
+  "img_of_10": 0
+ },
+ "https://www.mangalorean.com/feed/": {
+  "status": 200,
+  "entries": 10,
+  "devanagari_of_10": 0,
+  "img_of_10": 0,
+  "sample": "CM Shivakumar to hold talks with mill owners, protestin",
+  "text_words": 969
+ }
+}
