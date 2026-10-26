@@ -1,0 +1,72 @@
+{
+ "ani_index": {
+  "status": 200,
+  "len": 93097,
+  "head": "\n<!doctype html>\n<!--[if lt IE 7]>      <html class=\"no-js lt-ie9 lt-ie8 lt-ie7\" lang=\"\"> <![endif]-->\n<!--[if IE 7]>         <html class=\"no-js lt-ie9 lt-ie8\" lang=\"\"> <![endif]-->\n<!--[if IE 8]>         <html class=\"no-js lt-ie9\" lang=\"\"> <![endif]-->\n<!--[if gt IE 8]><!-->\n<html lang=\"en\" class=\"",
+  "links": [
+   "/rss-feed/",
+   "/rss/feed/category/national.xml",
+   "/rss/feed/category/national/general-news.xml",
+   "/rss/feed/category/national/politics.xml",
+   "/rss/feed/category/national/features.xml",
+   "/rss/feed/category/business.xml",
+   "/rss/feed/category/entertainment.xml",
+   "/rss/feed/category/entertainment/bollywood.xml",
+   "/rss/feed/category/entertainment/hollywood.xml",
+   "/rss/feed/category/entertainment/music.xml",
+   "/rss/feed/category/entertainment/out-of-box.xml",
+   "/rss/feed/category/sports.xml",
+   "/rss/feed/category/sports/cricket.xml",
+   "/rss/feed/category/sports/football.xml",
+   "/rss/feed/category/sports/others.xml",
+   "/rss/feed/category/sports/tennis.xml",
+   "/rss/feed/category/sports/hockey.xml",
+   "/rss/feed/category/world.xml",
+   "/rss/feed/category/world/asia.xml",
+   "/rss/feed/category/world/us.xml"
+  ]
+ },
+ "https://swarajyamag.com/rss.xml": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://swarajyamag.com/feed.xml": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://swarajyamag.com/feeds": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://swarajyamag.com/rss/all": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.ptinews.com/rss.xml": {
+  "status": 200,
+  "entries": 0,
+  "sample": ""
+ },
+ "https://www.ptinews.com/feeds": {
+  "status": 200,
+  "entries": 0,
+  "sample": ""
+ },
+ "https://www.aninews.in/rss-feed/national/": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.aninews.in/rss-feed/business/": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.aninews.in/rss-feed/world/": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "https://www.aninews.in/rss-feed/india/": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "site:aninews.in": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "site:ptinews.com": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "site:swarajyamag.com": {
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ }
+}
