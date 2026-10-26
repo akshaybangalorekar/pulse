@@ -1,0 +1,83 @@
+{
+ "loksatta": {
+  "home": "https://www.loksatta.com/",
+  "candidates": [],
+  "working": [],
+  "error": "HTTPError: HTTP Error 404: Not Found"
+ },
+ "lokmat": {
+  "home": "https://www.lokmat.com/",
+  "candidates": [
+   "https://www.lokmat.com/feedback/"
+  ],
+  "working": [],
+  "status": 200,
+  "len": 100486
+ },
+ "esakal": {
+  "home": "https://www.esakal.com/",
+  "candidates": [],
+  "working": [],
+  "status": 200,
+  "len": 2074654
+ },
+ "divyamarathi": {
+  "home": "https://divyamarathi.com/",
+  "candidates": [
+   "https://divyamarathi.com/rss?ref=inbound_RHS"
+  ],
+  "working": [],
+  "status": 200,
+  "len": 599014
+ },
+ "abpmajha": {
+  "home": "https://marathi.abplive.com/",
+  "candidates": [
+   "https://marathi.abplive.com/crime/pune-crime-news-husband-packs-blade-pieces-into-capsules-and-feeds-them-to-wife-end-her-life-court-sentences-him-to-7-years-in-jail-1443497",
+   "https://marathi.abplive.com/feedback"
+  ],
+  "working": [],
+  "status": 200,
+  "len": 451901
+ },
+ "maharashtratimes": {
+  "home": "https://maharashtratimes.com/",
+  "candidates": [
+   "https://maharashtratimes.com/langapi/sitemap/gstandrssfeed.xml",
+   "https://maharashtratimes.com/sitemap/rssfeed.xml",
+   "https://maharashtratimes.com/rss"
+  ],
+  "working": [
+   {
+    "url": "https://maharashtratimes.com/langapi/sitemap/gstandrssfeed.xml",
+    "entries": 33,
+    "sample": "AI \u0926\u094d\u0935\u093e\u0930\u0947 \u091a\u093f\u0924\u0947\u0935\u0930 \u092c\u0949\u0921\u0940\u091a\u093e \u092b\u094b\u091f\u094b, \u092c\u0915\u0930\u0940\u091a\u0947 \u0905\u0902\u0924\u094d\u092f\u0935\u093f\u0927\u0940, \u0939\u0924",
+    "devanagari": true
+   },
+   {
+    "url": "https://maharashtratimes.com/sitemap/rssfeed.xml",
+    "entries": 33,
+    "sample": "AI \u0926\u094d\u0935\u093e\u0930\u0947 \u091a\u093f\u0924\u0947\u0935\u0930 \u092c\u0949\u0921\u0940\u091a\u093e \u092b\u094b\u091f\u094b, \u092c\u0915\u0930\u0940\u091a\u0947 \u0905\u0902\u0924\u094d\u092f\u0935\u093f\u0927\u0940, \u0939\u0924",
+    "devanagari": true
+   }
+  ],
+  "status": 200,
+  "len": 761415
+ },
+ "pudhari": {
+  "home": "https://www.pudhari.news/",
+  "candidates": [],
+  "working": [],
+  "status": 200,
+  "len": 1127140
+ },
+ "daijiworld": {
+  "home": "https://www.daijiworld.com/",
+  "candidates": [
+   "https://www.daijiworld.com/common/commonPage?pName=dwRssFeed"
+  ],
+  "working": [],
+  "status": 200,
+  "len": 247042
+ }
+}
