@@ -74,7 +74,7 @@ TENNIS_FEEDS = ["https://www.tennismajors.com/feed/",
 
 SECTIONS = [
     {"id": "economy", "name": "Economy & geopolitics", "emoji": "\U0001F30F", "kind": "story",
-     "want": 8, "prefer_tag": True,
+     "want": 5, "prefer_tag": True, "rewrite": True,
      "feeds": ["https://economictimes.indiatimes.com/news/economy/rssfeeds/1373380680.cms",
                "https://economictimes.indiatimes.com/industry/rssfeeds/13352306.cms",
                "https://www.livemint.com/rss/economy",
@@ -86,7 +86,7 @@ SECTIONS = [
                "https://www.spectator.com.au/feed/"]},
 
     {"id": "bharat_au", "name": "Bharat & Australia", "emoji": "\U0001F1E6\U0001F1FA", "kind": "story",
-     "want": 6, "must_tag": True,
+     "want": 3, "must_tag": True, "rewrite": True,
      "feeds": ["https://www.smh.com.au/rss/business.xml",
                "https://www.spectator.com.au/feed/",
                "https://www.macrobusiness.com.au/feed/",
@@ -94,8 +94,21 @@ SECTIONS = [
                "https://www.livemint.com/rss/economy",
                "https://theprint.in/category/economy/feed/"]},
 
+    {"id": "finance", "name": "Finance & markets", "emoji": "\U0001F4C8", "kind": "story",
+     "want": 3, "rewrite": True,
+     "feeds": ["https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
+               "https://www.livemint.com/rss/markets",
+               "https://www.smh.com.au/rss/business.xml"]},
+
+    {"id": "tech", "name": "Technology & AI", "emoji": "\U0001F916", "kind": "story",
+     "want": 4, "rewrite": True,
+     "feeds": ["https://feeds.arstechnica.com/arstechnica/index",
+               "https://spectrum.ieee.org/feeds/feed.rss",
+               "https://www.newscientist.com/feed/home/",
+               "https://www.technologyreview.com/feed/"]},
+
     {"id": "tennis", "name": "Tennis", "emoji": "\U0001F3BE", "kind": "story",
-     "want": 5, "feeds": TENNIS_FEEDS},
+     "want": 4, "feeds": TENNIS_FEEDS},
 
     {"id": "football", "name": "Football", "emoji": "\u26BD", "kind": "head", "want": 6,
      "feeds": ["https://feeds.bbci.co.uk/sport/football/rss.xml"],
@@ -396,6 +409,100 @@ def impact_line(paras):
 USED = set()
 
 
+LLM_BASE = "https://text.pollinations.ai/"
+LLM_SLEEP = 31
+LLM_BUDGET = 15
+_llm = {"n": 0}
+
+
+def llm(prompt):
+    if _llm["n"] >= LLM_BUDGET:
+        return None
+    _llm["n"] += 1
+    try:
+        req = urllib.request.Request(LLM_BASE + urllib.parse.quote(prompt),
+                                     headers={"User-Agent": UA})
+        with urllib.request.urlopen(req, timeout=75) as r:
+            txt = r.read().decode("utf-8", "ignore").strip()
+        low = txt.lower()
+        if len(txt) > 80 and "free limit" not in low and "rate limit" not in low \
+                and "payment required" not in low and not txt.startswith("{"):
+            time.sleep(LLM_SLEEP)
+            return txt
+    except Exception as ex:
+        print("  ! llm", type(ex).__name__)
+    time.sleep(LLM_SLEEP)
+    return None
+
+
+def adult_prompt(title, text):
+    return (
+        "You are a sharp business, finance and technology editor. Your reader is an informed "
+        "Indian professional living in Melbourne. He wants to be up to date and to understand "
+        "the implications, not just the headline.\n\n"
+        "Rewrite the story below so it is short, complete and genuinely useful.\n\n"
+        "Rules:\n"
+        "- 90 to 120 words, in two or three short paragraphs.\n"
+        "- Paragraph 1: what happened, in plain English.\n"
+        "- Paragraph 2: why it happened and what it means - the implication, not just the event.\n"
+        "- Optional last line: what to watch next.\n"
+        "- Explain every technical or financial term in the same sentence it appears, for example "
+        "'composite PMI, a monthly survey of business activity'.\n"
+        "- Spell out every abbreviation the first time (say 'the United States Federal Reserve', "
+        "not 'the Fed').\n"
+        "- Every sentence 22 words or fewer. No semicolons.\n"
+        "- Use only facts from the story. Never invent numbers, names or quotes.\n"
+        "- Neutral and factual. No hype, no editorialising, no emojis, no links.\n\n"
+        "TITLE: %s\n\nSTORY: %s\n" % (title, text[:2600])
+    )
+
+
+def adult_clarity_ok(paras):
+    text = " ".join(paras).strip()
+    sents = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
+    if not sents:
+        return False, "empty"
+    words = sum(len(s.split()) for s in sents)
+    if words < 75:
+        return False, "too short (%d words)" % words
+    if words > 145:
+        return False, "too long (%d words)" % words
+    longest = max(len(s.split()) for s in sents)
+    if longest > 24:
+        return False, "sentence of %d words" % longest
+    if any(";" in s for s in sents):
+        return False, "semicolon"
+    if not re.search(r"\b(because|which means|that means|in effect|as a result|so |"
+                     r"this means|the implication|what it means)\b", text, re.I):
+        return False, "no implication"
+    return True, ""
+
+
+def parse_llm(out):
+    out = re.sub(r"```[a-z]*|```", "", out).strip()
+    paras = [re.sub(r"\s+", " ", p).strip() for p in re.split(r"\n\s*\n", out) if p.strip()]
+    paras = [p for p in paras if len(p.split()) >= 8][:3]
+    if not paras and out:
+        paras = [out]
+    return paras
+
+
+def rewrite_story(title, paras):
+    """Short, complete, jargon explained. Returns (paras, rewritten?)."""
+    text = " ".join(paras)[:2600]
+    if not text:
+        return paras, False
+    out = llm(adult_prompt(title, text))
+    if not out:
+        return paras, False
+    lp = parse_llm(out)
+    ok, why = adult_clarity_ok(lp)
+    if ok:
+        return lp, True
+    print("  ~ clarity:", why)
+    return paras, False
+
+
 def build_story_section(sec):
     items = gather(sec.get("feeds"), sec.get("queries"), tag_only=sec.get("must_tag", False),
                    prefer_tag=sec.get("prefer_tag", False))
@@ -413,6 +520,8 @@ def build_story_section(sec):
         if sec.get("must_tag") and not US_TAG.search(it["title"] + " " + " ".join(paras[:3])):
             continue
         short = condense(paras)
+        if sec.get("rewrite"):
+            short, _rw = rewrite_story(it["title"], paras)
         if sum(len(p.split()) for p in short) < MIN_WORDS:
             continue
         seen.add(key)
@@ -461,7 +570,7 @@ def main():
     with open("pulse.json", "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, separators=(",", ":"))
     print("WROTE pulse.json:", sum(len(s["items"]) for s in sections), "items in",
-          len(sections), "sections")
+          len(sections), "sections | llm calls:", _llm["n"])
 
 
 if __name__ == "__main__":

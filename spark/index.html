@@ -189,6 +189,7 @@
   .sync .st{font-size:12px;font-weight:800;margin-top:9px;color:var(--muted)}
   .sync .st.ok{color:#5fe6a8}.sync .st.bad{color:#ff8f8f}
   .devlist{font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:8px}
+  .wisdom .who{opacity:.7;font-weight:600;font-style:normal}
   .wisdom{font-size:13px;color:#8b93b4;font-style:italic;line-height:1.5;margin:16px 0 4px;
     padding-left:13px;border-left:3px solid rgba(255,122,61,.5)}
   .snav{display:flex;gap:10px;padding:14px 18px 4px}
@@ -313,20 +314,35 @@ const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;"
 
 const WISDOM=[
  "The strongest person is the one who stays calm when others do not.",
+ "Arise, awake, and stop not till the goal is reached. \u2014 Swami Vivekananda",
  "A plan thought through twice saves you twice.",
+ "Education is the best friend. An educated person is respected everywhere. \u2014 Chanakya",
  "Anger is a fire that burns the one who holds it.",
+ "Take up one idea. Make that one idea your life. \u2014 Swami Vivekananda",
  "Knowledge shared is knowledge doubled.",
+ "A person is great by deeds, not by birth. \u2014 Chanakya",
  "Do the small thing well today; big things are built from small ones.",
+ "The world is the great gymnasium where we come to make ourselves strong. \u2014 Swami Vivekananda",
  "Before you speak, let your words pass three gates: is it true, is it kind, is it needed?",
+ "Learn from the mistakes of others; you cannot live long enough to make them all yourself. \u2014 Chanakya",
  "A river reaches the sea by never turning back.",
+ "Strength is life, weakness is death. \u2014 Swami Vivekananda",
  "Learn from everyone; even a small ant can teach a big lesson.",
+ "Before you start a task, ask yourself why you are doing it, what the result may be, and whether you can see it through. \u2014 Chanakya",
  "Be brave in thought, steady in action, gentle in speech.",
+ "All the powers in the universe are already ours. It is we who put our hands before our eyes and cry that it is dark. \u2014 Swami Vivekananda",
  "The mind is like water: it takes the shape of what it rests in.",
+ "We are what our thoughts have made us, so take care what you think. \u2014 Swami Vivekananda",
  "Keep going until it is done - that is how big things get made.",
  "Watch, listen, then act. The one who rushes usually loses."
 ];
 let wseed=Math.floor(Math.random()*WISDOM.length);
 function wisdom(){ wseed++; return WISDOM[wseed % WISDOM.length]; }
+function wisdomHTML(){
+  const w=wisdom(), k=w.lastIndexOf(" \u2014 ");
+  if(k>0) return `<div class="wisdom">${esc(w.slice(0,k))}<span class="who"> \u2014 ${esc(w.slice(k+3))}</span></div>`;
+  return `<div class="wisdom">${esc(w)}</div>`;
+}
 
 /* ---- gentle 15-minute budget, never shown as a timer ---- */
 const SESSION_MS=15*60*1000, COOLDOWN_MS=15*60*1000;
@@ -987,7 +1003,7 @@ function bodyHTML(o){
   if(o.more) h+=`<a class="more" href="${esc(o.more)}" target="_blank" rel="noopener">Go deeper →</a>`;
   if(o.source) h+=`<div class="credit">Adapted for you from ${esc(o.source)}</div>`;
   if(o.curious) h+=`<div class="box curious"><b>\uD83E\uDD14 Still wondering?</b>${esc(o.curious)}</div>`;
-  h+=`<div class="wisdom">${esc(wisdom())}</div>`;
+  h+=wisdomHTML();
   const lastInRail=(function(){ const r=RAILS[CUR_RAIL]||[]; return CUR_IDX>=r.length-1; })();
   h+=`<div class="snav">
       <button onclick="toggleSaveCurrent()" id="saveBtn">${savedSet().has(o.id)?"🔖 Saved":"🔖 Save"}</button>
