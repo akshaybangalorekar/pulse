@@ -55,6 +55,8 @@ BOILER = re.compile(
     r"get unlimited access|to continue reading|already a subscriber|log ?in|register now|"
     r"bond yield and cds|business of odd things|will they decide the fate|"
     r"text settings|story text|size small|standard wide|links standard|subscribers only|"
+    r"listen loading|subscribe to unlock|ai briefing|premium content|"
+    r"morning herald logo|advertisement|world markets|loading\.\.\.|"
     r"credit:|getty images|afp/|aurich lawson|photo:|image:|"
     r"inside an industry th|top gainers and losers|mutual fund|ipo watch|"
     r"this article is|available exclusively|part \d+$|click for next|today'?s cache|"
