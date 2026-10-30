@@ -112,6 +112,9 @@
   .scrim{position:fixed;inset:0;background:rgba(3,7,14,.74);opacity:0;pointer-events:none;
     transition:opacity .28s var(--ease);z-index:50;backdrop-filter:blur(2px)}
   .scrim.on{opacity:1;pointer-events:auto}
+  .grab{width:44px;height:5px;border-radius:99px;background:rgba(255,255,255,.28);
+    margin:9px auto 2px;flex:0 0 auto}
+  .x.hidden{display:none !important}
   .sheet{position:fixed;left:0;right:0;bottom:0;z-index:51;max-height:min(92vh,940px);
     display:flex;flex-direction:column;background:linear-gradient(180deg,#122132,#0a1622);
     border-top-left-radius:26px;border-top-right-radius:26px;border:1px solid var(--line);border-bottom:0;
@@ -203,8 +206,9 @@
 
 <div class="scrim" id="scrim" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet">
+  <div class="grab" aria-hidden="true"></div>
   <div class="shead"><span class="lbl" id="sheetLbl">Pulse</span>
-    <button class="x" onclick="closeSheet()" aria-label="Close">&#10005;</button></div>
+    <button class="x hidden" onclick="closeSheet()" aria-label="Close">&#10005;</button></div>
   <div class="sbody" id="sbody"></div>
 </div>
 
@@ -297,16 +301,77 @@ function fmt(ts){
   if(hrs<48) return "yesterday";
   return d.getDate()+"/"+(d.getMonth()+1);
 }
+const SYMBOLS=[
+ [/\b(market|stocks?|sensex|nifty|shares?|equit\w*|बाजार|भांडवल)\b/i,"📈"],
+ [/\b(rupee|dollar|currency|forex|exchange rate|रुपया)\b/i,"💱"],
+ [/\b(inflation|prices?|cost of living|महागाई|भाववाढ)\b/i,"🛒"],
+ [/\b(bank|rbi|reserve bank|banking|बँक)\b/i,"🏦"],
+ [/\b(jobs?|employment|unemploy\w*|hiring|wages?|salary|payroll|नोकरी|रोजगार)\b/i,"💼"],
+ [/\b(factor\w*|manufactur\w*|industr\w*|plant|production|कारखाना|उद्योग)\b/i,"🏭"],
+ [/\b(oil|crude|petrol|diesel|fuel|opec|gas|तेल)\b/i,"🛢"],
+ [/\b(solar|wind|renewabl\w*|battery|grid|electric\w*|power|ऊर्जा)\b/i,"⚡"],
+ [/\b(chips?|semiconductor\w*|silicon|wafer|fabrication)\b/i,"💾"],
+ [/\b(ai|artificial intelligence|chatbot|openai|chatgpt|gemini|algorithm)\b/i,"🤖"],
+ [/\b(robot\w*|drone\w*|automation)\b/i,"🦾"],
+ [/\b(cyber|hack\w*|breach|malware|ransom\w*|phishing|password|सायबर)\b/i,"🔐"],
+ [/\b(space|satellite|rocket|isro|nasa|orbit|launch|अवकाश)\b/i,"🚀"],
+ [/\b(climate|monsoon|rain\w*|flood\w*|heatwave|cyclone|drought|पाऊस)\b/i,"🌧"],
+ [/\b(health|hospital|vaccine|virus|disease|cancer|doctor|आरोग्य)\b/i,"🩺"],
+ [/\b(school|universit\w*|exam\w*|student\w*|education|शाळा|शिक्षण)\b/i,"🎓"],
+ [/\b(election\w*|vote\w*|parliament|minister|modi|government|assembly|निवडणूक|सरकार)\b/i,"🗳"],
+ [/\b(court|law\w*|police|crime|arrest|verdict|न्यायालय)\b/i,"⚖"],
+ [/\b(war|conflict|military|defence|defense|army|missile|युद्ध)\b/i,"🛡"],
+ [/\b(trade|export\w*|import\w*|tariff\w*|fta|wto|व्यापार)\b/i,"🚢"],
+ [/\b(port\w*|shipping|cargo|container|बंदर)\b/i,"⚓"],
+ [/\b(farm\w*|agricultur\w*|crop\w*|harvest|शेतकरी|शेती)\b/i,"🌾"],
+ [/\b(temple|math\w*|devot\w*|pooja|puja|aarti|utsav|jatra|festival|देवस्थान|मंदिर|उत्सव)\b/i,"🛕"],
+ [/\b(cricket|test match|odi|t20)\b/i,"🏏"],
+ [/\b(tennis|wimbledon|grand slam|seed|serve|ace|rally|atp|wta|forehand)\b/i,"🎾"],
+ [/\b(football|soccer|premier league|a-league|फुटबॉल)\b/i,"⚽"],
+ [/\b(hockey|olympic\w*|medal|athletic\w*|ऑलिंपिक)\b/i,"🏅"],
+ [/\b(film|movie|cinema|actor|actress|serial|show|चित्रपट|मालिका)\b/i,"🎬"],
+ [/\b(music|song|concert|album|गाणे|संगीत)\b/i,"🎵"],
+ [/\b(dance|dancer|trend|viral|नृत्य)\b/i,"💃"],
+ [/\b(book|literature|poem|writer|novel|साहित्य|कविता)\b/i,"📚"],
+ [/\b(recipe|food|faral|sweet|dish|पाककृती|फराळ|पदार्थ)\b/i,"🍲"],
+ [/\b(travel|flight|airline|tourism|प्रवास)\b/i,"✈"],
+ [/\b(housing|property|rent|real estate|घर)\b/i,"🏠"],
+ [/\b(insurance|pension|superannuation|tax|बीमा)\b/i,"🧾"],
+ [/\b(water|dam|river|reservoir|पाणी)\b/i,"💧"],
+ [/\b(wildlife|tiger|elephant|species|animal|forest|वाघ)\b/i,"🐅"],
+ [/\b(diwali|दिवाळी|दीपावली)\b/i,"🪔"],
+ [/\b(friend\w*|friendship|मैत्री)\b/i,"🤝"],
+ [/\b(minerals?|lithium|rare earth|cobalt|mining|खनिज)\b/i,"⛏"]
+];
+
+function symbolFor(title, fallback){
+  const t=String(title||"");
+  for(let i=0;i<SYMBOLS.length;i++){ if(SYMBOLS[i][0].test(t)) return SYMBOLS[i][1]; }
+  const f=String(fallback||"");
+  if(!f || /^[\u{1F1E6}-\u{1F1FF}]{2}$/u.test(f)) return "📰";
+  return f;
+}
+
+function phStyle(seed){
+  let n=0; const s=String(seed||"");
+  for(let i=0;i<s.length;i++) n=(n*31+s.charCodeAt(i))>>>0;
+  const h1=n%360, h2=(h1+40)%360;
+  return "background:linear-gradient(135deg,hsl("+h1+" 55% 24%),hsl("+h2+" 60% 14%))";
+}
+function hasBody(o){ return !!(o && o.paras && o.paras.join(" ").trim().length>40); }
 function tileHTML(o,i,railIdx){
   return `<div class="tile anim" style="animation-delay:${Math.min(i*45,320)}ms" onclick="openItem(${railIdx},${i})">
     <div class="art">${o.image?`<img src="${esc(o.image)}" alt="" loading="lazy" onerror="this.style.display='none'">`:""}
-      <div class="ph" ${o.image?'style="display:none"':""}>${o.emoji||"\uD83D\uDCF0"}</div></div>
+      <div class="ph" ${o.image?'style="display:none"':""} style="${o.image?"":phStyle(o.title)}">${symbolFor(o.title,o.emoji)}</div></div>
     <div class="tt">${esc(o.title)}</div>
     <div class="tm">${esc(o.source||"")}${o.date?" \u00B7 "+fmt(o.date):""}</div>
   </div>`;
 }
 function railHTML(sec){
   if(!sec.items || !sec.items.length) return "";
+  const live=sec.items.filter(hasBody);
+  if(!live.length) return "";
+  sec = Object.assign({}, sec, {items: live});
   RAILS.push(sec);
   const idx=RAILS.length-1;
   return `<section class="rail"><div class="rhead"><h2>${sec.emoji} ${esc(secName(sec.id, sec.name))}</h2>
@@ -409,6 +474,45 @@ async function load(force){
 }
 $("#refreshBtn").addEventListener("click",()=>load(true));
 (async function(){ detectSize(); _lastSize=document.documentElement.dataset.size; await load(false); })();
+
+/* swipe the sheet down to close it - no close button */
+(function(){
+  const sheet=document.getElementById("sheet");
+  if(!sheet) return;
+  let y0=null, dy=0, dragging=false;
+  function start(e){
+    const t=e.touches?e.touches[0]:e;
+    y0=t.clientY; dy=0; dragging=true;
+    sheet.style.transition="none";
+  }
+  function move(e){
+    if(!dragging||y0===null) return;
+    const t=e.touches?e.touches[0]:e;
+    dy=t.clientY-y0;
+    if(dy>0){
+      sheet.style.transform="translateY("+dy+"px)";
+      sheet.style.opacity=String(Math.max(0.4,1-dy/420));
+      if(e.cancelable) e.preventDefault();
+    }
+  }
+  function end(){
+    if(!dragging) return;
+    dragging=false;
+    sheet.style.transition="transform .22s ease, opacity .22s ease";
+    if(dy>90){
+      sheet.style.transform=""; sheet.style.opacity="";
+      try{ closeSheet(); }catch(e){ sheet.classList.remove("on"); }
+    } else {
+      sheet.style.transform=""; sheet.style.opacity="";
+    }
+    y0=null; dy=0;
+  }
+  sheet.addEventListener("touchstart",start,{passive:true});
+  sheet.addEventListener("touchmove",move,{passive:false});
+  sheet.addEventListener("touchend",end);
+  sheet.addEventListener("touchcancel",end);
+})();
+
 </script>
 </body>
 </html>

@@ -105,6 +105,9 @@
   .scrim{position:fixed;inset:0;background:rgba(4,6,14,.72);opacity:0;pointer-events:none;
     transition:opacity .28s var(--ease);z-index:50;backdrop-filter:blur(2px)}
   .scrim.on{opacity:1;pointer-events:auto}
+  .grab{width:44px;height:5px;border-radius:99px;background:rgba(255,255,255,.28);
+    margin:9px auto 2px;flex:0 0 auto}
+  .x.hidden{display:none !important}
   .sheet{position:fixed;left:0;right:0;bottom:0;z-index:51;max-height:min(92vh,940px);display:flex;flex-direction:column;
     background:linear-gradient(180deg,#171a33,#0e1020);border-top-left-radius:26px;border-top-right-radius:26px;
     border:1px solid var(--line);border-bottom:0;transform:translateY(102%);
@@ -298,8 +301,9 @@
 
 <div class="scrim" id="scrim" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet">
+  <div class="grab" aria-hidden="true"></div>
   <div class="shead"><span class="lbl" id="sheetLbl">Spark</span>
-    <button class="x" onclick="closeSheet()" aria-label="Close">✕</button></div>
+    <button class="x hidden" onclick="closeSheet()" aria-label="Close">✕</button></div>
   <div class="sbody" id="sbody"></div>
 </div>
 
@@ -338,6 +342,57 @@ const WISDOM=[
 ];
 let wseed=Math.floor(Math.random()*WISDOM.length);
 function wisdom(){ wseed++; return WISDOM[wseed % WISDOM.length]; }
+
+/* a cover symbol drawn from what the headline is about, not from the section */
+const SYMBOLS=[
+ [/\b(market|stocks?|sensex|nifty|shares?|bourse|equit\w*|बाजार|भांडवल)\b/i,"\uD83D\uDCC8"],
+ [/\b(rupee|dollar|currency|forex|exchange rate|रुपया)\b/i,"\uD83D\uDCB1"],
+ [/\b(inflation|prices?|cost of living|महागाई|भाववाढ)\b/i,"\uD83D\uDED2"],
+ [/\b(bank|rbi|reserve bank|banking|बँक)\b/i,"\uD83C\uDFE6"],
+ [/\b(jobs?|employment|unemploy\w*|hiring|wages?|salary|payroll|नोकरी|रोजगार)\b/i,"\uD83D\uDCBC"],
+ [/\b(factor\w*|manufactur\w*|industr\w*|plant|production|कारखाना|उद्योग)\b/i,"\uD83C\uDFED"],
+ [/\b(oil|crude|petrol|diesel|fuel|opec|gas|तेल)\b/i,"\uD83D\uDEE2"],
+ [/\b(solar|wind|renewabl\w*|battery|grid|electric\w*|power|ऊर्जा)\b/i,"\u26A1"],
+ [/\b(chips?|semiconductor\w*|silicon|wafer|fabrication)\b/i,"\uD83D\uDCBE"],
+ [/\b(ai|artificial intelligence|model|chatbot|openai|chatgpt|gemini|algorithm|एआय)\b/i,"\uD83E\uDD16"],
+ [/\b(robot\w*|drone\w*|automation|robotic)\b/i,"\uD83E\uDDBE"],
+ [/\b(cyber|hack\w*|breach|malware|ransom\w*|phishing|security|password|सायबर)\b/i,"\uD83D\uDD10"],
+ [/\b(space|satellite|rocket|isro|nasa|orbit|launch|अवकाश)\b/i,"\uD83D\uDE80"],
+ [/\b(climate|monsoon|rain\w*|flood\w*|heatwave|cyclone|drought|पाऊस)\b/i,"\uD83C\uDF27"],
+ [/\b(health|hospital|vaccine|virus|disease|cancer|doctor|आरोग्य)\b/i,"\uD83E\uDE7A"],
+ [/\b(school|universit\w*|exam\w*|student\w*|education|शाळा|शिक्षण)\b/i,"\uD83C\uDF93"],
+ [/\b(election\w*|vote\w*|parliament|minister|modi|government|assembly|निवडणूक|सरकार)\b/i,"\uD83D\uDDF3"],
+ [/\b(court|law\w*|police|crime|arrest|verdict|न्यायालय)\b/i,"\u2696"],
+ [/\b(war|conflict|military|defence|defense|army|missile|युद्ध)\b/i,"\uD83D\uDEE1"],
+ [/\b(trade|export\w*|import\w*|tariff\w*|fta|wto|व्यापार)\b/i,"\uD83D\uDEA2"],
+ [/\b(port\w*|shipping|cargo|container|बंदर)\b/i,"\u2693"],
+ [/\b(farm\w*|agricultur\w*|crop\w*|harvest|शेतकरी|शेती)\b/i,"\uD83C\uDF3E"],
+ [/\b(temple|math\w*|devot\w*|pooja|puja|aarti|utsav|jatra|festival|देवस्थान|मंदिर|उत्सव)\b/i,"\uD83D\uDED5"],
+ [/\b(cricket|test match|odi|t20|आयपीएल)\b/i,"\uD83C\uDFCF"],
+ [/\b(tennis|wimbledon|us open|australian open|grand slam)\b/i,"\uD83C\uDFBE"],
+ [/\b(football|soccer|premier league|a-league|फुटबॉल)\b/i,"\u26BD"],
+ [/\b(hockey|olympic\w*|medal|athletic\w*|ऑलिंपिक)\b/i,"\uD83C\uDFC5"],
+ [/\b(film|movie|cinema|actor|actress|serial|show|चित्रपट|मालिका)\b/i,"\uD83C\uDFAC"],
+ [/\b(music|song|concert|album|गाणे|संगीत)\b/i,"\uD83C\uDFB5"],
+ [/\b(dance|dancer|trend|viral|नृत्य)\b/i,"\uD83D\uDC83"],
+ [/\b(book|literature|poem|writer|novel|साहित्य|कविता)\b/i,"\uD83D\uDCDA"],
+ [/\b(recipe|food|faral|sweet|dish|पाककृती|फराळ|पदार्थ)\b/i,"\uD83C\uDF72"],
+ [/\b(travel|flight|airline|tourism|प्रवास)\b/i,"\u2708"],
+ [/\b(housing|property|rent|real estate|घर)\b/i,"\uD83C\uDFE0"],
+ [/\b(insurance|pension|superannuation|tax|बीमा)\b/i,"\uD83E\uDDFE"],
+ [/\b(water|dam|river|reservoir|पाणी)\b/i,"\uD83D\uDCA7"],
+ [/\b(wildlife|tiger|elephant|species|animal|forest|वाघ)\b/i,"\uD83D\uDC05"],
+ [/\b(diwali|दिवाळी|दीपावली)\b/i,"\uD83E\uDE94"]
+];
+function symbolFor(title, fallback){
+  const t=String(title||"");
+  for(let i=0;i<SYMBOLS.length;i++){ if(SYMBOLS[i][0].test(t)) return SYMBOLS[i][1]; }
+  // never fall back to a national flag: pick a neutral news mark instead
+  const f=String(fallback||"");
+  if(!f || /^[\u{1F1E6}-\u{1F1FF}]{2}$/u.test(f)) return "\uD83D\uDCF0";
+  return f;
+}
+
 function wisdomHTML(){
   const w=wisdom(), k=w.lastIndexOf(" \u2014 ");
   if(k>0) return `<div class="wisdom">${esc(w.slice(0,k))}<span class="who"> \u2014 ${esc(w.slice(k+3))}</span></div>`;
@@ -602,9 +657,9 @@ const GRAD={frontier:["#2fd0a8","#0a7d6a"],science:["#12b5a5","#0a7fd0"],thinkin
 function gradFor(cat){ const g=GRAD[cat]||["#ff8a3d","#ff4d6d"]; return "linear-gradient(135deg,"+g[0]+","+g[1]+")"; }
 function artInner(o){
   if(o.img) return `<img src="${esc(o.img)}" alt="" loading="lazy" onerror="this.style.display='none'">`+
-    `<div class="ph" style="background:${gradFor(o.cat)};display:none">${o.emoji||"📰"}</div>`;
-  if(o.wid) return `<div class="ph" style="background:${gradFor(o.cat)}" data-wid="${o.wid}">${o.emoji||"✨"}<img style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0"></div>`;
-  return `<div class="ph" style="background:${gradFor(o.cat)}">${o.emoji||"📰"}</div>`;
+    `<div class="ph" style="background:${gradFor(o.cat)};display:none">${symbolFor(o.title,o.emoji)}</div>`;
+  if(o.wid) return `<div class="ph" style="background:${gradFor(o.cat)}" data-wid="${o.wid}">${symbolFor(o.title,o.emoji)}<img style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0"></div>`;
+  return `<div class="ph" style="background:${gradFor(o.cat)}">${symbolFor(o.title,o.emoji)}</div>`;
 }
 function tileHTML(o,i){
   const sv=savedSet().has(o.id);
@@ -1149,6 +1204,44 @@ setInterval(function(){
   if(sh && sh.classList.contains("on")) return;
   loadEdition().then(function(){ render(); });
 }, 30000);
+
+/* swipe the sheet down to close it - no close button */
+(function(){
+  const sheet=document.getElementById("sheet");
+  if(!sheet) return;
+  let y0=null, dy=0, dragging=false;
+  function start(e){
+    const t=e.touches?e.touches[0]:e;
+    y0=t.clientY; dy=0; dragging=true;
+    sheet.style.transition="none";
+  }
+  function move(e){
+    if(!dragging||y0===null) return;
+    const t=e.touches?e.touches[0]:e;
+    dy=t.clientY-y0;
+    if(dy>0){
+      sheet.style.transform="translateY("+dy+"px)";
+      sheet.style.opacity=String(Math.max(0.4,1-dy/420));
+      if(e.cancelable) e.preventDefault();
+    }
+  }
+  function end(){
+    if(!dragging) return;
+    dragging=false;
+    sheet.style.transition="transform .22s ease, opacity .22s ease";
+    if(dy>90){ sheet.style.transform=""; sheet.style.opacity="";
+      try{ closeSheet(); }catch(e){ sheet.classList.remove("on"); }
+    } else {
+      sheet.style.transform=""; sheet.style.opacity="";
+    }
+    y0=null; dy=0;
+  }
+  sheet.addEventListener("touchstart",start,{passive:true});
+  sheet.addEventListener("touchmove",move,{passive:false});
+  sheet.addEventListener("touchend",end);
+  sheet.addEventListener("touchcancel",end);
+})();
+
 </script>
 </body>
 </html>
