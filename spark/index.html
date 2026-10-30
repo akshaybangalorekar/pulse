@@ -715,6 +715,7 @@ function chrome(){
     <div class="grow"></div>
     <div class="pill">🔥 ${streak()}</div>
     <button class="iconbtn" onclick="surprise()" title="Surprise me">🎲</button>
+    <button class="iconbtn" onclick="refreshSpark()" title="Show me other stories">↻</button>
     <button class="iconbtn" onclick="askSheet()" title="Ask">💬</button>
     <button class="iconbtn" onclick="lockSheet()" title="Settings">⚙️</button>`;
   const tabs=[["news","News"],["tennis","Tennis"],["ball","Ball sports"],["history","History"]];
@@ -768,17 +769,38 @@ function heroHTML(o){
 let HERO=null;
 function openHero(){ if(HERO) openObj(HERO,null); }
 
+let DISMISSED = (function(){
+  try{
+    const raw=JSON.parse(localStorage.getItem("spark_dismissed")||"{}");
+    if(raw.day===todayKey()) return new Set(raw.ids||[]);
+  }catch(e){}
+  return new Set();
+})();
+function todayKey(){ const d=new Date(); return d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate(); }
+function saveDismissed(){
+  try{ localStorage.setItem("spark_dismissed", JSON.stringify({day:todayKey(), ids:[...DISMISSED]})); }catch(e){}
+}
+function refreshSpark(){
+  // whatever is on screen now is done with: read it or not, it goes.
+  RAILS.forEach(function(row){ row.forEach(function(o){ if(o&&o.id) DISMISSED.add(o.id); }); });
+  saveDismissed();
+  const y=window.scrollY;
+  render();
+  window.scrollTo(0,0);
+  if(typeof pullState==="function"){ try{ pullState(); }catch(e){} }
+}
+
 function renderNews(){
   const news=(EDITION&&EDITION.news)||[];
   const scr=(EDITION&&EDITION.screen)||[];
   const topics=TOPICS.slice();
-  const all=news.map(x=>newsItem(x,x.cat,x.show)).sort(function(a,b){
+  const all=news.filter(x=>!DISMISSED.has("n:"+x.id)).map(x=>newsItem(x,x.cat,x.show)).sort(function(a,b){
     // unread first, then newest to oldest - a read story rolls to the right
     return ((readToday(a.id)?1:0)-(readToday(b.id)?1:0)) || ((b.date||0)-(a.date||0));
   });
   const unread=all.filter(o=>!readToday(o.id));
   const items=unread.length?unread:all;          // read today = gone for today
-  const tItems=topics.map(topicItem).sort((a,b)=>(readToday(a.id)?1:0)-(readToday(b.id)?1:0));
+  const tItems=topics.filter(t=>!DISMISSED.has("t:"+t.id)).map(topicItem).sort((a,b)=>(readToday(a.id)?1:0)-(readToday(b.id)?1:0));
   const allItems=all.concat(tItems);
   const pick=cat=>allItems.filter(o=>o.cat===cat);
   const hero=items[0]||tItems[0];
@@ -793,7 +815,6 @@ function renderNews(){
   if(birthdayToday()) html+=`<div class="bday anim">\uD83C\uDF89 Happy birthday! A special edition, just for you.</div>`;
   html+=`<div class="hint" style="padding-top:12px">Tap a card to open it. Swipe the rows sideways for more.</div>`;
   if(cont) html+=railHTML("▶ Continue", [cont], "PICK UP");
-  if(saved.length) html+=railHTML("🔖 Saved", saved);
   html+=railHTML("\u2728 New today", items, "FRESH");
   html+=suggestHTML();
   // current affairs always lead: it is a news app
@@ -809,6 +830,7 @@ function renderNews(){
     html+=shelfHTML(sh, allItems, "");
   });
   if(scr.length) html+=railHTML("🎬 Screen picks", scr.map(x=>headItem(x,"Screen")));
+  if(saved.length) html+=railHTML("🔖 Saved", saved);
   $("#app").innerHTML=html;
   $("#foot").textContent="Stories picked for you. Pictures from the publishers and Wikipedia.";
   hydrate();
