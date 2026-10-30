@@ -1,0 +1,78 @@
+{
+ "feeds": {
+  "https://www.navhindtimes.in/feed/": {
+   "entries": 10,
+   "sample": "Head coach Samir calls for strong fan support"
+  },
+  "https://www.heraldgoa.in/feed/": {
+   "entries": 10,
+   "sample": "Major Collision Reported on Old Goa\u2013Kadamba Highwa"
+  },
+  "https://www.heraldgoa.in/rss": {
+   "entries": 10,
+   "sample": "Major Collision Reported on Old Goa\u2013Kadamba Highwa"
+  },
+  "https://www.goanewsonline.com/feed/": {
+   "error": "HTTPError: HTTP Error 521: <none>"
+  },
+  "https://www.gomantaktimes.com/feed/": {
+   "entries": 0
+  },
+  "https://www.prudentmedia.in/rss": {
+   "entries": 0
+  },
+  "https://www.mangalorean.com/feed/": {
+   "entries": 10,
+   "sample": "China\u2019s shrinking marriage market, gender imbalanc"
+  },
+  "https://www.daijiworld.com/rss/news": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "https://mangaluru.social/feed": {
+   "error": "URLError: <urlopen error [Errno -2] Name or servic"
+  },
+  "https://chitrapurmath.net/feed/": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "https://www.chitrapurmath.net/feed/": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "https://kashimath.org/feed/": {
+   "error": "HTTPError: HTTP Error 410: Gone"
+  },
+  "https://www.kashimath.org/feed/": {
+   "error": "HTTPError: HTTP Error 410: Gone"
+  },
+  "https://partagalimath.org/feed/": {
+   "entries": 0
+  },
+  "https://www.partagalimath.org/feed/": {
+   "error": "HTTPError: HTTP Error 404: Not Found"
+  },
+  "https://shreeshantadurga.com/feed/": {
+   "entries": 10,
+   "sample": "Navratrotsav 2026"
+  },
+  "https://shrimangesh.com/feed/": {
+   "error": "URLError: <urlopen error [Errno 111] Connection re"
+  }
+ },
+ "links": {
+  "pulse.json": {
+   "total": 146,
+   "bad": {}
+  },
+  "pulse-mr.json": {
+   "total": 64,
+   "bad": {}
+  },
+  "pulse-kok.json": {
+   "total": 0,
+   "bad": {}
+  },
+  "spark/edition.json": {
+   "total": 105,
+   "bad": {}
+  }
+ }
+}
