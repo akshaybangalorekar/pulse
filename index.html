@@ -196,8 +196,6 @@
       <div class="langbar" id="langbar">
         <button data-lang="en">EN</button><button data-lang="mr">मराठी</button><button data-lang="kok">कोंकणी</button>
       </div>
-      <button class="refresh" id="refreshBtn" title="Refresh" onclick="refreshPage()">↻</button>
-      <button class="iconbtn" id="refreshBtn" title="Refresh">&#8635;</button>
     </div>
   </header>
   <main id="app"><div class="loading">Loading Pulse&hellip;</div></main>
@@ -450,7 +448,7 @@ function render(){
   $("#foot").textContent=t("foot");
 }
 async function refreshPage(){
-  const b=$("#refreshBtn");
+  const b=$("#refreshBtn"); if(!b){ await load(true); return; }
   if(b){ b.classList.add("spin"); }
   CUR=null;
   await load(true);
@@ -472,7 +470,6 @@ async function load(force){
     return false;
   }
 }
-$("#refreshBtn").addEventListener("click",()=>load(true));
 (async function(){ detectSize(); _lastSize=document.documentElement.dataset.size; await load(false); })();
 
 /* swipe the sheet down to close it - no close button */
@@ -511,6 +508,46 @@ $("#refreshBtn").addEventListener("click",()=>load(true));
   sheet.addEventListener("touchmove",move,{passive:false});
   sheet.addEventListener("touchend",end);
   sheet.addEventListener("touchcancel",end);
+})();
+
+
+/* ---- pull down at the top of the page to refresh ---- */
+(function(){
+  let y0=null, pulling=false;
+  const IND=document.createElement("div");
+  IND.id="ptr";
+  IND.style.cssText="position:fixed;top:0;left:0;right:0;height:0;display:flex;align-items:flex-end;"+
+    "justify-content:center;overflow:hidden;z-index:40;pointer-events:none;"+
+    "transition:height .18s ease;color:var(--muted);font-size:12px;font-weight:700;padding-bottom:6px";
+  setTimeout(function(){ document.body.appendChild(IND); }, 300);
+  function start(e){
+    if(document.querySelector("#sheet.on")) return;
+    if(window.scrollY>2) return;
+    y0=(e.touches?e.touches[0]:e).clientY; pulling=true;
+  }
+  function move(e){
+    if(!pulling||y0===null) return;
+    const dy=(e.touches?e.touches[0]:e).clientY-y0;
+    if(dy>0){
+      IND.style.height=Math.min(dy*0.5,70)+"px";
+      IND.textContent = dy>110 ? "Release to refresh" : "Pull to refresh";
+      if(e.cancelable && dy>8) e.preventDefault();
+    }
+  }
+  function end(){
+    if(!pulling) return;
+    const hgt=parseFloat(IND.style.height||"0");
+    pulling=false; y0=null;
+    if(hgt>=52){
+      IND.style.height="46px"; IND.textContent="Refreshing\u2026";
+      try{ if(typeof refreshPage==="function") refreshPage(); }catch(err){}
+      setTimeout(function(){ IND.style.height="0"; IND.textContent=""; }, 900);
+    } else { IND.style.height="0"; IND.textContent=""; }
+  }
+  document.addEventListener("touchstart",start,{passive:true});
+  document.addEventListener("touchmove",move,{passive:false});
+  document.addEventListener("touchend",end);
+  document.addEventListener("touchcancel",end);
 })();
 
 </script>
