@@ -18,6 +18,8 @@ from datetime import datetime, timezone
 
 import feedparser
 
+import photos
+
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/124 Safari/537.36")
 TIMEOUT = 20
@@ -685,6 +687,17 @@ def main():
     sections.append({"id": "parenting", "name": "Parenting", "emoji": "\U0001F468\u200D\U0001F469\u200D\U0001F466",
                      "items": [{"kind": "card", "title": p["t"], "hook": p["hook"],
                                 "paras": p["paras"], "do": p["do"]} for p in PARENTING]})
+    # every story gets a real photograph, not an icon
+    added = 0
+    for s in sections:
+        for it in s["items"]:
+            if not it.get("image"):
+                ph = photos.photo_for(it.get("title", ""), s["id"])
+                if ph:
+                    it["image"] = ph
+                    added += 1
+    photos.save_cache()
+    print("photos added:", added)
     payload = {"generated": gen, "sections": sections}
     with open("pulse.json", "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, separators=(",", ":"))

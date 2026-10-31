@@ -20,6 +20,8 @@ from datetime import datetime, timezone
 
 import feedparser
 
+import photos
+
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/124 Safari/537.36")
 TIMEOUT = 20
@@ -721,6 +723,15 @@ def main():
     gen = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print("age", age)
     news = carry_over(build_news(age, word_budget(age)), load_prev_news())
+    added = 0
+    for it in news:
+        if not it.get("image"):
+            ph = photos.photo_for(it.get("title", ""), it.get("cat", ""))
+            if ph:
+                it["image"] = ph
+                added += 1
+    photos.save_cache()
+    print("photos added:", added)
     sport = build_sport(build_analysis(age, word_budget(age)))
     screen = build_screen()
     os.makedirs("spark", exist_ok=True)

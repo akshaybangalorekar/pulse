@@ -16,6 +16,8 @@ from datetime import datetime, timezone
 
 import feedparser
 
+import photos
+
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/124 Safari/537.36")
 TIMEOUT = 25
@@ -392,6 +394,12 @@ def main():
     mr_sections.append({"id": "pakkruti", "name": "पाककृती", "emoji": "\U0001F372",
                         "items": [{"kind": "card", "title": r["t"], "hook": r["hook"],
                                    "paras": r["body"], "wow": r["wow"]} for r in MR_RECIPES]})
+    for s in mr_sections:
+        for it in s["items"]:
+            if not it.get("image"):
+                ph = photos.photo_for(it.get("title", ""), s["id"])
+                if ph:
+                    it["image"] = ph
     with open("pulse-mr.json", "w", encoding="utf-8") as f:
         json.dump({"generated": gen, "lang": "mr", "sections": mr_sections},
                   f, ensure_ascii=False, separators=(",", ":"))
