@@ -88,12 +88,12 @@ FEEDS = {
     "science": ["https://www.snexplores.org/feed", "https://www.space.com/feeds/all"],
     "pressgang": ["https://pressgang.news/feed/"],
     "timeforkids": ["https://www.timeforkids.com/feed/"],
-    "newsround": ["https://feeds.bbci.co.uk/newsround/rss.xml"],
-    "current": ["https://feeds.bbci.co.uk/newsround/rss.xml",
-                "https://www.timeforkids.com/feed/",
+    # positive, curiosity-led outlets only - no general news wires
+    "current": ["https://www.timeforkids.com/feed/",
                 "https://pressgang.news/feed/",
                 "https://www.sciencejournalforkids.org/feed/",
-                "https://feeds.bbci.co.uk/news/world/rss.xml"],
+                "https://www.dogonews.com/feed",
+                "https://www.smithsonianmag.com/rss/latest_articles/"],
     "screen": [],
 }
 # keyword queries per group (turned into Google News feeds at run time)
@@ -101,15 +101,26 @@ KEYWORDS = {
     "screen": [("new kids movie", "en-au"), ("new animated family film", "en-au"),
                ("family film release", "en-au")],
     # what his classmates are actually talking about this week
+    "sangeet": [("Carnatic music Melbourne", "en-au"), ("Carnatic concert Australia", "en-au"),
+                ("Carnatic music festival", "en-au"), ("Indian classical music concert", "en-au"),
+                ("Carnatic vocalist interview", "en-au"), ("Shastriya sangeet", "en-in"),
+                ("Carnatic music jam session", "en-au")],
+    "stemfutures": [("university course artificial intelligence Australia", "en-au"),
+                    ("new degree robotics Australia", "en-au"),
+                    ("students science olympiad winners", "en-au"),
+                    ("young scientists invention", "en-au"),
+                    ("STEM competition school Australia", "en-au"),
+                    ("university quantum computing course", "en-au")],
     "trending": [("viral dance trend", "en-au"), ("TikTok trend explained", "en-au"),
                  ("Gen Z trend", "en-au"), ("internet meme explained", "en-au"),
                  ("viral challenge kids", "en-au"), ("new app teenagers", "en-au")],
 }
 GROUP_NAME = {"pressgang": "Press Gang News", "timeforkids": "TIME for Kids",
-              "current": "What's happening",
+              "current": "What's happening", "sangeet": "Carnatic & shastriya sangeet",
+              "stemfutures": "STEM futures",
               "newsround": "Kid news", "trending": "Trending", "science": "Science & space",
               "frontier": "Frontier tech", "screen": "Screen"}
-PER_GROUP = {"frontier": 6, "science": 6, "screen": 4, "current": 6, "trending": 5}
+PER_GROUP = {"frontier": 6, "science": 6, "screen": 4, "current": 5, "trending": 5, "sangeet": 5, "stemfutures": 5}
 WANT_DEFAULT = 6
 
 # sport: headline updates + junior achievements

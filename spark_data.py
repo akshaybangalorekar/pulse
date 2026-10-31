@@ -22,6 +22,57 @@ CATS = [
 ]
 
 TOPICS = [
+ # ---------------- CARNATIC / SHASTRIYA SANGEET ----------------
+ {"id":"kutcheri","cat":"sangeet","t":"What is a kutcheri?",
+  "hook":"A Carnatic concert has a shape, and once you know it, it stops being confusing.",
+  "paras":[
+   "A Carnatic concert is called a kutcheri. It usually has a singer or an instrument at the centre, a violin alongside, a mridangam drum for rhythm, and a tambura droning softly in the background.",
+   "The concert builds in stages. It opens with short pieces, then moves to longer ones where the musician improvises on a raga, exploring the notes slowly before speeding up.",
+   "You are not expected to know every song. Listen for the drum answering the singer, and for the moment the melody and rhythm lock together. That conversation is the heart of it."],
+  "wow":"A Carnatic concert often ends with a tani avartanam, a duel of rhythm where the drummer plays alone and the audience keeps the beat with their hands.",
+  "more":"https://www.youtube.com/results?search_query=carnatic+music+for+beginners"},
+ {"id":"jam","cat":"sangeet","t":"How to join a jam session",
+  "hook":"You do not need to be a master. You need to know one thing well.",
+  "paras":[
+   "A jam session is informal music-making. People sit in a circle, someone starts a raga or a rhythm cycle, and others join when they can.",
+   "The rule that matters most: leave space. In Indian classical music you play around the main line, not on top of it. If you are learning, pick one small phrase and repeat it when there is a gap.",
+   "Take a friend. Jams are friendlier in pairs, and a friend who claps the beat is genuinely useful. Bring a tambura app on your phone if you do not have an instrument, and keep the drone going for everyone."],
+  "wow":"Many jam sessions start with a single note held long and steady. Beginners think nothing is happening. That is actually the hardest part.",
+  "more":"https://www.youtube.com/results?search_query=carnatic+music+jam+session"},
+ {"id":"sangeetevolve","cat":"sangeet","t":"How Carnatic music is changing",
+  "hook":"Old ragas, new rooms.",
+  "paras":[
+   "Carnatic music is not frozen. Young musicians now play electric veena, mix ragas with jazz and electronic music, and teach over video calls to students on the other side of the world.",
+   "Concert lengths have changed too. Where a traditional kutcheri could run three hours, younger artists often play shorter, tighter sets designed for people who have never heard a raga before.",
+   "The old system of learning, where a student sits with a teacher for years, still exists. But now a student in Melbourne can learn from a teacher in Chennai every week without getting on a plane."],
+  "wow":"The veena, the mridangam and the violin are all used in Carnatic music, but the violin arrived only about 200 years ago and was adopted completely.",
+  "more":"https://www.youtube.com/results?search_query=carnatic+fusion+young+musicians"},
+ {"id":"melbsangeet","cat":"sangeet","t":"Finding Indian classical music in Melbourne",
+  "hook":"It is closer than you think.",
+  "paras":[
+   "Melbourne has a steady Indian classical music scene, mostly built by community organisations, temples and university music societies rather than big commercial venues.",
+   "The best way in is to watch for seasonal concerts around festivals, and to look at what community groups and university Indian societies are advertising.",
+   "If you play even a little, tell people. Teachers and jam groups are almost always short of young players, and word of mouth is how most of it works."],
+  "wow":"Some of the world's best Carnatic musicians tour Australia, but they often play in school halls and community centres rather than concert halls.",
+  "more":"https://www.youtube.com/results?search_query=carnatic+music+melbourne"},
+
+ # ---------------- STEM FUTURES ----------------
+ {"id":"unicourses","cat":"stemfutures","t":"Courses universities are opening now",
+  "hook":"AI, robotics and quantum are becoming their own degrees.",
+  "paras":[
+   "Universities in Australia and around the world are creating whole degrees around subjects that barely existed ten years ago: artificial intelligence, robotics, quantum computing, data science and cybersecurity.",
+   "Many combine two fields, like AI with medicine, or robotics with agriculture. That mix is deliberate, because the interesting problems sit between subjects rather than inside one.",
+   "The useful thing to know now is what they ask for. Most want strong maths, and many want a science subject too. That means the choices you make in school actually open or close these doors."],
+  "wow":"Some universities now let students start a research project in first year, which used to be reserved for final-year students.",
+  "more":"https://www.youtube.com/results?search_query=artificial+intelligence+degree+australia"},
+ {"id":"kidstem","cat":"stemfutures","t":"Kids who are already doing real science",
+  "hook":"They started with one small question.",
+  "paras":[
+   "Every year, students your age enter science fairs, olympiads and robotics competitions. Some of their projects get published or used by real organisations.",
+   "Almost none of them started with a big idea. They started by noticing something small, like why a plant leans towards light, or why a paper plane curves one way.",
+   "The pattern is always the same: notice something, ask why, test it, write down what happened. That is the whole method, and you can start it this week with no equipment at all."],
+  "wow":"Some winning science fair projects cost almost nothing. Judges care about a clear question and honest results more than expensive equipment.",
+  "more":"https://www.youtube.com/results?search_query=student+science+fair+project+winners"},
  # ---------------- GEN Z / TRENDS ----------------
  {"id":"scubadance","cat":"trending","t":"The Scuba Dance",
   "hook":"One hand on your nose, the other waving, knees bouncing. That is the whole dance.",
