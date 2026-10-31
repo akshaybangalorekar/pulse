@@ -605,13 +605,18 @@ def build_analysis(age, budget):
             continue
         seen.add(key)
         mark_seen(it["title"])
-        out.append({"kind": "analysis", "section": "Match analysis", "title": it["title"][:110],
+        out.append({"kind": "analysis", "cat": "tennis", "section": "Match analysis", "title": it["title"][:110],
                     "paras": short, "curious": curious, "image": it["image"], "source": it["source"],
                     "date": it["date"], "link": it["link"], "apply": apply_tip(it["title"], short)})
         if len(out) >= 6:
             break
     print("ANALYSIS", len(out))
     return out
+
+
+SPORT_CAT = {"Coaching tips": "coaching", "Junior stars (10-12)": "tennis",
+             "Basketball": "basketball", "Football": "football",
+             "Match analysis": "tennis"}
 
 
 def build_sport(analysis):
@@ -639,8 +644,16 @@ def build_sport(analysis):
         items.sort(key=lambda x: (1 if ANALYSIS.search(x["title"]) else 0, x["date"]), reverse=True)
         limit = 8 if section == "Match analysis" else 5
         for it in items[:limit]:
-            sport.append({"kind": "head", "section": section, "title": it["title"][:110],
-                          "source": it["source"], "date": it["date"], "link": it["link"]})
+            paras = article_paragraphs(it["link"]) if it["link"].startswith("http") else []
+            if not paras:
+                paras = [it["desc"]] if it["desc"] else []
+            short = condense(paras)
+            if sum(len(p.split()) for p in short) < MIN_WORDS:
+                continue
+            sport.append({"kind": "news", "cat": SPORT_CAT.get(section, "tennis"),
+                          "show": section, "title": it["title"][:110], "paras": short,
+                          "curious": "", "image": it["image"], "source": it["source"],
+                          "date": it["date"], "link": it["link"]})
         print("SPORT", section, len(items))
     return sport
 

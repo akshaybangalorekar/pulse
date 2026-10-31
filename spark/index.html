@@ -624,11 +624,15 @@ function deviceTotals(){
 })();
 
 /* ---- history: only things he actually read (50s+), kept a month unless saved ---- */
-const HIST_KEY="spark_history", HIST_DAYS=30, READ_MS=50000;
+const HIST_KEY="spark_history", READ_MS=35000;      // 35s on a story counts as read
+const STACK_MAX=10;                                  // a shelf shows at most ten
+const READ_KEEP_MS=60*60*1000;                       // a read story sits at the back for an hour
+const HIST_MAX=20;                                   // then it lives in history, newest first
+const READ_AT_KEY="spark_read_at";
 let openedAt=0, openedItem=null;
 function histGet(){ const a=get(HIST_KEY,[]); return Array.isArray(a)?a:[]; }
 function histPrune(){
-  const sv=savedSet(), cut=Date.now()-HIST_DAYS*24*3600*1000;
+  const sv=savedSet(), cut=0;
   const arr=histGet().filter(x=>x && x.item && (x.ts>=cut || sv.has(x.item.id)));
   set(HIST_KEY,arr);
   return arr;
@@ -637,11 +641,18 @@ function histAdd(o){
   if(!o||!o.id) return;
   const arr=histGet().filter(x=>!(x.item&&x.item.id===o.id));
   arr.unshift({ts:Date.now(), item:o});
-  set(HIST_KEY,arr.slice(0,80));
+  set(HIST_KEY,arr.slice(0,HIST_MAX));
 }
 function histList(){ return histPrune().map(x=>x.item); }
+function readAtMap(){ const m=get(READ_AT_KEY,{}); return (m&&typeof m==="object")?m:{}; }
+function markReadAt(id){
+  if(!id) return;
+  const m=readAtMap();
+  if(!m[id]){ m[id]=Date.now(); set(READ_AT_KEY,m); }
+}
+
 function settleTime(){
-  if(openedItem && openedAt && (Date.now()-openedAt) >= READ_MS){ histAdd(openedItem); scheduleSync(); }
+  if(openedItem && openedAt && (Date.now()-openedAt) >= READ_MS){ markReadAt(openedItem.id); histAdd(openedItem); scheduleSync(); }
   openedAt=0; openedItem=null;
 }
 function trackRead(o){
@@ -774,6 +785,10 @@ const SHELVES=[
   {key:"maths",       title:"\uD83D\uDD22 Maths magic",               cats:["maths"]},
   {key:"experiments", title:"\uD83E\uDDEA Experiments",               cats:["experiments"]},
   {key:"thinking",    title:"\uD83E\uDDE0 Big ideas",                 cats:["thinking"]},
+  {key:"tennis",      title:"\uD83C\uDFBE Tennis",                    cats:["tennis"]},
+  {key:"coaching",    title:"\uD83C\uDFBE Tennis coaching",           cats:["coaching"]},
+  {key:"basketball",  title:"\uD83C\uDFC0 Basketball",                cats:["basketball"]},
+  {key:"football",    title:"\u26BD Football",                        cats:["football"]},
   {key:"sport",       title:"\uD83C\uDFC6 Sport",                     cats:["sport"]},
   {key:"bharat",      title:"\uD83D\uDED5 Bharat & the Vedas",        cats:["bharatiya","bharat_tech"]},
   {key:"friends",     title:"\uD83D\uDC9B Friends & feelings",        cats:["friends"]},
@@ -822,6 +837,7 @@ function recommendShelves(k){
 function shelfHTML(sh, tItems, badge){
   let list=[];
   sh.cats.forEach(function(c){ list=list.concat(tItems.filter(function(o){ return o.cat===c; })); });
+  list = stackOf(list);
   if(sh.sort==="creators") list.sort(function(a,b){
     return (/MrBeast|Viral/i.test(a.title)?1:0)-(/MrBeast|Viral/i.test(b.title)?1:0); });
   if(sh.sort==="trending") list.sort(function(a,b){
@@ -900,7 +916,7 @@ function render(){
 }
 function heroHTML(o){
   return `<div class="hero anim" onclick="openHero()">
-    ${o.img?`<img src="${esc(o.img)}" alt="" onerror="this.style.display='none'">`:""}
+    ${(o.image||o.img)?`<img src="${esc(o.image||o.img)}" alt="" onerror="this.style.display='none'">`:""}
     <div class="scrim"></div>
     <div class="tx"><span class="chip">⚡ Today's Spark${o.show?" · "+esc(o.show):""}</span>
       <h1>${esc(o.title)}</h1>
@@ -931,6 +947,19 @@ function refreshSpark(){
   if(typeof pullState==="function"){ try{ pullState(); }catch(e){} }
 }
 
+function stackOf(list){
+  const now=Date.now(), ra=readAtMap();
+  const fresh=[], resting=[];
+  list.forEach(function(o){
+    const t=ra[o.id];
+    if(!t){ fresh.push(o); }
+    else if(now-t < READ_KEEP_MS){ resting.push({o:o,t:t}); }
+    // read more than an hour ago: gone from the shelf, it lives in history now
+  });
+  resting.sort(function(a,b){ return a.t-b.t; });     // oldest read sits furthest right
+  return fresh.concat(resting.map(function(x){ return x.o; })).slice(0,STACK_MAX);
+}
+
 function renderNews(){
   const news=(EDITION&&EDITION.news)||[];
   const scr=(EDITION&&EDITION.screen)||[];
@@ -943,7 +972,7 @@ function renderNews(){
   const items=unread.length?unread:all;          // read today = gone for today
   const tItems=topics.filter(t=>!DISMISSED.has("t:"+t.id)).map(topicItem).sort((a,b)=>(readToday(a.id)?1:0)-(readToday(b.id)?1:0));
   const allItems=all.concat(tItems);
-  const pick=cat=>allItems.filter(o=>o.cat===cat);
+  const pick=cat=>stackOf(allItems.filter(o=>o.cat===cat));
   const hero=items[0]||tItems[0];
   if(hero) hero.sub=hero.paras?hero.paras[0]:"";
 
@@ -952,11 +981,12 @@ function renderNews(){
   const cont=last?items.concat(tItems).find(o=>o.id===last.id):null;
 
   let html="";
+  HERO=hero||null;
   if(hero) html+=heroHTML(hero);
   if(birthdayToday()) html+=`<div class="bday anim">\uD83C\uDF89 Happy birthday! A special edition, just for you.</div>`;
   html+=`<div class="hint" style="padding-top:12px">Tap a card to open it. Swipe the rows sideways for more.</div>`;
   if(cont) html+=railHTML("▶ Continue", [cont], "PICK UP");
-  html+=railHTML("\u2728 New today", items, "FRESH");
+  html+=railHTML("\u2728 New today", stackOf(items), "FRESH");
   html+=suggestHTML();
   // current affairs always lead: it is a news app
   const promoted=["current"].concat(
