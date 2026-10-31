@@ -1,0 +1,43 @@
+{
+ "wiki_api_botua": {
+  "status": 404,
+  "body": "<!DOCTYPE html>\n<html lang=\"en\" dir=\"ltr\">\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\" />\n<title>Not Found</title>"
+ },
+ "wiki_api_browserua": {
+  "status": 404,
+  "body": "<!DOCTYPE html>\n<html lang=\"en\" dir=\"ltr\">\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\" />\n<title>Not Found</title>"
+ },
+ "wiki_rest": {
+  "status": 200,
+  "len": 2997,
+  "head": "{\"type\":\"standard\",\"title\":\"Reserve Bank of India\",\"displaytitle\":\"<span lang=\\\"en\\\" dir=\\\"ltr\\\"><span class=\\\"mw-page-t"
+ },
+ "commons_api": {
+  "status": 404,
+  "body": "<!DOCTYPE html>\n<html lang=\"en\" dir=\"ltr\">\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\" />\n<title>Not Found</title>"
+ },
+ "upload_wikimedia": {
+  "status": 400,
+  "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<meta charset=\"utf-8\">\n<title>Wikimedia Error</title>\n<style>\n* { margin: 0; padding: 0; }\nbody { background: #fff; font: 15px/"
+ },
+ "openverse": {
+  "error": "TimeoutError: The read operation timed out"
+ },
+ "pixabay_nokey": {
+  "status": 400,
+  "body": "[ERROR 400] Invalid or missing API key (https://pixabay.com/api/docs/)."
+ },
+ "pexels_nokey": {
+  "status": 401,
+  "body": "{\"status\":401,\"code\":\"Unauthorized\",\"message\":\"Missing API key\"}"
+ },
+ "wikimedia_commons_search": {
+  "status": 404,
+  "body": "<!DOCTYPE html>\n<html lang=\"en\" dir=\"ltr\">\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\" />\n<title>Not Found</title>"
+ },
+ "ddg_html": {
+  "status": 200,
+  "len": 3108,
+  "head": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\""
+ }
+}
