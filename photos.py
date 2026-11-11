@@ -140,10 +140,9 @@ BAD_IMG = re.compile(r"(chart|graph|\bmap\b|diagram|logo|seal|emblem|coat_of_arm
 
 
 def upsize(url, width=900):
-    """Wikimedia thumbnails come at ~330px; ask for a cover-sized version."""
-    if not url:
-        return url
-    return re.sub(r"/(\d{2,4})px-", "/%dpx-" % width, url)
+    """Kept for compatibility. Wikimedia only serves a fixed set of widths and
+    rejects invented ones with HTTP 400, so the URL is returned untouched."""
+    return url
 
 
 def load_cache():
