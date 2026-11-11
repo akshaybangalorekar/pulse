@@ -22,6 +22,52 @@ CATS = [
 ]
 
 TOPICS = [
+ # ---------------- SWAMI VIVEKANANDA: THE MAKING OF A STRONG MIND ----------------
+ {"id":"vivek_night","cat":"bharatiya","t":"The Night Everything Changed",
+  "e":"🌙",
+  "image":"https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/Kolkata_maidan.jpg/900px-Kolkata_maidan.jpg",
+  "hook":"He was twenty-one, asleep at a friend's house. At two in the morning, someone knocked.",
+  "paras":[
+   "It was 25 February 1884. Young Narendra was staying at Baranagar, near Kolkata, after a long evening of singing and talking with friends. He had gone to sleep around eleven.",
+   "At about two in the morning his friend Hemali arrived with terrible news. Narendra's father had died suddenly of heart failure. Narendra rushed back to Kolkata. His mother and his younger brothers and sisters were weeping beside his father.",
+   "At first he could not speak. He could not even cry. Then it came out all at once. As the eldest son, it fell to him to carry out the funeral rites, while his family stood around him.",
+   "His father Vishwanath Dutta had been ill for a long time and had kept working anyway, because the family depended on him. He had even planned to start looking for a bride for Narendra the very next day."],
+  "wow":"Narendra had no idea that morning would be his last ordinary day. Within hours he went from being a carefree young man to the head of a household.",
+  "talk":"Ask your family: who is the person everyone leans on when something goes wrong? What happens on the day they need help?"},
+ {"id":"vivek_boats","cat":"bharatiya","t":"Two Boats, One Pair of Feet",
+  "e":"⛵",
+  "image":"https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Swami_Vivekananda-1893-09-signed.jpg/900px-Swami_Vivekananda-1893-09-signed.jpg",
+  "hook":"He had to stand with one foot in each of two boats pulling apart.",
+  "paras":[
+   "His father had been the only person earning money for the family. When he died, the money stopped. Narendra, his mother and his younger brothers and sisters were suddenly in a very hard position.",
+   "So Narendra had two jobs at once. He had to find work and feed a family. And he also wanted to keep learning from his teacher, Sri Ramakrishna, and to keep asking the big questions about life.",
+   "One writer described it as standing with your feet in two boats. Anyone who has tried that knows the problem: the boats drift apart and you end up in the water.",
+   "He did it anyway. He looked for work, he taught, he kept going back to his teacher, and he did not drop either boat."],
+  "wow":"The word for holding two hard things at once is not balance. It is stubbornness plus love, and he had a great deal of both.",
+  "talk":"Name two things you care about that sometimes pull against each other, like sport and study, or friends and practice. Which one do you drop first?"},
+ {"id":"vivek_worst","cat":"bharatiya","t":"What He Did With the Worst Day of His Life",
+  "e":"🔥",
+  "image":"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/81/Belur_Math%2C_Howrah.jpg/900px-Belur_Math%2C_Howrah.jpg",
+  "hook":"He could have given up. Nobody would have blamed him.",
+  "paras":[
+   "Losing a parent at twenty-one, with a family to feed and no money, is the kind of thing that ends some people's stories. It very nearly ended his.",
+   "What he did instead is the interesting part. He did not pretend the pain was not there, and he did not let it make him bitter. He kept working, kept learning, and kept asking questions.",
+   "Years later, that young man from Kolkata stood in front of a hall in Chicago and spoke to the whole world. The same person who had been dazed and silent beside his father's body became one of the most powerful voices India has ever sent abroad.",
+   "Belur Math, the place in the picture, is what he built afterwards, on the banks of the Ganga, as a home for people who wanted to serve others."],
+  "wow":"Swami Vivekananda did not become strong despite his hard years. He became strong because of what he chose to do with them.",
+  "talk":"Ask someone older than you about the hardest year of their life. Then ask what got them through it."},
+ {"id":"vivek_arise","cat":"bharatiya","t":"The Sentence He Left for You",
+  "e":"⚡",
+  "image":"https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Swami_Vivekananda-1893-09-signed.jpg/900px-Swami_Vivekananda-1893-09-signed.jpg",
+  "hook":"Six words. People have used them for over a hundred years.",
+  "paras":[
+   "Arise, awake, and stop not till the goal is reached.",
+   "He did not invent that line out of nowhere. He had lived it. He said it as someone who had been knocked down, had got up, and knew exactly how heavy getting up can feel.",
+   "The line has three steps. Arise means get up, even when you do not feel like it. Awake means pay attention, do not sleepwalk through your own life. And stop not till the goal is reached means the middle part is not the end.",
+   "It is not about being the best in the class. It is about not quitting on something you actually care about."],
+  "wow":"The full line is much older than Vivekananda. It comes from an ancient Indian text, and he made it famous by saying it so often that people started hearing his voice in it.",
+  "act":"Pick one small thing you keep giving up on. Do it for seven days in a row and tick each day on a piece of paper. The ticks are the point, not the result.",
+  "talk":"Ask your family to finish this sentence: 'Stop not till...' What would they put at the end?"},
  # ---------------- CARNATIC / SHASTRIYA SANGEET ----------------
  {"id":"kutcheri","cat":"sangeet","t":"What is a kutcheri?",
   "hook":"A Carnatic concert has a shape, and once you know it, it stops being confusing.",
