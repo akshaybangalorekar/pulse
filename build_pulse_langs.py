@@ -25,6 +25,8 @@ MIN_WORDS = 30
 MAX_AGE_H = 48
 
 BAD = re.compile(r"(reels?\s*व्हिडिओ|जाहिरात|व्हिडिओ पहा|subscribe|advertisement|"
+                 r"murder|killed|abduct|kidnap|rape|assault|arrest|underworld|smuggl|"
+                 r"habitual offender|crime|criminal|police custody|suicide|"
                  r"हत्या|खून|बलात्कार|अत्याचार|अपघात|मृत्यू|आत्महत्या|अंत्यविधी|"
                  r"पोलीस कोठडी|अटक)", re.I)
 BOILER = re.compile(r"(आणखी वाचा|हेही वाचा|जाहिरात|सदस्यता|subscribe|also read|"
@@ -304,15 +306,15 @@ KOK_FEEDS = ["https://www.navhindtimes.in/feed/",      # Goa
 
 KOK_SECTIONS = [
     {"id": "goa", "name": "\u0917\u094b\u0935\u093e", "emoji": "\U0001F3D6", "want": 5,
-     "match": r"goa|panaji|panjim|margao|ponda|vasco|mapusa|canacona"},
+     "match": r"\b(goa|panaji|panjim|margao|ponda|vasco|mapusa|canacona)\b"},
     {"id": "mangalore", "name": "\u092e\u0902\u0917\u0933\u0942\u0930 \u0906\u0923\u093f \u0915\u0930\u094d\u0928\u093e\u091f\u0915", "emoji": "\U0001F30A", "want": 5,
-     "match": r"mangal|udupi|kundapur|karkala|uttara kannada|shirali|karwar|kanara|kanhangad|kasaragod"},
+     "match": r"\b(mangal\w*|udupi|kundapur|karkala|uttara kannada|shirali|karwar|kanara|kanhangad|kasaragod)\b"},
     {"id": "maths", "name": "\u092e\u0920 \u0906\u0923\u093f \u092e\u0902\u0926\u093f\u0930\u0947", "emoji": "\U0001F6D5", "want": 6,
-     "match": r"math|matha|shirali|chitrapur|kashi|partagali|jeevottam|shantadurga|mangesh|manguesh|"
-              r"temple|devsthan|devasthan|swamiji|utsav|jatra|palkhi|festival|pooja|puja|aarti|seva|"
-              r"shrine|deity|trust|anniversary|celebrat"},
+     "match": r"\b(math|matha|maths?|shirali|chitrapur|kashi|partagali|jeevottam|shantadurga|"
+              r"mangesh|manguesh|temple|devsthan|devasthan|swamiji|utsav|jatra|palkhi|festival|"
+              r"pooja|puja|aarti|seva|shrine|deity|anniversary|celebrat)\b"},
     {"id": "community", "name": "\u0938\u092e\u093e\u091c", "emoji": "\U0001F91D", "want": 5,
-     "match": r"konkani|saraswat|gaud|gsb|community|kochi|kerala"},
+     "match": r"\b(konkani|saraswat|gaud|gsb|community|kochi|kanhangad)\b"},
 ]
 
 
