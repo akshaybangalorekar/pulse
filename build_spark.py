@@ -524,7 +524,7 @@ def save_seen():
     print("SEEN saved:", len(keep))
 
 
-MAX_AGE_H = 5           # five-hour flush: only very recent stories survive
+MAX_AGE_H = 24          # kid-safe feeds are thinner: a day
 
 
 def fresh_first(items):
