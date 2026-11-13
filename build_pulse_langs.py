@@ -22,7 +22,7 @@ UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/124 Safari/537.36")
 TIMEOUT = 25
 MIN_WORDS = 30
-MAX_AGE_H = 48
+MAX_AGE_H = 5           # five-hour flush
 
 BAD = re.compile(r"(reels?\s*व्हिडिओ|जाहिरात|व्हिडिओ पहा|subscribe|advertisement|"
                  r"murder|killed|abduct|kidnap|rape|assault|arrest|underworld|smuggl|"

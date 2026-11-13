@@ -429,7 +429,7 @@ def impact_line(paras):
 USED = set()
 SEEN_FILE = "pulse-seen.json"
 SEEN_DAYS = 60
-MAX_AGE_H = 48          # only stories published in the last two days
+MAX_AGE_H = 5           # five-hour flush: only very recent stories survive
 SEEN = {}
 
 

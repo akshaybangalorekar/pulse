@@ -524,7 +524,7 @@ def save_seen():
     print("SEEN saved:", len(keep))
 
 
-MAX_AGE_H = 48          # nothing older than two days: stale news gets flushed
+MAX_AGE_H = 5           # five-hour flush: only very recent stories survive
 
 
 def fresh_first(items):
