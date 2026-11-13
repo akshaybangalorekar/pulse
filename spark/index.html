@@ -909,9 +909,21 @@ function suggestHTML(){
 function birthdayToday(){
   const d=new Date(); return d.getDate()===9 && d.getMonth()===5;
 }
+function updatedAgo(){
+  try{
+    const g=EDITION && EDITION.generated;
+    if(!g) return "";
+    const mins=Math.max(0,Math.round((Date.now()-new Date(g).getTime())/60000));
+    if(mins<60) return "Updated " + mins + "m ago";
+    const hrs=Math.round(mins/60);
+    if(hrs<24) return "Updated " + hrs + "h ago";
+    return "Updated " + Math.round(hrs/24) + "d ago";
+  }catch(e){ return ""; }
+}
 function chrome(){
+  const fresh = updatedAgo();
   const tagline = birthdayToday() ? "🎉 Happy birthday!"
-    : "Fresh for you · " + new Date().toLocaleDateString(undefined,{weekday:"long"});
+    : (fresh || ("Fresh for you · " + new Date().toLocaleDateString(undefined,{weekday:"long"})));
   $("#hbar").innerHTML=`<div class="logo">⚡</div>
     <div><div class="brand">Sp<span>ark</span></div>
       <div class="tag">${tagline}</div></div>

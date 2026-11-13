@@ -465,11 +465,11 @@ def save_seen():
 LLM_BASE = "https://text.pollinations.ai/"
 LLM_SLEEP = 31
 LLM_BUDGET = 16
-_llm = {"n": 0}
+_llm = {"n": 0, "fails": 0}
 
 
 def llm(prompt):
-    if _llm["n"] >= LLM_BUDGET:
+    if _llm["n"] >= LLM_BUDGET or _llm["fails"] >= 2:
         return None
     _llm["n"] += 1
     try:
@@ -483,7 +483,10 @@ def llm(prompt):
             time.sleep(LLM_SLEEP)
             return txt
     except Exception as ex:
-        print("  ! llm", type(ex).__name__)
+        _llm["fails"] += 1
+        print("  ! llm", type(ex).__name__, "(fails %d)" % _llm["fails"])
+        if _llm["fails"] >= 2:
+            return None
     time.sleep(LLM_SLEEP)
     return None
 

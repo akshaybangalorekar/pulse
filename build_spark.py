@@ -92,7 +92,6 @@ FEEDS = {
     "current": ["https://www.timeforkids.com/feed/",
                 "https://pressgang.news/feed/",
                 "https://www.sciencejournalforkids.org/feed/",
-                "https://www.dogonews.com/feed",
                 "https://www.smithsonianmag.com/rss/latest_articles/"],
     "screen": [],
 }
@@ -364,7 +363,7 @@ THINK = {
 LLM_BASE = "https://text.pollinations.ai/"
 LLM_SLEEP = 31          # the free endpoint allows about one reply every 30s
 LLM_BUDGET = 10         # cap per run, so the job stays quick
-_llm = {"n": 0}
+_llm = {"n": 0, "fails": 0}
 
 
 def llm(prompt):
@@ -383,7 +382,11 @@ def llm(prompt):
             time.sleep(LLM_SLEEP)
             return txt
     except Exception as ex:
-        print("  ! llm", type(ex).__name__)
+        _llm["fails"] += 1
+        print("  ! llm", type(ex).__name__, "(fails %d)" % _llm["fails"])
+        if _llm["fails"] >= 2:
+            print("  ! model unavailable - using extracted text")
+            return None
     time.sleep(LLM_SLEEP)
     return None
 
@@ -521,7 +524,7 @@ def save_seen():
     print("SEEN saved:", len(keep))
 
 
-MAX_AGE_H = 72          # current affairs: nothing older than three days
+MAX_AGE_H = 48          # nothing older than two days: stale news gets flushed
 
 
 def fresh_first(items):
@@ -531,6 +534,29 @@ def fresh_first(items):
              if key_of(x["title"]) not in SEEN
              and (not x.get("date") or x["date"] >= cut)]
     return fresh
+
+
+def condense(paras, budget=110):
+    """Shorten an article to a few readable sentences, in order."""
+    sents = []
+    for p in paras:
+        for s in re.split(r"(?<=[.!?])\s+", p):
+            s = re.sub(r"\s+", " ", s).strip()
+            if len(s.split()) < 6:
+                continue
+            sents.append(s)
+    out, total = [], 0
+    for s in sents:
+        out.append(s)
+        total += len(s.split())
+        if total >= budget:
+            break
+    if not out:
+        return []
+    if len(out) <= 3:
+        return [" ".join(out)]
+    third = max(1, len(out) // 3)
+    return [" ".join(out[:third]), " ".join(out[third:2 * third]), " ".join(out[2 * third:])]
 
 
 def build_news(age, budget):
