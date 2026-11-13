@@ -365,12 +365,15 @@ def carry(new, prev_items, want):
         out.append(it)
         if len(out) >= want:
             break
+    cut = (time.time() - MAX_AGE_H * 3600) * 1000
     for it in prev_items:
         if len(out) >= STACK_MAX:
             break
         t = it.get("title", "").lower()[:60]
         if t in titles:
             continue
+        if it.get("date") and it["date"] < cut:
+            continue                  # older than the flush window: gone
         titles.add(t)
         out.append(it)
     return out[:STACK_MAX]

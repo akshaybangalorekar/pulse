@@ -752,11 +752,14 @@ def carry_over(news, prev):
         c = x.get("cat")
         by_cat.setdefault(c, []).append(x)
         titles.add(key_of(x["title"]))
+    cut = (time.time() - MAX_AGE_H * 3600) * 1000
     for x in prev:
         c = x.get("cat")
         k = key_of(x["title"])
         if k in titles:
             continue
+        if x.get("date") and x["date"] < cut:
+            continue                  # older than the flush window: gone
         lst = by_cat.setdefault(c, [])
         if len(lst) >= STACK_MAX:
             continue
