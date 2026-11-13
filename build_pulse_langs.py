@@ -417,7 +417,18 @@ def main():
         if got:
             kok_sections.append({"id": sec["id"], "name": sec["name"],
                                  "emoji": sec["emoji"], "items": got})
-    print("WROTE pulse-mr.json and pulse-kok.json")
+    for s in kok_sections:
+        for it in s["items"]:
+            if not it.get("image"):
+                ph = photos.photo_for(it.get("title", ""), s["id"])
+                if ph:
+                    it["image"] = ph
+    photos.save_cache()
+    with open("pulse-kok.json", "w", encoding="utf-8") as f:
+        json.dump({"generated": gen, "lang": "kok", "sections": kok_sections},
+                  f, ensure_ascii=False, separators=(",", ":"))
+    print("WROTE pulse-mr.json:", sum(len(s["items"]) for s in mr_sections), "items |",
+          "pulse-kok.json:", sum(len(s["items"]) for s in kok_sections), "items")
 
 
 if __name__ == "__main__":
