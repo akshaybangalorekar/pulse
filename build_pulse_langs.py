@@ -22,7 +22,7 @@ UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/124 Safari/537.36")
 TIMEOUT = 25
 MIN_WORDS = 30
-MAX_AGE_H = 24          # these feeds are thinner: a day
+MAX_AGE_H = 5           # five-hour flush across the whole app
 
 BAD = re.compile(r"(reels?\s*व्हिडिओ|जाहिरात|व्हिडिओ पहा|subscribe|advertisement|"
                  r"murder|killed|abduct|kidnap|rape|assault|arrest|underworld|smuggl|"
@@ -343,6 +343,63 @@ def build_section(items, sec, used):
     return out
 
 
+
+# hand-written cards for the Konkani page: no dates, so they rotate instead of expiring
+KOK_EVERGREEN = [
+ {"id":"k_chitrapur","t":"Shri Chitrapur Math, Shirali",
+  "hook":"The spiritual home of the Chitrapur Saraswat community, in Uttara Kannada.",
+  "paras":["The Shri Chitrapur Math is the math of the Chitrapur Saraswat Brahmin community, with its headquarters at Shirali in Karnataka.",
+           "It has guided the community's religious and cultural life for generations, and runs schools, hostels and charitable work alongside its spiritual role."],
+  "wow":"Chitrapur Saraswats are spread across Maharashtra, Karnataka, Goa and overseas, but Shirali remains the centre."},
+ {"id":"k_partagali","t":"Shrimad Partagali Jeevottam Math",
+  "hook":"The Gaud Saraswat math at Partagali in Canacona, south Goa.",
+  "paras":["The Shrimad Partagali Jeevottam Math is one of the principal maths of the Gaud Saraswat Brahmin community.",
+           "It is named after Shrimad Jeevottam Teerth, and its annual festivals draw GSB families from Goa, Karnataka and Maharashtra."],
+  "wow":"The Gaud Saraswat community is often called the GSB, and its maths in Goa and at Kashi are both central to its identity."},
+ {"id":"k_kashi","t":"Shri Kashi Math Samsthan",
+  "hook":"A coastal community's math, far away in Varanasi.",
+  "paras":["The Shri Kashi Math Samsthan is a math of the Gaud Saraswat Brahmin community with its headquarters at Varanasi.",
+           "Its branches and followers are spread through coastal Karnataka, Goa, Kerala and Maharashtra, and its swamijis travel to the community's centres through the year."],
+  "wow":"For a coastal community, having its math in Kashi is a reminder of how far Saraswat families travelled for scholarship."},
+ {"id":"k_shantadurga","t":"Shri Shantadurga Temple, Kavlem",
+  "hook":"The goddess of peace, at Ponda in Goa.",
+  "paras":["The Shri Shantadurga temple at Kavlem in Ponda is one of the most visited temples of the Gaud Saraswat community.",
+           "The name means the goddess of peace, and the temple's annual jatra is a major event in Goa."],
+  "wow":"Several Goan temples, including this one, were moved inland in the 16th century to keep them safe."},
+ {"id":"k_mangesh","t":"Shri Mangesh Temple, Priol",
+  "hook":"A Shiva temple closely tied to the community.",
+  "paras":["The Shri Mangesh temple at Priol in Ponda is dedicated to Shiva and is closely tied to the Gaud Saraswat Brahmin community.",
+           "It is known for its deepstambha, its tank and its Goan architecture."],
+  "wow":"The Mangesh temple's architecture mixes Goan and Konkani styles, and it is one of the best-known temples in Goa."},
+ {"id":"k_fourstates","t":"Konkani across four states",
+  "hook":"One language, many coastlines.",
+  "paras":["Konkani is spoken along the western coast, from Maharashtra through Goa and coastal Karnataka to northern Kerala.",
+           "It is the official language of Goa and is written in Devanagari, though Roman script is widely used in Mangalore and Kochi."],
+  "wow":"Konkani was added to the Eighth Schedule of the Indian Constitution in 1992."},
+ {"id":"k_saraswat","t":"The Saraswat thread",
+  "hook":"Chitrapur and Gaud Saraswat are not the same community.",
+  "paras":["The Konkani Saraswat world has two large branches: the Gaud Saraswat Brahmins and the Chitrapur Saraswats.",
+           "The Gaud Saraswats follow the Partagali and Kashi maths; the Chitrapur Saraswats are centred on Shirali with their own math and traditions."],
+  "wow":"Both share the Konkani language and a coastal heritage, but their maths and customs are distinct."},
+ {"id":"k_kanhangad","t":"Kanhangad and Kochi",
+  "hook":"Konkani families settled far down the coast.",
+  "paras":["Konkani-speaking families settled in Kanhangad in northern Kerala and in Kochi over centuries, and their temples and community institutions are still active.",
+           "These communities keep the language alive well outside Goa and Karnataka."],
+  "wow":"Konkani is spoken in four states today because of centuries of coastal trade and migration."},
+]
+
+
+def rotate(pool, n):
+    """Show a different slice of the pool each five-hour block."""
+    if not pool:
+        return []
+    if len(pool) <= n:
+        return list(pool)
+    block = int(time.time() // (MAX_AGE_H * 3600))
+    start = (block * n) % len(pool)
+    return [pool[(start + i) % len(pool)] for i in range(n)]
+
+
 def load_prev(path):
     try:
         with open(path, encoding="utf-8") as f:
@@ -422,6 +479,10 @@ def main():
         if got:
             kok_sections.append({"id": sec["id"], "name": sec["name"],
                                  "emoji": sec["emoji"], "items": got})
+    ever = [{"kind": "card", "title": c["t"], "hook": c["hook"], "paras": c["paras"],
+             "wow": c["wow"], "date": 0} for c in rotate(KOK_EVERGREEN, 5)]
+    kok_sections.append({"id": "evergreen", "name": "\u092e\u0920 \u0906\u0923\u093f \u092a\u0930\u0902\u092a\u0930\u093e",
+                         "emoji": "\U0001F6D5", "items": ever})
     for s in kok_sections:
         for it in s["items"]:
             if not it.get("image"):

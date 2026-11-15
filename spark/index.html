@@ -1003,17 +1003,36 @@ function refreshSpark(){
   if(typeof pullState==="function"){ try{ pullState(); }catch(e){} }
 }
 
+const WINDOW_MS = 5*60*60*1000;          // the whole app turns over every five hours
+
+/* evergreen cards rotate: each five-hour block shows a different slice of the pool,
+   so a quiet category still looks fresh and never repeats inside the window */
+function rotatePool(list, n){
+  if(!list.length || n<=0) return [];
+  if(list.length<=n) return list.slice();
+  const block=Math.floor(Date.now()/WINDOW_MS);
+  const start=(block*n)%list.length;
+  const out=[];
+  for(let i=0;i<n;i++) out.push(list[(start+i)%list.length]);
+  return out;
+}
+
 function stackOf(list){
   const now=Date.now(), ra=readAtMap();
-  const fresh=[], resting=[];
+  const news=[], ever=[], resting=[];
   list.forEach(function(o){
     const t=ra[o.id];
-    if(!t){ fresh.push(o); }
+    const isEvergreen = !o.date;                 // hand-written cards carry no date
+    if(isEvergreen){ ever.push(o); return; }
+    if(now-(o.date||0) > WINDOW_MS) return;      // older than five hours: flushed
+    if(!t){ news.push(o); }
     else if(now-t < READ_KEEP_MS){ resting.push({o:o,t:t}); }
-    // read more than an hour ago: gone from the shelf, it lives in history now
   });
-  resting.sort(function(a,b){ return a.t-b.t; });     // oldest read sits furthest right
-  return fresh.concat(resting.map(function(x){ return x.o; })).slice(0,STACK_MAX);
+  news.sort(function(a,b){ return (b.date||0)-(a.date||0); });
+  resting.sort(function(a,b){ return a.t-b.t; });
+  const head=news.concat(resting.map(function(x){ return x.o; })).slice(0,STACK_MAX);
+  const filler=rotatePool(ever, STACK_MAX-head.length);
+  return head.concat(filler);
 }
 
 function renderNews(){
@@ -1041,9 +1060,7 @@ function renderNews(){
   if(hero) html+=heroHTML(hero);
   if(birthdayToday()) html+=`<div class="bday anim">\uD83C\uDF89 Happy birthday! A special edition, just for you.</div>`;
   html+=`<div class="hint" style="padding-top:12px">Tap a card to open it. Swipe the rows sideways for more.</div>`;
-  if(cont) html+=railHTML("▶ Continue", [cont], "PICK UP");
   html+=railHTML("\u2728 New today", stackOf(items), "FRESH");
-  html+=suggestHTML();
   // current affairs always lead: it is a news app
   const promoted=["current"].concat(
     recommendShelves(3).filter(function(k){ return k!=="current"; }).slice(0,2));
